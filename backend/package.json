@@ -4,6 +4,7 @@
   "description": "This project is a web application that integrates with the Strava API to help athletes plan, track, and manage their training schedules for upcoming races. It allows users to create detailed training plans by adding specific activities (e.g., runs, rides, or swims) to a calendar, including parameters such as distance, pace, and route name. After completing an activity and uploading it to Strava, users can easily log the completed workout into their training calendar by selecting it from the list of Strava activities.",
   "main": "index.js",
   "scripts": {
+    "start": "node ./src/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -20,11 +21,18 @@
   "homepage": "https://github.com/sunnybunnyy/training-dashboard#readme",
   "dependencies": {
     "axios": "^1.7.9",
+    "body-parser": "^1.20.3",
+    "cookie-parser": "^1.4.7",
     "dotenv": "^16.4.7",
+    "ejs": "^3.1.10",
     "express": "^4.21.2",
+    "express-session": "^1.18.1",
     "jsonwebtoken": "^9.0.2",
+    "method-override": "^3.0.0",
     "mongoose": "^8.9.5",
+    "morgan": "^1.10.0",
     "passport": "^0.7.0",
-    "passport-strava": "^0.2.0"
+    "passport-strava": "^0.2.0",
+    "passport-strava-oauth2": "^0.1.3"
   }
 }

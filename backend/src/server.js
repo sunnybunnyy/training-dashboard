@@ -1,78 +1,56 @@
-const express = require('express');
-const dotenv = require('dotenv');
-const path = require('path');
-dotenv.config(); // to read environment variables from .env file
-
-const app = express();
-const port = process.env.PORT || 5000;
-
-/*app.get('/', (req, res) => {
-  res.send('Hello from the backend!');
-});*/
-
-const passport = require('passport');
-const util = require('util');
-const StravaStrategy = require('passport-strava-oauth2').Strategy;
-const morgan = require('morgan'); // Import morgan
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const dotenv = require('dotenv');
+const express = require('express');
 const methodOverride = require('method-override');
+const morgan = require('morgan');
+const passport = require('passport');
+const path = require('path');
 const session = require('express-session');
+const StravaStrategy = require('passport-strava-oauth2').Strategy;
+const util = require('util');
 
-var STRAVA_CLIENT_ID = '145133';
-var STRAVA_CLIENT_SECRET = '943bd105dc8f5509a61c2444d96bb342c43f465c';
+dotenv.config(); // Load environment variables from .env file
+const port = process.env.PORT; // Get the port from environment variables
 
-// configure Express
-app.set('views', __dirname + '/views');
-app.set('view engine', 'ejs');
-app.use(morgan('dev')); // Use morgan to log requests in 'dev' format
-app.use(cookieParser());
-app.use(bodyParser.json());
-app.use(methodOverride('_method')); // Use method-override middleware
+const app = express(); // Initialize the Express application
+
+// Configure Express settings
+app.set('views', __dirname + '/views'); // Initialize the Express application
+app.set('view engine', 'ejs'); // Initialize the Express application
+
+// Middleware setup
+app.use(bodyParser.json()); // Parse JSON request bodies
+app.use(cookieParser()); // Parse cookies
+app.use(methodOverride('_method')); // Allow HTTP method overriding
+app.use(morgan('dev')); // Log HTTP requests in 'dev' format
 app.use(session({
-    secret: 'super-secure-strava-training-dashboard',
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false }
-    })); // Use session middleware
-// Initialize Passport!  Also use passport.session() middleware, to support
-// persistent login sessions (recommended).
+  secret: process.env.SESSION_SECRET, // Secret used to sign the session ID cookie
+  resave: false, // Don't save the session if it wasn't modified
+  saveUninitialized: true, // Save new sessions
+  cookie: { secure: false } // Cookie settings
+}));
+
+// Initialize Passport for authentication
 app.use(passport.initialize());
-app.use(passport.session());
+app.use(passport.session()); // Enable persistent login sessions
 
-console.log('Serving static files from:', path.join(__dirname, '../../frontend/build'));
-
-
-// Use the StravaStrategy within Passport.
-//   Strategies in Passport require a `verify` function, which accept
-//   credentials (in this case, an accessToken, refreshToken, and Strava
-//   profile), and invoke a callback with a user object.
+// Configure Passport to use the Strava OAuth2 strategy
 passport.use(new StravaStrategy({
-  clientID: STRAVA_CLIENT_ID,
-  clientSecret: STRAVA_CLIENT_SECRET,
-  callbackURL: "http://localhost:5000/auth/strava/callback"
+  clientID: process.env.STRAVA_CLIENT_ID, // Strava client ID from environment variables
+  clientSecret: process.env.STRAVA_CLIENT_SECRET, // Strava client secret from environment variables
+  callbackURL: `http://localhost:${port}/auth/strava/callback` // Callback URL after Strava authentication
 },
 function(accessToken, refreshToken, profile, done) {
-  // asynchronous verification, for effect...
+  // Asynchronous verification function
   process.nextTick(function () {
-    if (!profile || !profile.id) {
-      return done(new Error("No user profile received"));
-    }
-    console.log("Strava Profile:", profile);
     // To keep the example simple, the user's Strava profile is returned to
     // represent the logged-in user.  In a typical application, you would want
     // to associate the Strava account with a user record in your database,
     // and return that user instead.
     return done(null, profile);
   });
-}
-));
-
-
-/*(app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../frontend/build', 'index.html'))
-})*/
-
+}));
 
 // Passport session setup.
 //   To support persistent login sessions, Passport needs to be able to
@@ -82,40 +60,23 @@ function(accessToken, refreshToken, profile, done) {
 //   have a database of user records, the complete Strava profile is
 //   serialized and deserialized.
 passport.serializeUser(function(user, done) {
-  try {
-      if (!user || !user.id) {
-          return done(new Error("Invalid user object"));
-      }
-      // Only store essential user info in session
-      done(null, {
-          id: user.id,
-          displayName: user.displayName,
-          token: user.token
-      });
-  } catch (err) {
-      done(err);
-  }
-});
-passport.deserializeUser(function(serializedUser, done) {
-  try {
-      done(null, serializedUser);
-  } catch (err) {
-      done(err);
-  }
+  // Serialize only essential user info to store in the session
+  done(null, {
+    id: user.id,
+    displayName: user.displayName,
+    token: user.token
+  });
 });
 
+passport.deserializeUser(function(serializedUser, done) {
+  // Deserialize the user from the session
+  done(null, serializedUser);
+});
+
+// Root route: Redirect to Strava authentication
 app.get('/', (req, res) => {
-  console.log("Redirecting to /auth/strava...");
   res.redirect('/auth/strava');
 });
-/*
-app.get('/account', ensureAuthenticated, function(req, res){
-  res.render('account', { user: req.user });
-});
-
-app.get('/login', function(req, res){
-  res.render('login', { user: req.user });
-});*/
 
 // GET /auth/strava
 //   Use passport.authenticate() as route middleware to authenticate the
@@ -124,41 +85,29 @@ app.get('/login', function(req, res){
 //   will redirect the user back to this application at /auth/strava/callback
 app.get('/auth/strava',
   passport.authenticate('strava', { scope: ['activity:read_all'] })
+// Request access to Strava activities
 );
+
 // GET /auth/strava/callback
 //   Use passport.authenticate() as route middleware to authenticate the
 //   request.  If authentication fails, the user will be redirected back to the
 //   login page.  Otherwise, the primary route function function will be called,
 //   which, in this example, will redirect the user to the home page.
 app.get('/auth/strava/callback', 
-  passport.authenticate('strava', { failureRedirect: '/login' }),
+  passport.authenticate('strava', { failureRedirect: '/login' }), // Redirect to login on failure
+  ensureAuthenticated, // Ensure the user is authenticated
   function(req, res, next) {
-    try {
-        if (!req.user) {
-            console.log("Authentication error: req.user is undefined");
-            return res.redirect('/login');
-        }
-        console.log("User authenticated:", req.user);
-        
-
-        //res.sendFile(path.join(__dirname, '../../frontend/build', 'index.html'));
-        
-        console.log("after User authenticated:", req.user);
-    } catch (err) {
-        next(err);
+    if (!req.user) {
+      return res.redirect('/login'); // Redirect to login if no user is found
     }
-  });
+    // Serve the frontend's index.html file after successful authentication
+    res.sendFile(path.join(__dirname, '../../frontend/build', 'index.html'));
+});
 
+// Serve static files from the frontend build directory
 app.use(express.static(path.join(__dirname, '../../frontend/build')));
 
-//app.use(express.static(path.join(__dirname, '../../frontend/build')));
-
-/*
-app.get('/logout', function(req, res){
-  req.logout();
-  res.redirect('/');
-});*/
-
+// Start the server
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
 });
@@ -169,12 +118,6 @@ app.listen(port, () => {
 //   the request will proceed.  Otherwise, the user will be redirected to the
 //   login page.
 function ensureAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) { return next(); }
-  res.redirect('/login')
+  if (req.isAuthenticated()) { return next(); } // Proceed if authenticated
+  res.redirect('/login') // Redirect to login if not authenticated
 }
-
-
-// Fallback route for React Router
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '../../frontend/build', 'index.html'));
-});

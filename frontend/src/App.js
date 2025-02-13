@@ -1,22 +1,39 @@
-import { useState } from 'react';
-import Calendar from 'react-calendar';
-import './App.css';
+import FullCalendar from '@fullcalendar/react'
+import dayGridPlugin from '@fullcalendar/daygrid'
+import interactionPlugin from "@fullcalendar/interaction" // needed for dayClick
+
+const events = [
+  { title: 'Meeting', start: new Date() }
+]
 
 function App() {
-  const [date, setDate] = useState(new Date());
+  const handleDateClick = (arg) => {
+    alert(arg.dateStr)
+  }
 
   return (
-    <div className='app'>
-      <h1 className='text-center'>React Calendar</h1>
-      <div className='calendar-container'>
-        <Calendar onChange={setDate} value={date} />
-      </div>
-      <p className='text-center'>
-        <span className='bold'>Selected Date:</span>{' '}
-        {date.toDateString()}
-      </p>
+    <div>
+      <h1>Demo App</h1>
+      <FullCalendar
+        plugins={[dayGridPlugin, interactionPlugin]}
+        initialView='dayGridMonth'
+        weekends={false}
+        events={events}
+        eventContent={renderEventContent}
+        dateClick={handleDateClick}
+      />
     </div>
-  );
+  )
+}
+
+// a custom render function
+function renderEventContent(eventInfo) {
+  return (
+    <>
+      <b>{eventInfo.timeText}</b>
+      <i>{eventInfo.event.title}</i>
+    </>
+  )
 }
 
 export default App;

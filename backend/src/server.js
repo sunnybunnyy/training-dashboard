@@ -1,3 +1,4 @@
+const axios = require('axios');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const dotenv = require('dotenv');
@@ -96,13 +97,29 @@ app.get('/auth/strava',
 app.get('/auth/strava/callback', 
   passport.authenticate('strava', { failureRedirect: '/login' }), // Redirect to login on failure
   ensureAuthenticated, // Ensure the user is authenticated
-  function(req, res, next) {
+  (req, res, next) => {
     if (!req.user) {
       return res.redirect('/login'); // Redirect to login if no user is found
     }
     // Serve the frontend's index.html file after successful authentication
     res.sendFile(path.join(__dirname, '../../frontend/build', 'index.html'));
-});
+  });
+
+app.get('/api/strava/activities', ensureAuthenticated,
+  async (req, res) => {
+    try {
+      const accessToken = req.user.token;
+      const response = await axios.get('https://www.strava.com/api/v3/athlete/activities', {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      res.json(response.data); // Send activities to the frontend
+    } catch (error) {
+      console.error('Error fetching Strava activities:', error);
+      res.status(500).json({error: 'Failed to fetch Strava activities'});
+    } 
+  });
 
 // Serve static files from the frontend build directory
 app.use(express.static(path.join(__dirname, '../../frontend/build')));

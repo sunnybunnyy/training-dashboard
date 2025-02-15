@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from "@fullcalendar/interaction" // needed for dayClick
 import axios from 'axios';
+import './App.css';
 
 const events = [
   { title: 'Meeting', start: new Date() }
@@ -10,6 +11,7 @@ const events = [
 
 function App() {
   const [events, setEvents] = useState([]);
+  const calendarRef = useRef(null);
 
   // Fetch Strava activities when the component mounts
   useEffect(() => {
@@ -38,14 +40,52 @@ function App() {
     fetchActivities();
   }, []);
 
+  // Handle date clicks
   const handleDateClick = (arg) => {
     alert(arg.dateStr)
   }
 
+  // Adjust event text size when the event is mounted
+  /*const eventDidMount = (info)  => {
+    adjustEventTextSize(info.el);
+  };*/
+
+  // Function to adjust event text size
+  const adjustEventTextSize = (eventEl) => {
+    // Reset the font size to its default value before recalculating
+    // eventEl.style.fontSize = '';
+
+    const cell = eventEl.parentElement;
+    const cellHeight = cell.clientHeight; // Get the cell height
+    const cellWidth = cell.clientWidth; // Get the cell width
+    console.log('Cell Height:', cellHeight, 'Cell Width:', cellWidth);
+    
+    // Calculate font size based on cell size
+    const fontSize = Math.min(cellHeight, cellWidth) * 0.5;
+    eventEl.style.fontSize = `${fontSize}px`;
+    console.log('Applied Font Size:', fontSize);
+  };
+
+  /*
+  // Handle window resize
+  useEffect(() => {
+    const handleResize = () => {
+      // Get all event elements
+      const eventElements = document.getElementsByClassName('fc-event');
+      console.log('Number of Event Elements:', eventElements.length);
+      // Loop through each event element
+      Array.from(eventElements).forEach(eventEl => adjustEventTextSize(eventEl));
+    };
+
+    window.addEventListener('resize', handleResize);
+    // Cleanup event listener on component unmount
+    return () => window.removeEventListener('resize', handleResize);
+  }, []); */
+
   // Custom event content
   const renderEventContent = (eventInfo) => {
     return (
-      <div>
+      <div className="event-content">
         <b>{eventInfo.event.title}</b>
         <br />
         <i>{eventInfo.event.extendedProps.type} - {eventInfo.event.extendedProps.distance} meters</i>
@@ -63,9 +103,10 @@ function App() {
         events={events}
         eventContent={renderEventContent}
         dateClick={handleDateClick}
+        // eventDidMount = {eventDidMount} // Use eventDidMount to adjust text size
       />
     </div>
-  )
+  );
 }
 
 // a custom render function

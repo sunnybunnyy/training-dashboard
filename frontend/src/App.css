@@ -42,3 +42,9 @@
   overflow: hidden; /* Hide overflow */
   text-overflow: ellipsis; /* Show ellipses for overflow text */
 }
+
+.calendar-container {
+  padding: 20px; /* Add padding around the calendar */
+  margin: 0 auto; /* Center the calendar horizontally */
+  overflow-x: auto;
+}

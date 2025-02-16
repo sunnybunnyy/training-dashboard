@@ -11,7 +11,6 @@ const events = [
 
 function App() {
   const [events, setEvents] = useState([]);
-  const calendarRef = useRef(null);
 
   // Fetch Strava activities when the component mounts
   useEffect(() => {
@@ -45,11 +44,6 @@ function App() {
     alert(arg.dateStr)
   }
 
-  // Adjust event text size when the event is mounted
-  /*const eventDidMount = (info)  => {
-    adjustEventTextSize(info.el);
-  };*/
-
   // Function to adjust event text size
   const adjustEventTextSize = (eventEl) => {
     // Reset the font size to its default value before recalculating
@@ -65,23 +59,6 @@ function App() {
     eventEl.style.fontSize = `${fontSize}px`;
     console.log('Applied Font Size:', fontSize);
   };
-
-  /*
-  // Handle window resize
-  useEffect(() => {
-    const handleResize = () => {
-      // Get all event elements
-      const eventElements = document.getElementsByClassName('fc-event');
-      console.log('Number of Event Elements:', eventElements.length);
-      // Loop through each event element
-      Array.from(eventElements).forEach(eventEl => adjustEventTextSize(eventEl));
-    };
-
-    window.addEventListener('resize', handleResize);
-    // Cleanup event listener on component unmount
-    return () => window.removeEventListener('resize', handleResize);
-  }, []); */
-
   // Custom event content
   const renderEventContent = (eventInfo) => {
     return (
@@ -94,7 +71,7 @@ function App() {
   };
 
   return (
-    <div>
+    <div className="calendar-container">
       <h1>Strava Activities Calendar</h1>
       <FullCalendar
         plugins={[dayGridPlugin, interactionPlugin]}
@@ -103,20 +80,10 @@ function App() {
         events={events}
         eventContent={renderEventContent}
         dateClick={handleDateClick}
-        // eventDidMount = {eventDidMount} // Use eventDidMount to adjust text size
+        height="auto"
       />
     </div>
   );
 }
-
-// a custom render function
-/* function renderEventContent(eventInfo) {
-  return (
-    <>
-      <b>{eventInfo.timeText}</b>
-      <i>{eventInfo.event.title}</i>
-    </>
-  )
-} */
 
 export default App;

@@ -46,5 +46,25 @@
 .calendar-container {
   padding: 20px; /* Add padding around the calendar */
   margin: 0 auto; /* Center the calendar horizontally */
-  overflow-x: auto;
+}
+
+.fc-theme-standard td, .fc-theme-standard th {
+  border: 2px solid #fff;
+}
+
+/* Style the current month cells */
+.fc-daygrid-day {
+  background-color: #f7f7fa;
+  color: #6d6d78;
+}
+
+/* Style the previous and next month cells */
+.fc-day-other {
+  opacity: 0.5;
+}
+
+/* Style the days of the week */
+.fc-col-header-cell {
+  background-color: #f0f0f5;
+  color: #242428
 }

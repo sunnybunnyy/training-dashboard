@@ -43,11 +43,6 @@
   text-overflow: ellipsis; /* Show ellipses for overflow text */
 }
 
-.calendar-container {
-  padding: 20px; /* Add padding around the calendar */
-  margin: 0 auto; /* Center the calendar horizontally */
-}
-
 .fc-theme-standard td, .fc-theme-standard th {
   border: 2px solid #fff;
 }
@@ -56,6 +51,7 @@
 .fc-daygrid-day {
   background-color: #f7f7fa;
   color: #6d6d78;
+  font-size: 14px;
 }
 
 /* Style the previous and next month cells */
@@ -66,5 +62,6 @@
 /* Style the days of the week */
 .fc-col-header-cell {
   background-color: #f0f0f5;
-  color: #242428
+  color: #242428;
+  font-size: 14px;
 }

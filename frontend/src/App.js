@@ -44,23 +44,8 @@ function App() {
     alert(arg.dateStr)
   }
 
-  // Function to adjust event text size
-  const adjustEventTextSize = (eventEl) => {
-    // Reset the font size to its default value before recalculating
-    // eventEl.style.fontSize = '';
-
-    const cell = eventEl.parentElement;
-    const cellHeight = cell.clientHeight; // Get the cell height
-    const cellWidth = cell.clientWidth; // Get the cell width
-    console.log('Cell Height:', cellHeight, 'Cell Width:', cellWidth);
-    
-    // Calculate font size based on cell size
-    const fontSize = Math.min(cellHeight, cellWidth) * 0.5;
-    eventEl.style.fontSize = `${fontSize}px`;
-    console.log('Applied Font Size:', fontSize);
-  };
   // Custom event content
-  const renderEventContent = (eventInfo) => {
+  const handleEventContent = (eventInfo) => {
     return (
       <div className="event-content">
         <b>{eventInfo.event.title}</b>
@@ -70,15 +55,23 @@ function App() {
     );
   };
 
+  const handleDayHeader = (arg) => {
+    // Get the full weekday name
+    const weekdayName = new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(arg.date);
+    // Convert to uppercase
+    return weekdayName.toUpperCase();
+  }
+
   return (
     <div className="calendar-container">
       <h1>Strava Activities Calendar</h1>
       <FullCalendar
         plugins={[dayGridPlugin, interactionPlugin]}
         initialView='dayGridMonth'
+        dayHeaderContent={handleDayHeader}
         weekends={true}
         events={events}
-        eventContent={renderEventContent}
+        eventContent={handleEventContent}
         dateClick={handleDateClick}
         height="auto"
       />

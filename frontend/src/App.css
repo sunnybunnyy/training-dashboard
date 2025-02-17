@@ -1,3 +1,8 @@
+* { 
+  margin: 0;
+  padding: 0;
+}
+
 .App {
   text-align: center;
 }
@@ -43,15 +48,20 @@
   text-overflow: ellipsis; /* Show ellipses for overflow text */
 }
 
+.calendar-container {
+  overflow: auto;
+  height: 100vh;
+}
+
 .fc-theme-standard td, .fc-theme-standard th {
   border: 2px solid #fff;
+  /*box-sizing: border-box;*/
 }
 
 /* Style the current month cells */
 .fc-daygrid-day {
   background-color: #f7f7fa;
   color: #6d6d78;
-  font-size: 14px;
 }
 
 /* Style the previous and next month cells */
@@ -63,5 +73,18 @@
 .fc-col-header-cell {
   background-color: #f0f0f5;
   color: #242428;
+}
+
+.fc .fc-col-header-cell,
+.fc .fc-daygrid-day {
   font-size: 14px;
+}
+
+.fc .fc-scrollgrid {
+  padding: 0 20px;
+  min-width: calc(700px + 40px);
+}
+
+h1, .fc-header-toolbar {
+  padding: 0 20px;
 }

@@ -42,31 +42,19 @@
   }
 }
 
-.event-content {
-  white-space: nowrap; /* Prevent text from wrapping */
-  overflow: hidden; /* Hide overflow */
-  text-overflow: ellipsis; /* Show ellipses for overflow text */
+.fc-theme-standard td, .fc-theme-standard th {
+  border: 2px solid #fff;
 }
 
 .calendar-container {
-  overflow: auto;
   height: 100vh;
+  overflow: auto;
 }
 
-.fc-theme-standard td, .fc-theme-standard th {
-  border: 2px solid #fff;
-  /*box-sizing: border-box;*/
-}
-
-/* Style the current month cells */
-.fc-daygrid-day {
-  background-color: #f7f7fa;
-  color: #6d6d78;
-}
-
-/* Style the previous and next month cells */
-.fc-day-other {
-  opacity: 0.5;
+.event-content {
+  overflow: hidden; /* Hide overflow */
+  text-overflow: ellipsis; /* Show ellipses for overflow text */
+  white-space: nowrap; /* Prevent text from wrapping */
 }
 
 /* Style the days of the week */
@@ -75,16 +63,27 @@
   color: #242428;
 }
 
+/* Style the previous and next month cells */
+.fc-day-other {
+  opacity: 0.5;
+}
+
+/* Style the current month cells */
+.fc-daygrid-day {
+  background-color: #f7f7fa;
+  color: #6d6d78;
+}
+
 .fc .fc-col-header-cell,
 .fc .fc-daygrid-day {
   font-size: 14px;
 }
 
 .fc .fc-scrollgrid {
-  padding: 0 20px;
   min-width: calc(700px + 40px);
+  padding: 0 20px;
 }
 
-h1, .fc-header-toolbar {
+.fc .fc-scrollgrid, .fc-header-toolbar, h1 {
   padding: 0 20px;
 }

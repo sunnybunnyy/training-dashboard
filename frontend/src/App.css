@@ -79,9 +79,21 @@
   font-size: 14px;
 }
 
+.fc .fc-col-header-cell-cushion {
+  font-weight: 500px;
+}
+
+.fc .fc-daygrid-day-frame {
+  height: 120px;
+}
+
 .fc .fc-scrollgrid {
-  min-width: calc(700px + 40px);
+  min-width: calc(150px * 7 + 40px);
   padding: 0 20px;
+}
+
+.fc-theme-standard .fc-scrollgrid {
+  border: none;
 }
 
 .fc .fc-scrollgrid, .fc-header-toolbar, h1 {

@@ -64,7 +64,7 @@ function App() {
 
   return (
     <div className="calendar-container">
-      <h1>Strava Activities Calendar</h1>
+      <h1>Training Calendar</h1>
       <FullCalendar
         plugins={[dayGridPlugin, interactionPlugin]}
         initialView='dayGridMonth'

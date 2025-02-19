@@ -79,6 +79,13 @@
   font-size: 14px;
 }
 
+/* Style for the img element */
+.calendar-container img {
+  width: 24px;
+  height: 24px;
+  margin-right: 10px;
+}
+
 .fc .fc-col-header-cell-cushion {
   font-weight: 500px;
 }
@@ -86,6 +93,25 @@
 .fc .fc-daygrid-day-frame {
   height: 120px;
 }
+
+.fc-icon-button {
+  background-image: url('../public/images/icon/persimmon.gif');
+  background-size: contain;
+  height: 40px;
+  width: 40px;
+}
+
+/* Style for the icon button */
+/*.fc .fc-icon-button {
+  width: 24px;
+  height: 24px;
+  margin-right: 10px;
+  background-image: url('../src/images/icon/persimmon.gif');
+}
+
+.fc .fc-icon-button.static {
+  background-image: url('../src/images/icon/persimmon.png');
+} */
 
 .fc .fc-scrollgrid {
   min-width: calc(150px * 7 + 40px);
@@ -99,3 +125,4 @@
 .fc .fc-scrollgrid, .fc-header-toolbar, h1 {
   padding: 0 20px;
 }
+

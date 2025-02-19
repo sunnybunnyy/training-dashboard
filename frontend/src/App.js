@@ -39,6 +39,11 @@ function App() {
     fetchActivities();
   }, []);
 
+  // Custom rendering for the icon button
+  const customButtons = {
+  icon: {}
+};
+
   // Handle date clicks
   const handleDateClick = (arg) => {
     alert(arg.dateStr)
@@ -68,6 +73,12 @@ function App() {
       <FullCalendar
         plugins={[dayGridPlugin, interactionPlugin]}
         initialView='dayGridMonth'
+        headerToolbar={{
+          left: 'icon today prev next', // Add icon as seperate button
+          center: 'title',
+          right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        }}
+        customButtons={customButtons}
         dayHeaderContent={handleDayHeader}
         weekends={true}
         events={events}

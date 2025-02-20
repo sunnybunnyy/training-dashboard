@@ -76,7 +76,7 @@ function App() {
         headerToolbar={{
           left: 'icon today prev next', // Add icon as seperate button
           center: 'title',
-          right: 'dayGridMonth,timeGridWeek,timeGridDay'
+          right: ''
         }}
         customButtons={customButtons}
         dayHeaderContent={handleDayHeader}

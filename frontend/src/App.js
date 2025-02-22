@@ -41,8 +41,10 @@ function App() {
 
   // Custom rendering for the icon button
   const customButtons = {
-  icon: {}
-};
+    logo: {
+      text: 'Persimmon'
+    }
+  };
 
   // Handle date clicks
   const handleDateClick = (arg) => {
@@ -69,12 +71,11 @@ function App() {
 
   return (
     <div className="calendar-container">
-      <h1>Training Calendar</h1>
       <FullCalendar
         plugins={[dayGridPlugin, interactionPlugin]}
         initialView='dayGridMonth'
         headerToolbar={{
-          left: 'icon today prev next', // Add icon as seperate button
+          left: 'logo today prev next', // Add icon as seperate button
           center: 'title',
           right: ''
         }}

@@ -74,6 +74,11 @@
   color: #6d6d78;
 }
 
+.fc-icon-chevron-left::before,
+.fc-icon-chevron-right::before {
+  color: #444746;
+}
+
 .fc .fc-col-header-cell,
 .fc .fc-daygrid-day {
   font-size: 14px;
@@ -86,6 +91,26 @@
   margin-right: 10px;
 }
 
+h1,
+.fc-header-toolbar,
+.fc .fc-scrollgrid {
+  padding: 0 20px;
+}
+
+.fc .fc-logo-button,
+.fc .fc-button-primary {
+  box-shadow: none !important;
+}
+
+.fc .fc-logo-button,
+.fc-theme-standard .fc-scrollgrid {
+  border: none;
+}
+
+.fc .fc-button-primary {
+  background-color: transparent;
+}
+
 .fc .fc-col-header-cell-cushion {
   font-weight: 500px;
 }
@@ -94,35 +119,61 @@
   height: 120px;
 }
 
-.fc-icon-button {
+.fc .fc-logo-button {
   background-image: url('../public/images/icon/persimmon.gif');
-  background-size: contain;
-  height: 40px;
-  width: 40px;
+  background-position: 10px;
+  background-repeat: no-repeat;
+  background-size: 40px;
+  color: #fa8e25 !important;
+  cursor: default !important;
+  font-size: 22px;
+  padding-left: 50px;
 }
-
-/* Style for the icon button */
-/*.fc .fc-icon-button {
-  width: 24px;
-  height: 24px;
-  margin-right: 10px;
-  background-image: url('../src/images/icon/persimmon.gif');
-}
-
-.fc .fc-icon-button.static {
-  background-image: url('../src/images/icon/persimmon.png');
-} */
 
 .fc .fc-scrollgrid {
   min-width: calc(150px * 7 + 40px);
-  padding: 0 20px;
 }
 
-.fc-theme-standard .fc-scrollgrid {
-  border: none;
+.fc .fc-logo-button,
+.fc .fc-button-primary:disabled {
+  background-color: transparent !important;
 }
 
-.fc .fc-scrollgrid, .fc-header-toolbar, h1 {
-  padding: 0 20px;
+.fc .fc-button.fc-prev-button, 
+.fc .fc-button.fc-next-button {
+  border-radius: 100%;
+  padding: 3px 5px;
 }
 
+.fc .fc-button-primary:focus-visible {
+  box-shadow: #fa8e25 0px 0px 0px 0.2rem !important;
+}
+
+.fc .fc-logo-button:focus-visible {
+  box-shadow: none !important;
+}
+
+.fc .fc-button-primary:hover {
+  background-color: #fa8f253F;
+}
+
+.fc .fc-button-primary,
+.fc .fc-button-primary:hover,
+.fc .fc-button-primary:not(:disabled):active,
+.fc .fc-button-primary:not(:disabled).fc-button-active {
+  border-color: transparent;
+}
+
+.fc .fc-button.fc-today-button {
+  border-radius: 30% / 60%;
+  border: 1px solid #747775;
+  color: #1f1f1f;
+  font-weight: 500;
+  height: 48px;
+  width: 90px;
+}
+
+.fc .fc-button-primary:not(:disabled):active,
+.fc .fc-button-primary:not(:disabled).fc-button-active {
+  background-color: #fa8f257F;
+}

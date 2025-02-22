@@ -102,7 +102,7 @@ app.get('/auth/strava/callback',
       return res.redirect('/login'); // Redirect to login if no user is found
     }
     // Serve the frontend's index.html file after successful authentication
-    res.sendFile(path.join(__dirname, '../../frontend/build', 'index.html'));
+    res.sendFile(path.join(__dirname, '../../frontend/dist', 'index.html'));
   });
 
 app.get('/api/strava/activities', ensureAuthenticated,
@@ -122,7 +122,7 @@ app.get('/api/strava/activities', ensureAuthenticated,
   });
 
 // Serve static files from the frontend build directory
-app.use(express.static(path.join(__dirname, '../../frontend/build')));
+app.use(express.static(path.join(__dirname, '../../frontend/dist')));
 
 // Start the server
 app.listen(port, () => {

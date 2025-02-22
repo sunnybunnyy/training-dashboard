@@ -1,0 +1,16 @@
+{
+  "files": {
+    "main.css": "/static/css/main.aa8f0579.css",
+    "main.js": "/static/js/main.6598b09f.js",
+    "static/js/488.e75445ad.chunk.js": "/static/js/488.e75445ad.chunk.js",
+    "static/media/persimmon.gif": "/static/media/persimmon.181ff4fb0c6bdf486fda.gif",
+    "index.html": "/index.html",
+    "main.aa8f0579.css.map": "/static/css/main.aa8f0579.css.map",
+    "main.6598b09f.js.map": "/static/js/main.6598b09f.js.map",
+    "488.e75445ad.chunk.js.map": "/static/js/488.e75445ad.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.aa8f0579.css",
+    "static/js/main.6598b09f.js"
+  ]
+}

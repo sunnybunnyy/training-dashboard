@@ -5,12 +5,10 @@ import interactionPlugin from "@fullcalendar/interaction" // needed for dayClick
 import axios from 'axios';
 import './App.css';
 
-const events = [
-  { title: 'Meeting', start: new Date() }
-]
-
 function App() {
   const [events, setEvents] = useState([]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedDate, setSelectedDate] = useState(null);
 
   // Fetch Strava activities when the component mounts
   useEffect(() => {
@@ -48,16 +46,26 @@ function App() {
 
   // Handle date clicks
   const handleDateClick = (arg) => {
-    alert(arg.dateStr)
+    setSelectedDate(arg.dateStr);
+    setIsModalOpen(true);
+  };
+
+  // Handle saving the planned activity
+  const handleSaveActivity = (newActivity) => {
+    setEvents(prev => [...prev, newActivity]);
   }
 
   // Custom event content
   const handleEventContent = (eventInfo) => {
+    const isPlanned = eventInfo.event.extendedProps.planned;
     return (
-      <div className="event-content">
+      <div className={`event-content ${isPlanned ? 'planned-activity' : ''}`}>
         <b>{eventInfo.event.title}</b>
         <br />
-        <i>{eventInfo.event.extendedProps.type} - {eventInfo.event.extendedProps.distance} meters</i>
+        <i>
+          {eventInfo.event.extendedProps.type} - {eventInfo.event.extendedProps.distance} meters
+          {eventInfo.event.extendedProps.shoes && ` - ${eventInfo.event.extendedProps.shoes}`}
+        </i>
       </div>
     );
   };

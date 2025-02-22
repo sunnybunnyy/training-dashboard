@@ -1,9 +1,10 @@
-import React, { useEffect, useState, useRef } from 'react';
-import FullCalendar from '@fullcalendar/react'
-import dayGridPlugin from '@fullcalendar/daygrid'
-import interactionPlugin from "@fullcalendar/interaction" // needed for dayClick
-import axios from 'axios';
 import './App.css';
+import ActivityPlannerModal from './ActivityPlannerModal';
+import axios from 'axios';
+import dayGridPlugin from '@fullcalendar/daygrid'
+import FullCalendar from '@fullcalendar/react'
+import interactionPlugin from "@fullcalendar/interaction" // needed for dayClick
+import React, { useEffect, useState, useRef } from 'react';
 
 function App() {
   const [events, setEvents] = useState([]);
@@ -97,6 +98,12 @@ function App() {
         eventContent={handleEventContent}
         dateClick={handleDateClick}
         height="auto"
+      />
+      <ActivityPlannerModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        selectedDate={selectedDate}
+        onSave={handleSaveActivity}
       />
     </div>
   );

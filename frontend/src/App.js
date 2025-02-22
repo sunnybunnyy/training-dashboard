@@ -79,6 +79,9 @@ function App() {
           center: 'title',
           right: ''
         }}
+        buttonText={{
+          today: 'Today'
+        }}
         customButtons={customButtons}
         dayHeaderContent={handleDayHeader}
         weekends={true}

@@ -91,11 +91,9 @@
   margin-right: 10px;
 }
 
-h1,
 .fc-header-toolbar,
 .fc .fc-scrollgrid {
   padding-left: 20px;
-  padding-top: 20px;
 }
 
 .fc .fc-logo-button,
@@ -144,6 +142,10 @@ h1,
 .fc .fc-button.fc-next-button {
   border-radius: 100%;
   padding: 3px 5px;
+}
+
+.fc .fc-toolbar.fc-header-toolbar {
+  margin: 20px 0;
 }
 
 .fc .fc-button-primary:focus-visible {

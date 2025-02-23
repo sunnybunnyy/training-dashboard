@@ -121,10 +121,12 @@
 
 .form-group input,
 .form-group select {
-  width: 100%;
-  padding: 8px;
   border: 1px solid #ddd;
   border-radius: 4px;
+  height: 36px;
+  padding: 8px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .fc-header-toolbar > div {

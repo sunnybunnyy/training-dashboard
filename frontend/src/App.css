@@ -210,12 +210,12 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 
 .modal-buttons button[type="button"] {
-  background-color: #e5e7eb;
+  background-color: #f0f0f5;
 }
 
 .modal-buttons button[type="submit"] {
-  background-color: #0ea5e9;
-  color: white;
+  background-color: #fa8e25;
+  color: #FFF;
 }
 
 .fc .fc-logo-button,

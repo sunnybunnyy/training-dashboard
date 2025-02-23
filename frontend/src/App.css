@@ -70,6 +70,45 @@
   color: #6d6d78;
 }
 
+.form-group {
+  margin-bottom: 15px;
+}
+
+.modal-buttons {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 500px;
+} 
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+/* Style for the img element */
+.calendar-container img {
+  width: 24px;
+  height: 24px;
+  margin-right: 10px;
+}
+
 .fc-theme-standard td,
 .fc-theme-standard th {
   border: 2px solid #fff;
@@ -80,26 +119,40 @@
   color: #444746;
 }
 
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
 .fc-header-toolbar > div {
   flex: 0 0 auto;
 }
 
-.fc .fc-col-header-cell,
-.fc .fc-daygrid-day {
-  font-size: 14px;
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: 500;
 }
 
-/* Style for the img element */
-.calendar-container img {
-  width: 24px;
-  height: 24px;
-  margin-right: 10px;
+.modal-buttons button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
 }
 
 .fc-header-toolbar,
 .fc .fc-scrollgrid {
   padding: 0 20px;
   padding-bottom: 20px;
+}
+
+.fc .fc-col-header-cell,
+.fc .fc-daygrid-day {
+  font-size: 14px;
 }
 
 .fc .fc-logo-button,
@@ -137,6 +190,15 @@
 
 .fc .fc-scrollgrid {
   min-width: calc(150px * 7 + 40px);
+}
+
+.modal-buttons button[type="button"] {
+  background-color: #e5e7eb;
+}
+
+.modal-buttons button[type="submit"] {
+  background-color: #0ea5e9;
+  color: white;
 }
 
 .fc .fc-logo-button,

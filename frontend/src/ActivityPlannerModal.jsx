@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 
 const ActivityPlannerModal = ({ isOpen, onClose, selectedDate, onSave }) => {
     const [activity, setActivity] = useState({
@@ -8,6 +8,68 @@ const ActivityPlannerModal = ({ isOpen, onClose, selectedDate, onSave }) => {
         route: '',
         shoes: ''
     });
+
+    const modalRef = useRef(null); // Ref for the modal container
+    const previousFocusRef = useRef(null); // Ref to store the previously focused element
+
+    // Focus on the modal when it opens
+    useEffect(() => {
+        if (isOpen) {
+            // Save the currently focused element
+            previousFocusRef.current = document.activeElement;
+
+            // Focus on the modal container
+            if (modalRef.current) {
+                modalRef.current.focus();
+            }
+        } else {
+            // Restore focus to the previously focused element when the modal closes
+            if (previousFocusRef.current) {
+                previousFocusRef.current.focus();
+            }
+        }
+    }, [isOpen]);
+
+    // Trap focus inside the modal
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === 'Tab') {
+                if (!modalRef.current) {
+                    return;
+                }
+
+                // Get all focusable elements inside the modal
+                const focusableElements = modalRef.current.querySelectorAll(
+                    'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+                );
+                const firstElement = focusableElements[0];
+                const lastElement = focusableElements[focusableElements.length - 1];
+                
+                if (e.shiftKey) {
+                    // Shift + Tab: Move focus to the previous element
+
+                    if (document.activeElement === firstElement) {
+                        lastElement.focus();
+                        e.preventDefault();
+                    }
+                } else {
+                    // Tab: Move focus to the next element
+                    if (document.activeElement === lastElement) {
+                        firstElement.focus();
+                        e.preventDefault();
+                    }
+                }
+            }
+        };
+
+        if (isOpen) {
+            document.addEventListener('keydown', handleKeyDown);
+        }
+        
+        return () => {
+            document.removeEventListener('keydown', handleKeyDown);
+        };
+    }, [isOpen]);
 
     if (!isOpen) {
         return null;
@@ -34,7 +96,7 @@ const ActivityPlannerModal = ({ isOpen, onClose, selectedDate, onSave }) => {
     };
 
     return (
-        <div className="modal-overlay">
+        <div className="modal-overlay" ref={modalRef} tabIndex="=1">
             <div className='modal-content'>
                 <h2>Plan Activity for {selectedDate}</h2>
                 <form onSubmit={handleSubmit}>

@@ -9,4 +9,6 @@ This project is a web application that integrates with the Strava API to help at
 - **Activity Tracking**: Log completed activities and visualize training progress.
 - **Calendar View**: Plan and manage your training schedule with a clear calendar interface.
 - **Detailed Activity Information**: Add specific details for each planned activity, such as distance, pace, and route name.
+
+A web app that integrates with the Strava API to help athletes plan and track their training for upcoming races. Users can create custom training plans, add activities to a calendar, and log completed workouts by syncing with Strava.
 -->

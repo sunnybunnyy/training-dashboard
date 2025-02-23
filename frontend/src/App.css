@@ -102,6 +102,11 @@
   z-index: 1000;
 }
 
+/* Hide spinners in Firefox */
+input[type="number"] {
+  appearance: textfield;
+}
+
 /* Style for the img element */
 .calendar-container img {
   width: 24px;
@@ -144,6 +149,12 @@
   border: none;
   border-radius: 4px;
   cursor: pointer;
+}
+
+/* Hide spinners in Chrome, Safari, Edge, Opera */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+  appearance: none;
 }
 
 .fc-header-toolbar,

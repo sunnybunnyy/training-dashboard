@@ -26,6 +26,13 @@ const ActivityPlannerModal = ({ isOpen, onClose, selectedDate, onSave }) => {
         onClose();
     };
 
+    // Function to disable arrow keys for number inputs
+    const handleKeyDown = (e) => {
+        if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+            e.preventDefault();
+        }
+    };
+
     return (
         <div className="modal-overlay">
             <div className='modal-content'>
@@ -55,6 +62,7 @@ const ActivityPlannerModal = ({ isOpen, onClose, selectedDate, onSave }) => {
                             step="0.1"
                             value={activity.distance}
                             onChange={(e) => setActivity({ ...activity, distance: e.target.value })}
+                            onKeyDown={handleKeyDown}
                         />
                     </div>
 
@@ -65,6 +73,7 @@ const ActivityPlannerModal = ({ isOpen, onClose, selectedDate, onSave }) => {
                             type="number"
                             value={activity.duration}
                             onChange={(e) => setActivity({ ...activity, duration: e.target.value })}
+                            onKeyDown={handleKeyDown}    
                     />
                     </div>
 
@@ -75,6 +84,7 @@ const ActivityPlannerModal = ({ isOpen, onClose, selectedDate, onSave }) => {
                             type="text"
                             value={activity.route}
                             onChange={(e) => setActivity({ ...activity, route: e.target.value })}
+                            onKeyDown={handleKeyDown}
                         />
                     </div>
 
@@ -85,6 +95,7 @@ const ActivityPlannerModal = ({ isOpen, onClose, selectedDate, onSave }) => {
                             type="text"
                             value={activity.shoes}
                             onChange={(e) => setActivity({ ...activity, shoes: e.target.value })}
+                            onKeyDown={handleKeyDown}
                         />
                     </div>
 

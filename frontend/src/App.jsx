@@ -10,6 +10,7 @@ function App() {
   const [events, setEvents] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
+  const calendarRef = useRef(null);
 
   // Fetch Strava activities when the component mounts
   useEffect(() => {
@@ -37,6 +38,22 @@ function App() {
 
     fetchActivities();
   }, []);
+
+
+  // Manipulate the logo button after it is rendered
+  useEffect(() => {
+    if (calendarRef.current) {
+      // Find the logo button in the DOM
+      const calendarEl = calendarRef.current.getApi().el;
+      if (calendarEl) {
+        const logo = calendarEl.querySelector('.fc-logo-button');
+        if (logo) {
+          // Set the tabIndex to -1 to make it unfocusable
+          logo.tabIndex = -1;
+        }
+      }
+    }
+  }, []); // Run only once after the initial render
 
   // Custom rendering for the icon button
   const customButtons = {
@@ -81,6 +98,7 @@ function App() {
   return (
     <div className="calendar-container">
       <FullCalendar
+        ref = {calendarRef}
         plugins={[dayGridPlugin, interactionPlugin]}
         initialView='dayGridMonth'
         headerToolbar={{

@@ -2,5 +2,8 @@
   "dependencies": {
     "@testing-library/react": "^16.2.0",
     "react-calendar": "^5.1.0"
+  },
+  "scripts": {
+    "serve": "cd frontend && npm run serve"
   }
 }

@@ -192,6 +192,10 @@
   min-width: calc(150px * 7 + 40px);
 }
 
+.fc td.fc-daygrid-day {
+  cursor: pointer;
+}
+
 .modal-buttons button[type="button"] {
   background-color: #e5e7eb;
 }

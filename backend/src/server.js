@@ -8,6 +8,7 @@ const methodOverride = require('method-override');
 const morgan = require('morgan');
 const passport = require('passport');
 const path = require('path');
+const router = express.Router();
 const session = require('express-session');
 const StravaStrategy = require('passport-strava-oauth2').Strategy;
 const util = require('util');
@@ -122,6 +123,16 @@ app.get('/api/strava/activities', ensureAuthenticated,
     } 
   });
 
+
+// GET planned activities
+app.get('/api/planned-activities', async (req, res) => {
+  try {
+    getPlannedActivities(req, res);
+  } catch (error) {
+    console.error('Error fetching planned activities:', error);
+  }
+})
+
 // Serve static files from the frontend build directory
 app.use(express.static(path.join(__dirname, '../../frontend/dist')));
 
@@ -153,7 +164,7 @@ async function createPlannedActivityGet(req, res) {
 
 async function createPlannedActivityPost(req, res){
   const { strava_id, id,  title, date, type, distance, duration, route, shoes } = req.body;
-  await db.insertPlannedActivity(strava_id, id,  title, date, type, distance, duration, route, shoes);
+  await db.insertActivity(strava_id, id,  title, date, type, distance, duration, route, shoes);
   res.redirect('/');
 } 
 

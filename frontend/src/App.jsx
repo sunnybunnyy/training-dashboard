@@ -16,11 +16,14 @@ function App() {
   useEffect(() => {
     const fetchActivities = async () => {
       try {
-        const response = await axios.get('/api/strava/activities'); // Call the backend endpoint
-        const activities = response.data;
+        // Fetch both Strava and planned activities in parallel
+        const [stravaResponse, plannedResponse] = await Promise.all([
+          axios.get('/api/strava/activities'),
+          axios.get('/api/planned-activities')
+        ]);
 
         // Map Strava activities to FullCalendar events
-        const calendarEvents = activities.map(activity => ({
+        const stravaEvents = stravaResponse.data.map(activity => ({
           id: activity.id,
           title: activity.name,
           start: activity.start_date, // FullCalendar will parse this date string
@@ -30,7 +33,12 @@ function App() {
             duration: activity.moving_time,
           },
         }));
-        setEvents(calendarEvents);
+
+        // Planned activities should already be in the right format
+        const plannedEvents = plannedResponse.data;
+
+        // Combine both type of events
+        setEvents([...stravaEvents, ...plannedEvents]);
       } catch (error) {
         console.error('Error fetching Strava activities:', error);
       }
@@ -69,8 +77,18 @@ function App() {
   };
 
   // Handle saving the planned activity
-  const handleSaveActivity = (newActivity) => {
-    setEvents(prev => [...prev, newActivity]);
+  const handleSaveActivity = async (newActivity) => {
+    try {
+      // Send the new activity to the backend
+      const response = await axios.post('/api/planned-activites', newActivity);
+
+      // Update local state with the saved activity from the backend
+      // This ensures we have any additional fields the backend adds, like ID
+      setEvents(prev => [...prev, response.data]);
+    } catch (error) {
+      console.error('Error saving planned activity:', error);
+      // TODO: Display an error message to the user
+    }
   }
 
   // Custom event content

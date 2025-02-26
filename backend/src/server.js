@@ -1,6 +1,7 @@
 const axios = require('axios');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const db = require("../../db/queries");
 const dotenv = require('dotenv');
 const express = require('express');
 const methodOverride = require('method-override');
@@ -138,3 +139,26 @@ function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) { return next(); } // Proceed if authenticated
   res.redirect('/login') // Redirect to login if not authenticated
 }
+
+async function getPlannedActivities(req, res){
+  const plannedActivities = await db.getAllPlannedActivities();
+  console.log("Planned activities: ", plannedActivities);
+  const formattedData = plannedActivities.map(plannedActivity => `${plannedActivity.id}  (title: ${plannedActivity.title}, date: ${plannedActivity.date}, type: ${plannedActivity.type}, distance: ${plannedActivity.distance}, duration: ${plannedActivity.duration}, route: ${plannedActivity.route}, shoes: ${plannedActivity.shoes})`).join(", ");
+  res.send("Planned activities: " + formattedData);
+} 
+
+async function createPlannedActivityGet(req, res) {
+  // TODO
+}
+
+async function createPlannedActivityPost(req, res){
+  const { strava_id, id,  title, date, type, distance, duration, route, shoes } = req.body;
+  await db.insertPlannedActivity(strava_id, id,  title, date, type, distance, duration, route, shoes);
+  res.redirect('/');
+} 
+
+module.exports = {
+  getPlannedActivities,
+  createPlannedActivityGet,
+  createPlannedActivityPost
+};

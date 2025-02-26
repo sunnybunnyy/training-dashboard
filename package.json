@@ -1,6 +1,8 @@
 {
   "dependencies": {
     "@testing-library/react": "^16.2.0",
+    "dotenv": "^16.4.7",
+    "pg": "^8.13.3",
     "react-calendar": "^5.1.0"
   },
   "scripts": {

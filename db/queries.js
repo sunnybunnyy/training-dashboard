@@ -5,8 +5,12 @@ async function getAllPlannedActivities() {
     return rows;
 }
 
-async function insertActivity(strava_id, id,  title, date, type, distance, duration, route, shoes) {
-    await pool.query('INSERT INTO planned_activities (strava_id, id, title, date, type, distance, duration, route, shoes) VALUES ($1)', [strava_id, id,  title, date, type, distance, duration, route, shoes]);
+async function insertActivity(strava_id, id, title, date, type, distance, duration, route, shoes) {
+    await pool.query(
+        `INSERT INTO planned_activities
+        (strava_id, id, title, date, type, distance, duration, route, shoes)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)`
+        [strava_id, id, title, date, type, distance, duration, route, shoes]);
 }
 
 module.exports = {

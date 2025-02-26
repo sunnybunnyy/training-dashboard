@@ -133,6 +133,11 @@ app.get('/api/planned-activities', async (req, res) => {
   }
 })
 
+// POST new planned activitiy
+app.post('/api/planned-activities', async (req, res) => {
+
+})
+
 // Serve static files from the frontend build directory
 app.use(express.static(path.join(__dirname, '../../frontend/dist')));
 
@@ -154,8 +159,19 @@ function ensureAuthenticated(req, res, next) {
 async function getPlannedActivities(req, res){
   const plannedActivities = await db.getAllPlannedActivities();
   console.log("Planned activities: ", plannedActivities);
-  const formattedData = plannedActivities.map(plannedActivity => `${plannedActivity.id}  (title: ${plannedActivity.title}, date: ${plannedActivity.date}, type: ${plannedActivity.type}, distance: ${plannedActivity.distance}, duration: ${plannedActivity.duration}, route: ${plannedActivity.route}, shoes: ${plannedActivity.shoes})`).join(", ");
-  res.send("Planned activities: " + formattedData);
+  const events = plannedActivities.rows.map(plannedActivity => ({
+    id: plannedActivity.id,
+    title: plannedActivity.title,
+    start: plannedActivity.date,
+    extendedProps: {
+      type: plannedActivity.type,
+      distance: plannedActivity.distance,
+      duration: plannedActivity.duration,
+      route: plannedActivity.route,
+      shoes: plannedActivity.shoes
+    }
+  }));
+  res.send(events);
 } 
 
 async function createPlannedActivityGet(req, res) {

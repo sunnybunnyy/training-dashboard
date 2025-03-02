@@ -135,7 +135,11 @@ app.get('/api/planned-activities', async (req, res) => {
 
 // POST new planned activitiy
 app.post('/api/planned-activities', async (req, res) => {
-
+  try {
+    createPlannedActivityPost(req, res);
+  } catch (error) {
+    console.error('Error creating planned activity:', error);
+  }
 })
 
 // Serve static files from the frontend build directory
@@ -158,20 +162,25 @@ function ensureAuthenticated(req, res, next) {
 
 async function getPlannedActivities(req, res){
   const plannedActivities = await db.getAllPlannedActivities();
-  console.log("Planned activities: ", plannedActivities);
-  const events = plannedActivities.rows.map(plannedActivity => ({
-    id: plannedActivity.id,
-    title: plannedActivity.title,
-    start: plannedActivity.date,
-    extendedProps: {
-      type: plannedActivity.type,
-      distance: plannedActivity.distance,
-      duration: plannedActivity.duration,
-      route: plannedActivity.route,
-      shoes: plannedActivity.shoes
-    }
-  }));
-  res.send(events);
+  
+  if (typeof plannedActivities.rows === "undefined") {
+    return res.send([]);
+  } else {
+    console.log("Planned activities: ", plannedActivities.rows);
+    const events = plannedActivities.rows.map(plannedActivity => ({
+      id: plannedActivity.id,
+      title: plannedActivity.title,
+      start: plannedActivity.date,
+      extendedProps: {
+        type: plannedActivity.type,
+        distance: plannedActivity.distance,
+        duration: plannedActivity.duration,
+        route: plannedActivity.route,
+        shoes: plannedActivity.shoes
+      }
+    }));
+    return res.send(events);
+  }
 } 
 
 async function createPlannedActivityGet(req, res) {
@@ -179,9 +188,24 @@ async function createPlannedActivityGet(req, res) {
 }
 
 async function createPlannedActivityPost(req, res){
-  const { strava_id, id,  title, date, type, distance, duration, route, shoes } = req.body;
-  await db.insertActivity(strava_id, id,  title, date, type, distance, duration, route, shoes);
-  res.redirect('/');
+  const { title, start, extendedProps } = req.body;
+  const strava_id = 145133; // TODO: fetch user's strava id
+  const result = await db.insertActivity(strava_id, title, start, extendedProps.type, extendedProps.distance, extendedProps.duration, extendedProps.route, extendedProps.shoes);
+  
+  // Transform the response to match the FullCalendar event format
+  const savedActivity = {
+    title: title,
+    start: start,
+    extendedProps : {
+      type: extendedProps.type,
+      distance: extendedProps.distance,
+      duration: extendedProps.duration,
+      route: extendedProps.route,
+      shoes: extendedProps.shoes
+    }
+  };
+
+  res.status(201).json(savedActivity);
 } 
 
 module.exports = {

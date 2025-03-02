@@ -80,7 +80,7 @@ function App() {
   const handleSaveActivity = async (newActivity) => {
     try {
       // Send the new activity to the backend
-      const response = await axios.post('/api/planned-activites', newActivity);
+      const response = await axios.post('/api/planned-activities', newActivity);
 
       // Update local state with the saved activity from the backend
       // This ensures we have any additional fields the backend adds, like ID

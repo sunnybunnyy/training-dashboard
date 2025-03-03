@@ -163,11 +163,11 @@ function ensureAuthenticated(req, res, next) {
 async function getPlannedActivities(req, res){
   const plannedActivities = await db.getAllPlannedActivities();
   
-  if (typeof plannedActivities.rows === "undefined") {
+  if (typeof plannedActivities === "undefined") {
     return res.json([]);
   } else {
-    console.log("Planned activities: ", plannedActivities.rows);
-    const events = plannedActivities.rows.map(plannedActivity => ({
+    console.log("Planned activities: ", plannedActivities);
+    const events = plannedActivities.map(plannedActivity => ({
       id: plannedActivity.id,
       title: plannedActivity.title,
       start: plannedActivity.date,

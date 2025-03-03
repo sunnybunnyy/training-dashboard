@@ -164,7 +164,7 @@ async function getPlannedActivities(req, res){
   const plannedActivities = await db.getAllPlannedActivities();
   
   if (typeof plannedActivities.rows === "undefined") {
-    return res.send([]);
+    return res.json([]);
   } else {
     console.log("Planned activities: ", plannedActivities.rows);
     const events = plannedActivities.rows.map(plannedActivity => ({
@@ -179,7 +179,7 @@ async function getPlannedActivities(req, res){
         shoes: plannedActivity.shoes
       }
     }));
-    return res.send(events);
+    return res.json(events);
   }
 } 
 

@@ -202,13 +202,20 @@ app.get('/api/profile', authenticateToken, async (req, res) => {
   }
 });
 
-app.get('/api/strava/activities', ensureAuthenticated,
-  async (req, res) => {
+app.get('/api/strava/activities', authenticateToken, async (req, res) => {
     try {
-      const accessToken = req.user.token;
+      // Get user's Strava credentials
+      const rows = await db.getStravaCredentials(req.user.id);
+      if (rows.length === 0) {
+        return res.status(404).json({ error: 'Strava credentials not found for this user' });
+      }
+
+      const { access_token } = rows[0];
+
+      // Use the user's Strava access token
       const response = await axios.get('https://www.strava.com/api/v3/athlete/activities', {
         headers: {
-          Authorization: `Bearer ${accessToken}`,
+          Authorization: `Bearer ${access_token}`,
         },
       });
       res.json(response.data); // Send activities to the frontend

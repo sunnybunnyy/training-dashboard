@@ -155,6 +155,39 @@ app.listen(port, () => {
 //   the request is authenticated (typically via a persistent login session),
 //   the request will proceed.  Otherwise, the user will be redirected to the
 //   login page.
+
+// Authenticate token
+function authenticateToken (req, res, next) {
+  // Get auth header value
+  const authHeader = req.headers['authorization'];
+
+  // Check if auth header is undefined
+  if (typeof authHeader !== 'undefined') {
+    // Split at the space and get the token from the array
+    const token =  authHeader.split(' ')[1];
+    // Set the token
+    req.token = token;
+    // Next middleware
+    next();
+  } else {
+    // Forbidden
+    return res.sendStatus(403);
+  }
+
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) {
+      return res.sendStatus(403);
+    } else {
+      res.json({
+        message: 'Sucess with jwt!',
+        user
+      });
+    }
+    req.user = user;
+    next();
+  });
+}
+
 function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) { return next(); } // Proceed if authenticated
   res.redirect('/login') // Redirect to login if not authenticated

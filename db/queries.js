@@ -21,7 +21,7 @@ async function getUserByEmail(email) {
         FROM users
         WHERE email = $1`, 
         [email]);
-    return rows[0];
+    return rows;
 }
 
 async function getUserById(userId) {

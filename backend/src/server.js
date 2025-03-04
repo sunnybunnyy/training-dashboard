@@ -142,6 +142,41 @@ app.post('/api/planned-activities', async (req, res) => {
   }
 })
 
+app.post('/api/register', async (req, res) => {
+  try {
+    const { email, password, firstName, lastName } = req.body;
+
+    // Check if user already exists
+    const existingUser = await db.getUserByEmail(email);
+    if (existingUser.length > 0) {
+      return res.status(409).json({ error: 'User with this email already exists' });
+    }
+
+    // Create new user
+    const user = await db.createUser(email, password, firstName, lastName);
+
+    // Generate JWT token
+    const token = jwt.sign(
+      { id: user.id, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: '24h' }
+    );
+
+    res.status(201).json({
+      user: {
+        id: user.id,
+        email: user.email,
+        firstName: user.first_name,
+        lastName: user.last_name
+      },
+      token
+    });
+  } catch (error) {
+    console.error('Registration error:', error);
+    res.status(500).json({ error: 'Failed to register user' });
+  }
+});
+
 // Serve static files from the frontend build directory
 app.use(express.static(path.join(__dirname, '../../frontend/dist')));
 

@@ -39,23 +39,6 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session()); // Enable persistent login sessions
 
-// Configure Passport to use the Strava OAuth2 strategy
-passport.use(new StravaStrategy({
-  clientID: process.env.STRAVA_CLIENT_ID, // Strava client ID from environment variables
-  clientSecret: process.env.STRAVA_CLIENT_SECRET, // Strava client secret from environment variables
-  callbackURL: `http://localhost:${port}/auth/strava/callback` // Callback URL after Strava authentication
-},
-function(accessToken, refreshToken, profile, done) {
-  // Asynchronous verification function
-  process.nextTick(function () {
-    // To keep the example simple, the user's Strava profile is returned to
-    // represent the logged-in user.  In a typical application, you would want
-    // to associate the Strava account with a user record in your database,
-    // and return that user instead.
-    return done(null, profile);
-  });
-}));
-
 // Passport session setup.
 //   To support persistent login sessions, Passport needs to be able to
 //   serialize users into and deserialize users out of the session.  Typically,
@@ -87,10 +70,91 @@ app.get('/', (req, res) => {
 //   request.  The first step in Strava authentication will involve
 //   redirecting the user to strava.com.  After authorization, Strava
 //   will redirect the user back to this application at /auth/strava/callback
-app.get('/auth/strava',
-  passport.authenticate('strava', { scope: ['activity:read_all'] })
+// Check for logged-in user first
+app.get('/auth/strava', authenticateToken, async (req, res, next) => {
+  try {
+    // Get user's Strava credentials if they exist
+    const rows = await db.getStravaCredentials(req.user.id);
+
+    if (rows.length > 0) {
+      // User has Strava credentials, use them
+      const { client_id, client_secret } = rows[0];
+
+      // Configure a strategy for this specific user
+      const strategyName = `strava-${req.user.id}`;
+      // Configure Passport to use the Strava OAuth2 strategy
+      passport.use(strategyName, new StravaStrategy({
+        clientID: client_id,
+        clientSecret: client_secret,
+        callbackURL: `http://localhost:${port}/auth/strava/callback` // Callback URL after Strava authentication
+      },
+      function(accessToken, refreshToken, profile, done) {
+        // Asynchronous verification function
+        process.nextTick(function () {
+          // Store the tokens with the user's credentials
+          db.saveStravaCredentials(
+            req.user.id,
+            client_id,
+            client_secret,
+            accessToken,
+            refreshToken,
+            new Date(Date.now() + 21600000) // Token expires in 6 hours
+          ).then(() => {
+            profile.userId = req.user.id;
+            profile.token = accessToken;
+            return done(null, profile);
+          }).catch(err => {
+            return done(err);
+          });
+          // To keep the example simple, the user's Strava profile is returned to
+          // represent the logged-in user.  In a typical application, you would want
+          // to associate the Strava account with a user record in your database,
+          // and return that user instead.
+        });
+      }));
+
+      // Use the user-specific strategy
+      passport.authenticate(strategyName, { scope: ['activity:read_all'] })(req, res, next);
+    } else {
+        // User doesn't have Strava credentials yet, use default appliaction credentials
+        // TODO: Don't use any credentials
+        passport.use('default-strava', new StravaStrategy({
+          clientID: process.env.STRAVA_CLIENT_ID,
+          clientSecret: process.env.STRAVA_CLIENT_SECRET,
+          callbackURL: `http://localhost:${port}/auth/strava/callback`
+        },
+        function(accesToken, refreshToken, profile, done) {
+          process.nextTick(function () {
+            // Link this Strava profile to the current user
+            profile.userId = req.user.id;
+            profile.token = accessToken;
+
+            // Save initial Strava tokens for the user
+            db.saveUserStravaCredentials(
+              req.user.id,
+              process.env.STRAVA_CLIENT_ID,
+              process.env.STRAVA_CLIENT_SECRET,
+              accesToken,
+              refreshToken,
+              new Date(Date.now() + 21600000) // Token expires in 6 hours
+            ).then(() => {
+              return done(null, profile);
+            }).catch(err => {
+              return done(err);
+            });
+          });
+        }));
+
+        // Use the default strategy
+        passport.authenticate('default-strava', { scope: ['activity:read_all'] })(req, res, next);
+    }
+  } catch (error) {
+    console.error('Strava authentication error:', error);
+    res.status(500).json({ error: 'Failed to authenticate with Strava' });
+  }
+  
 // Request access to Strava activities
-);
+});
 
 // GET /auth/strava/callback
 //   Use passport.authenticate() as route middleware to authenticate the

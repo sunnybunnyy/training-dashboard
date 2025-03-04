@@ -54,7 +54,7 @@ async function getStravaCredentials(userId) {
         FROM strava_credentials
         WHERE user_id = $1`,
         [userId]);
-    return rows[0];
+    return rows;
 }
 
 // Planned activity functions

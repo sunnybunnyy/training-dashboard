@@ -257,13 +257,41 @@ app.get('/api/planned-activities', authenticateToken, async (req, res) => {
 });
 
 // POST new planned activitiy
-app.post('/api/planned-activities', async (req, res) => {
+app.post('/api/planned-activities', authenticateToken, async (req, res) => {
   try {
-    createPlannedActivityPost(req, res);
+    const { title, start, extendedProps } = req.body;
+    const userId = req.user.id;
+
+    const result = await db.insertActivity(
+      userId, 
+      title, 
+      start, 
+      extendedProps.type, 
+      extendedProps.distance, 
+      extendedProps.duration, 
+      extendedProps.route, 
+      extendedProps.shoes
+    );
+    
+    // Transform the response to match the FullCalendar event format
+    const savedActivity = {
+      title: title,
+      start: start,
+      extendedProps : {
+        type: extendedProps.type,
+        distance: extendedProps.distance,
+        duration: extendedProps.duration,
+        route: extendedProps.route,
+        shoes: extendedProps.shoes
+      }
+    };
+  
+    res.status(201).json(savedActivity);
   } catch (error) {
     console.error('Error creating planned activity:', error);
+    res.status(500).json({ error: 'Failed to create planned activity' });
   }
-})
+});
 
 app.post('/api/register', async (req, res) => {
   try {
@@ -397,27 +425,6 @@ function ensureAuthenticated(req, res, next) {
 async function createPlannedActivityGet(req, res) {
   // TODO
 }
-
-async function createPlannedActivityPost(req, res){
-  const { title, start, extendedProps } = req.body;
-  const strava_id = 145133; // TODO: fetch user's strava id
-  const result = await db.insertActivity(strava_id, title, start, extendedProps.type, extendedProps.distance, extendedProps.duration, extendedProps.route, extendedProps.shoes);
-  
-  // Transform the response to match the FullCalendar event format
-  const savedActivity = {
-    title: title,
-    start: start,
-    extendedProps : {
-      type: extendedProps.type,
-      distance: extendedProps.distance,
-      duration: extendedProps.duration,
-      route: extendedProps.route,
-      shoes: extendedProps.shoes
-    }
-  };
-
-  res.status(201).json(savedActivity);
-} 
 
 module.exports = {
   getPlannedActivities,

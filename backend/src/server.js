@@ -227,7 +227,7 @@ app.get('/api/strava/activities', authenticateToken, async (req, res) => {
 
 
 // GET planned activities
-app.get('/api/planned-activities', async (req, res) => {
+app.get('/api/planned-activities', authenticateToken, async (req, res) => {
   try {
     const userId = req.user.id;
     const plannedActivities = await db.getPlannedActivitiesByUserId(userId);

@@ -229,11 +229,32 @@ app.get('/api/strava/activities', authenticateToken, async (req, res) => {
 // GET planned activities
 app.get('/api/planned-activities', async (req, res) => {
   try {
-    getPlannedActivities(req, res);
+    const userId = req.user.id;
+    const plannedActivities = await db.getPlannedActivitiesByUserId(userId);
+  
+    if (typeof plannedActivities === "undefined") {
+      return res.send([]);
+    } else {
+      console.log("Planned activities: ", plannedActivities);
+      const events = plannedActivities.map(plannedActivity => ({
+        id: plannedActivity.id,
+        title: plannedActivity.title,
+        start: plannedActivity.date,
+        extendedProps: {
+          type: plannedActivity.type,
+          distance: plannedActivity.distance,
+          duration: plannedActivity.duration,
+          route: plannedActivity.route,
+          shoes: plannedActivity.shoes
+        }
+      }));
+      return res.send(events);
+    }
   } catch (error) {
     console.error('Error fetching planned activities:', error);
+    res.status(500).json({ error: 'Failed to fetch planned activities' });
   }
-})
+});
 
 // POST new planned activitiy
 app.post('/api/planned-activities', async (req, res) => {
@@ -372,29 +393,6 @@ function ensureAuthenticated(req, res, next) {
   if (req.isAuthenticated()) { return next(); } // Proceed if authenticated
   res.redirect('/login') // Redirect to login if not authenticated
 }
-
-async function getPlannedActivities(req, res){
-  const plannedActivities = await db.getAllPlannedActivities();
-  
-  if (typeof plannedActivities === "undefined") {
-    return res.json([]);
-  } else {
-    console.log("Planned activities: ", plannedActivities);
-    const events = plannedActivities.map(plannedActivity => ({
-      id: plannedActivity.id,
-      title: plannedActivity.title,
-      start: plannedActivity.date,
-      extendedProps: {
-        type: plannedActivity.type,
-        distance: plannedActivity.distance,
-        duration: plannedActivity.duration,
-        route: plannedActivity.route,
-        shoes: plannedActivity.shoes
-      }
-    }));
-    return res.json(events);
-  }
-} 
 
 async function createPlannedActivityGet(req, res) {
   // TODO

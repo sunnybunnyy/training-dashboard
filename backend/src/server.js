@@ -417,17 +417,17 @@ function authenticateToken (req, res, next) {
   });
 }
 
-function ensureAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) { return next(); } // Proceed if authenticated
-  res.redirect('/login') // Redirect to login if not authenticated
+async function getPlannedActivitiesByUserId (userId) {
+  const { rows } = await pool.query(
+    `SELECT *
+    FROM planned_activities
+    WHERE user_id = $1`,
+    [userId]);
+    
+  return rows;
 }
 
-async function createPlannedActivityGet(req, res) {
-  // TODO
-}
 
 module.exports = {
-  getPlannedActivities,
-  createPlannedActivityGet,
-  createPlannedActivityPost
+  
 };

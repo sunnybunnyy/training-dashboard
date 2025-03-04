@@ -161,16 +161,25 @@ app.get('/auth/strava', authenticateToken, async (req, res, next) => {
 //   request.  If authentication fails, the user will be redirected back to the
 //   login page.  Otherwise, the primary route function function will be called,
 //   which, in this example, will redirect the user to the home page.
-app.get('/auth/strava/callback', 
-  passport.authenticate('strava', { failureRedirect: '/login' }), // Redirect to login on failure
-  ensureAuthenticated, // Ensure the user is authenticated
-  (req, res, next) => {
-    if (!req.user) {
-      return res.redirect('/login'); // Redirect to login if no user is found
-    }
+// Maintains JWT authentication
+app.get('/auth/strava/callback', (req, res, next) => {
+  // Determine which strategy to user based on the user in the session
+  const userId = req.session.userId;
+  if (!userId) {
+    return res.redirect('/login');
+  }
+  
+  const strategyName = req.session.hasOwnProperty(`strava-${userId}`) ?
+                        `strava-${userId}` : 'default-strava';
+  passport.authenticate(strategyName, { failureRedirect: '/login' })(req, res, next); // Redirect to login on failure
+  },
+  (req, res) => {
+    // TODO: Now that Strava auth is complete, redirect to the dashboard
+    // res.redirect('/dashboard');
     // Serve the frontend's index.html file after successful authentication
     res.sendFile(path.join(__dirname, '../../frontend/dist', 'index.html'));
-  });
+  }
+);
 
 app.get('/api/profile', authenticateToken, async (req, res) => {
   try { 

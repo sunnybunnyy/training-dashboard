@@ -416,18 +416,3 @@ function authenticateToken (req, res, next) {
     next();
   });
 }
-
-async function getPlannedActivitiesByUserId (userId) {
-  const { rows } = await pool.query(
-    `SELECT *
-    FROM planned_activities
-    WHERE user_id = $1`,
-    [userId]);
-    
-  return rows;
-}
-
-
-module.exports = {
-  
-};

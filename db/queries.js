@@ -58,21 +58,23 @@ async function getStravaCredentials(userId) {
 }
 
 // Planned activity functions
-async function getAllPlannedActivities() {
+async function getPlannedActivitiesByUserId (userId) {
     const { rows } = await pool.query(
-        `SELECT *
-        FROM planned_activities`);
-    console.log("Database query result:", rows);
+      `SELECT *
+      FROM planned_activities
+      WHERE user_id = $1`,
+      [userId]);
+      
     return rows;
 }
 
-async function insertActivity(strava_id, title, date, type, distance, duration, route, shoes) {
+async function insertActivity(userId, title, date, type, distance, duration, route, shoes) {
     const { rows } = await pool.query(
         `INSERT INTO planned_activities
-        (strava_id, title, date, type, distance, duration, route, shoes)
+        (user_id, title, date, type, distance, duration, route, shoes)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
         RETURNING *`,
-        [strava_id, title, date, type, distance, duration, route, shoes]);
+        [userId, title, date, type, distance, duration, route, shoes]);
     return rows[0];
 }
 
@@ -82,6 +84,6 @@ module.exports = {
     getUserById,
     saveStravaCredentials,
     getStravaCredentials,
-    getAllPlannedActivities,
+    getPlannedActivitiesByUserId,
     insertActivity
 };

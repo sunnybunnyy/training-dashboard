@@ -108,6 +108,27 @@ app.get('/auth/strava/callback',
     res.sendFile(path.join(__dirname, '../../frontend/dist', 'index.html'));
   });
 
+app.get('/api/profile', authenticateToken, async (req, res) => {
+  try { 
+    const rows = await db.getUserById(req.user.id);
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    const user = rows[0];
+
+    res.json({
+      id: user.id,
+      email: user.email,
+      firstName: user.first_name,
+      lastName: user.last_name
+    });
+  } catch (error) {
+    console.error('Profile fetch error:', error);
+    res.status(500).json({ error: 'Failed to fetch profile' });
+  }
+});
+
 app.get('/api/strava/activities', ensureAuthenticated,
   async (req, res) => {
     try {
@@ -183,10 +204,12 @@ app.post('/api/login', async (req, res) => {
     const { email, password } = req.body;
 
     // Find user by email
-    const user = await db.getUserByEmail(email);
-    if (result.length === 0) {
+    const rows = await db.getUserByEmail(email);
+    if (rows.length === 0) {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
+
+    const user = rows[0];
 
     // Check password
     const isPasswordValid = await bcrypt.compare(password, user.password);

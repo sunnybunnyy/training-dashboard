@@ -30,7 +30,7 @@ async function getUserById(userId) {
         FROM users
         WHERE id = $1`,
         [userId]);
-    return rows[0];
+    return rows;
 }
 
 // Strava credentials functions

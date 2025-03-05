@@ -20,7 +20,7 @@ function Login() {
             localStorage.setItem('user', JSON.stringify(response.data.user));
 
             // TODO: Redirect to dashboard
-            // navigate('/dashboard');
+            navigate('/dashboard');
         } catch (err) {
             setError(err.response?.data?.error || 'Login failed. Please try again.');
         }

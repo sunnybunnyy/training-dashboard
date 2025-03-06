@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const db = require("../../db/queries");
 const dotenv = require('dotenv');
 const express = require('express');
+const jwt = require('jsonwebtoken');
 const methodOverride = require('method-override');
 const morgan = require('morgan');
 const passport = require('passport');
@@ -65,14 +66,49 @@ app.get('/', (req, res) => {
   res.redirect('/auth/strava');
 });
 
+app.get('/login', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../frontend/dist', 'index.html'));
+});
+
+app.get('/register', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../frontend/dist', 'index.html'));
+});
+
 // GET /auth/strava
 //   Use passport.authenticate() as route middleware to authenticate the
 //   request.  The first step in Strava authentication will involve
 //   redirecting the user to strava.com.  After authorization, Strava
 //   will redirect the user back to this application at /auth/strava/callback
 // Check for logged-in user first
-app.get('/auth/strava', authenticateToken, async (req, res, next) => {
+app.get('/auth/strava', async (req, res, next) => {
   try {
+    // Check if the user is authenticated via JWT
+    const authHeader = req.headers['authorization'];
+    let userId = null;
+
+    if (authHeader) {
+      // Try to get user from token
+      const token = authHeader.split(' ')[1];
+      try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        userId = decoded.id;
+      } catch (error) {
+        console.log('Token verification failed:', err.message);
+      }
+    }
+    // If we don't have a userId yet, check if it's stored in the session
+    if (!userId && req.session.userId) {
+      userId = req.session.userId;
+    }
+
+    // If we still don't have a userId, redirect to login
+    if (!userId) {
+      return res.redirect('/login');
+    }
+
+    // Store userId in the session for callback
+    req.session.userId = userId;
+
     // Get user's Strava credentials if they exist
     const rows = await db.getStravaCredentials(req.user.id);
 
@@ -385,33 +421,25 @@ app.listen(port, () => {
 //   the request will proceed.  Otherwise, the user will be redirected to the
 //   login page.
 
-// Authenticate token
+// Authenticate token middleware
 function authenticateToken (req, res, next) {
   // Get auth header value
   const authHeader = req.headers['authorization'];
 
-  // Check if auth header is undefined
-  if (typeof authHeader !== 'undefined') {
-    // Split at the space and get the token from the array
-    const token =  authHeader.split(' ')[1];
-    // Set the token
-    req.token = token;
-    // Next middleware
-    next();
-  } else {
+  if (typeof authHeader === 'undefined') {
     // Forbidden
     return res.sendStatus(403);
   }
+  
+  // Split at the space and get the token from the array
+  const token =  authHeader.split(' ')[1];
 
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
     if (err) {
       return res.sendStatus(403);
-    } else {
-      res.json({
-        message: 'Sucess with jwt!',
-        user
-      });
-    }
+    } 
+
+    // Set the user on the request object
     req.user = user;
     next();
   });

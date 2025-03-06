@@ -3,7 +3,6 @@ import ActivityPlannerModal from './ActivityPlannerModal';
 import axios from 'axios';
 import { BrowserRouter, Routes, Route, Navigate } from  'react-router-dom';
 import ConnectStrava from './components/ConnectStrava';
-import Dashboard from './components/Dashboard';
 import dayGridPlugin from '@fullcalendar/daygrid'
 import FullCalendar from '@fullcalendar/react'
 import interactionPlugin from "@fullcalendar/interaction" // needed for dayClick

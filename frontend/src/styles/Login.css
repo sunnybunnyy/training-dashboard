@@ -1,0 +1,112 @@
+.login-container {
+    font-family: 'Roboto', 'Segoe UI', Arial, Helvetica, sans-serif;
+    background-color: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 24px 40px 36px;
+    width: 450px;
+    max-width: 100%;
+    box-sizing: border-box;
+    text-align: center;
+    margin: 40px auto;
+}
+
+.logo-container {
+    text-align: left;
+    margin-bottom: 24px;
+}
+
+.logo {
+    max-width: 48px;
+    height: auto;
+}
+
+.login-container h2 {
+    font-size: 32px;
+    font-weight: 400;
+    margin-top: 0;
+    color: #1f1f1f;
+    text-align: left;
+}
+
+.login-container h3 {
+    font-size: 16px;
+    font-weight: 400;
+    color: #1f1f1f;
+    text-align: left;
+    margin-top: 16px;
+    margin-bottom: 32px;
+}
+
+.login-container .form-group {
+    margin-bottom: 24px;
+    text-align: left;
+}
+
+.login-container label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 8px;
+    color: #5f6368;
+}
+
+.login-container input {
+    width: 100%;
+    padding: 14px 16px;
+    font-size: 16px;
+    border: 1px solid #dadce0;
+    border-radius: 4px;
+    box-sizing: border-box;
+    transition: border 0.2s;
+}
+
+.login-container input:focus {
+    border-color: #1a73e8;
+    outline: none;
+}
+
+.login-container .error-message {
+    background-color: #fce8e6;
+    color: #d93025;
+    padding: 12px;
+    font-size: 14px;
+    border-radius: 4px;
+    margin-bottom: 24px;
+}
+
+.login-container button {
+    background-color: #1a73e8;
+    color: white;
+    font-weight: 500;
+    font-size: 14px;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    float: right;
+    transition: background-color 0.2s;
+}
+
+.login-container button:hover {
+    background-color: #1669d9;
+}
+
+.login-container .button-container {
+    display: flex;
+    justify-content: flex-start;
+    gap: 16px;
+    margin-top: 24px;
+}
+
+.login-container a {
+    color: #1a73e8;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 14px;
+    color: #5f6368;
+}
+
+.login-container a:hover {
+    text-decoration: underline;
+}

@@ -1,3 +1,4 @@
+import '../styles/Login.css';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -28,7 +29,11 @@ function Login() {
 
     return (
         <div className="login-container">
-            <h2>Login</h2>
+            <div className="logo-container">
+                <img src="/images/icon/persimmon.gif" alt="Persimmon Logo" className="logo" />
+            </div>
+            <h2>Sign in</h2>
+            <h3>to continue to Persimmon</h3>
             {error && <div className="error-message">{error}</div>}
 
             <form onSubmit={handleSubmit}>
@@ -54,12 +59,11 @@ function Login() {
                     />
                 </div>
 
-                <button type="submit">Login</button>
+                <button type="submit">Sign in</button>
             </form>
-
-            <p>
-                Don't have an account? <a href="/register">Register here</a>
-            </p>
+            <div className="button-container">
+                <a href="/register">Create account</a>
+            </div>
         </div>
     );
 };

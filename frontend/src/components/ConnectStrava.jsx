@@ -22,8 +22,14 @@ function ConnectStrava() {
     }, []);
 
     const handleConnectStrava = () => {
-        // Redirect to Strava auth endpoint
-        window.location.href = '/auth/strava';
+        // Get token from localStorage
+        const token = localStorage.getItem('token');
+
+        // Create URL object for easier manipulation
+        const url = new URL('/auth/strava', window.location.origin);
+
+        // Redirect to this URL
+        window.location.href = url.toString();
     };
 
     if (loading) {

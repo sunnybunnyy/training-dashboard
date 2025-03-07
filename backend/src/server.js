@@ -74,6 +74,10 @@ app.get('/register', (req, res) => {
   res.sendFile(path.join(__dirname, '../../frontend/dist', 'index.html'));
 });
 
+app.get('/connect-strava', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../frontend/dist', 'index.html'));
+});
+
 // GET /auth/strava
 //   Use passport.authenticate() as route middleware to authenticate the
 //   request.  The first step in Strava authentication will involve
@@ -82,7 +86,7 @@ app.get('/register', (req, res) => {
 // Check for logged-in user first
 app.get('/auth/strava', async (req, res, next) => {
   try {
-    // Check if the user is authenticated via JWT
+    // Extract user ID from token if available
     const authHeader = req.headers['authorization'];
     let userId = null;
 
@@ -92,32 +96,47 @@ app.get('/auth/strava', async (req, res, next) => {
       try {
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
         userId = decoded.id;
+        // Store the userId in a local variable since we have it from the token
+        req.userId = userId;
       } catch (error) {
         console.log('Token verification failed:', err.message);
       }
     }
-    // If we don't have a userId yet, check if it's stored in the session
-    if (!userId && req.session.userId) {
+
+    // If token auth failed, check session
+    if (!userId && req.session && req.session.userId) {
       userId = req.session.userId;
+      req.userId = userId;
     }
 
     // If we still don't have a userId, redirect to login
     if (!userId) {
+      console.log('No user ID found, redirecting to login');
       return res.redirect('/login');
     }
 
-    // Store userId in the session for callback
-    req.session.userId = userId;
+    console.log('Using user ID:', userId);
 
-    // Get user's Strava credentials if they exist
-    const rows = await db.getStravaCredentials(req.user.id);
+    // Now try to get Strava credentials
+    let rows = [];
+    try {
+      // Get user's Strava credentials if they exist
+      rows = await db.getStravaCredentials(userId);
+    } catch (err) {
+      console.error('Error getting Strava credentials:', err);
+      // Continue with empty rows - we'll use default credentials
+    }
 
-    if (rows.length > 0) {
+    if (rows && rows.length > 0) {
       // User has Strava credentials, use them
       const { client_id, client_secret } = rows[0];
 
+      // Store in session for callback
+      req.session.userId = userId;
+
       // Configure a strategy for this specific user
-      const strategyName = `strava-${req.user.id}`;
+      const strategyName = `strava-${userId}`;
+
       // Configure Passport to use the Strava OAuth2 strategy
       passport.use(strategyName, new StravaStrategy({
         clientID: client_id,
@@ -129,14 +148,14 @@ app.get('/auth/strava', async (req, res, next) => {
         process.nextTick(function () {
           // Store the tokens with the user's credentials
           db.saveStravaCredentials(
-            req.user.id,
+            userId,
             client_id,
             client_secret,
             accessToken,
             refreshToken,
             new Date(Date.now() + 21600000) // Token expires in 6 hours
           ).then(() => {
-            profile.userId = req.user.id;
+            profile.userId = userId;
             profile.token = accessToken;
             return done(null, profile);
           }).catch(err => {
@@ -153,24 +172,29 @@ app.get('/auth/strava', async (req, res, next) => {
       passport.authenticate(strategyName, { scope: ['activity:read_all'] })(req, res, next);
     } else {
         // User doesn't have Strava credentials yet, use default appliaction credentials
+        console.log('No Strava credentials found, using default');
+
+        // Store in session for callback
+        req.session.userId = userId;
+
         // TODO: Don't use any credentials
         passport.use('default-strava', new StravaStrategy({
           clientID: process.env.STRAVA_CLIENT_ID,
           clientSecret: process.env.STRAVA_CLIENT_SECRET,
           callbackURL: `http://localhost:${port}/auth/strava/callback`
         },
-        function(accesToken, refreshToken, profile, done) {
+        function(accessToken, refreshToken, profile, done) {
           process.nextTick(function () {
             // Link this Strava profile to the current user
-            profile.userId = req.user.id;
+            profile.userId = userId;
             profile.token = accessToken;
 
             // Save initial Strava tokens for the user
-            db.saveUserStravaCredentials(
-              req.user.id,
+            db.saveStravaCredentials(
+              userId,
               process.env.STRAVA_CLIENT_ID,
               process.env.STRAVA_CLIENT_SECRET,
-              accesToken,
+              accessToken,
               refreshToken,
               new Date(Date.now() + 21600000) // Token expires in 6 hours
             ).then(() => {
@@ -199,14 +223,15 @@ app.get('/auth/strava', async (req, res, next) => {
 //   which, in this example, will redirect the user to the home page.
 // Maintains JWT authentication
 app.get('/auth/strava/callback', (req, res, next) => {
-  // Determine which strategy to user based on the user in the session
+  // Get userId from session
   const userId = req.session.userId;
   if (!userId) {
     return res.redirect('/login');
   }
   
-  const strategyName = req.session.hasOwnProperty(`strava-${userId}`) ?
-                        `strava-${userId}` : 'default-strava';
+  const strategyName = `strava-${userId}` in passport._strategies ?
+                      `strava-${userId}` : 'default-strava';
+  
   passport.authenticate(strategyName, { failureRedirect: '/login' })(req, res, next); // Redirect to login on failure
   },
   (req, res) => {
@@ -214,8 +239,7 @@ app.get('/auth/strava/callback', (req, res, next) => {
     // res.redirect('/dashboard');
     // Serve the frontend's index.html file after successful authentication
     res.sendFile(path.join(__dirname, '../../frontend/dist', 'index.html'));
-  }
-);
+  });
 
 app.get('/api/profile', authenticateToken, async (req, res) => {
   try { 

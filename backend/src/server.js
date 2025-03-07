@@ -232,14 +232,19 @@ app.get('/auth/strava/callback', (req, res, next) => {
   const strategyName = `strava-${userId}` in passport._strategies ?
                       `strava-${userId}` : 'default-strava';
   
-  passport.authenticate(strategyName, { failureRedirect: '/login' })(req, res, next); // Redirect to login on failure
-  },
-  (req, res) => {
+  passport.authenticate(strategyName, { 
+    failureRedirect: '/login', 
+    successRedirect: '/dashboard' 
+  })(req, res, next); // Redirect to login on failure
+});
+
+app.get('/dashboard', (req, res) => {
     // TODO: Now that Strava auth is complete, redirect to the dashboard
     // res.redirect('/dashboard');
     // Serve the frontend's index.html file after successful authentication
     res.sendFile(path.join(__dirname, '../../frontend/dist', 'index.html'));
-  });
+})
+
 
 app.get('/api/profile', authenticateToken, async (req, res) => {
   try { 

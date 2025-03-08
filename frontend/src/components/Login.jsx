@@ -59,11 +59,13 @@ function Login() {
                     />
                 </div>
 
-                <button type="submit">Sign in</button>
+                <div className="action-container">
+                    <div className="create-account">
+                        <a href="/register">Create account</a>
+                    </div>
+                    <button type="submit">Sign in</button>
+                </div>
             </form>
-            <div className="button-container">
-                <a href="/register">Create account</a>
-            </div>
         </div>
     );
 };

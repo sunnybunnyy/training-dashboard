@@ -52,7 +52,10 @@ function Register() {
 
     return (
         <div className="register-container">
-            <h2>Register</h2>
+            <div className="logo-container">
+                <img src="/images/icon/persimmon.gif" alt="Persimmon Logo" className="logo" />
+            </div>
+            <h2>Create a Persimmon Account</h2>
             {error && <div className="error-message">{error}</div>}
 
             <form onSubmit={handleSubmit}>

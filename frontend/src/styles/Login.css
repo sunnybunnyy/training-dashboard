@@ -25,6 +25,7 @@
     font-size: 32px;
     font-weight: 400;
     margin-top: 0;
+    margin-bottom: 16px;
     color: #1f1f1f;
     text-align: left;
 }
@@ -34,7 +35,6 @@
     font-weight: 400;
     color: #1f1f1f;
     text-align: left;
-    margin-top: 16px;
     margin-bottom: 32px;
 }
 

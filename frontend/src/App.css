@@ -255,13 +255,14 @@ input[type="number"]::-webkit-inner-spin-button {
   border-color: transparent;
 }
 
+.fc .fc-button.fc-connectStrava-button,
+.fc .fc-button.fc-logout-button,
 .fc .fc-button.fc-today-button {
-  border-radius: 30% / 60%;
   border: 1px solid #747775;
+  border-radius: 100px;
   color: #1f1f1f;
   font-weight: 500;
-  height: 48px;
-  width: 90px;
+  padding: 10px 25px;
 }
 
 .fc .fc-button-primary:not(:disabled):active,

@@ -75,25 +75,42 @@ function Dashboard() {
     fetchActivities();
   }, []);
 
-    // Manipulate the logo button after it is rendered
-    useEffect(() => {
-      if (calendarRef.current) {
-        // Find the logo button in the DOM
-        const calendarEl = calendarRef.current.getApi().el;
-        if (calendarEl) {
-          const logo = calendarEl.querySelector('.fc-logo-button');
-          if (logo) {
-            // Set the tabIndex to -1 to make it unfocusable
-            logo.tabIndex = -1;
-          }
+  // Manipulate the logo button after it is rendered
+  useEffect(() => {
+    if (calendarRef.current) {
+      // Find the logo button in the DOM
+      const calendarEl = calendarRef.current.getApi().el;
+      if (calendarEl) {
+        const logo = calendarEl.querySelector('.fc-logo-button');
+        if (logo) {
+          // Set the tabIndex to -1 to make it unfocusable
+          logo.tabIndex = -1;
         }
       }
-    }, []); // Run only once after the initial render
+    }
+  }, []); // Run only once after the initial render
 
-    // Custom rendering for the icon button
+  // Handle logout
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    window.location.href = '/login';    
+  };
+
+  // Custom buttons for the toolbar
   const customButtons = {
     logo: {
       text: 'Persimmon'
+    },
+    connectStrava: {
+      text: 'Connect Strava',
+      click: () => {
+        window.location.href = '/connect-strava';
+      }
+    },
+    logout: {
+      text: 'Logout',
+      click: handleLogout
     }
   };
 
@@ -146,52 +163,33 @@ function Dashboard() {
   }
 
   return (
-    <div className="dashboard-container">
-      <header className="app-header">
-        <h1>Persimmon</h1>
-        <nav>
-          <a href="/connect-strava" className="nav-link">Connect Strava</a>
-          <button
-            className="logout-button"
-            onClick={() => {
-              localStorage.removeItem('token');
-              localStorage.removeItem('user');
-              window.location.href = '/login';
-            }}
-          >
-            Logout
-          </button>
-        </nav>
-      </header>
-
-      <div className="calendar-container">
-        <FullCalendar
-          ref = {calendarRef}
-          plugins={[dayGridPlugin, interactionPlugin]}
-          initialView='dayGridMonth'
-          headerToolbar={{
-            left: 'logo today prev next', // Add icon as seperate button
-            center: 'title',
-            right: ''
-          }}
-          buttonText={{
-            today: 'Today'
-          }}
-          customButtons={customButtons}
-          dayHeaderContent={handleDayHeader}
-          weekends={true}
-          events={events}
-          eventContent={handleEventContent}
-          dateClick={handleDateClick}
-          height="auto"
-        />
-        <ActivityPlannerModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          selectedDate={selectedDate}
-          onSave={handleSaveActivity}
-        />
-      </div>
+    <div className="calendar-container">
+      <FullCalendar
+        ref = {calendarRef}
+        plugins={[dayGridPlugin, interactionPlugin]}
+        initialView='dayGridMonth'
+        headerToolbar={{
+          left: 'logo today prev next', // Add icon as seperate button
+          center: 'title',
+          right: 'connectStrava logout' // Connect Strava and Logout buttons on right
+        }}
+        buttonText={{
+          today: 'Today'
+        }}
+        customButtons={customButtons}
+        dayHeaderContent={handleDayHeader}
+        weekends={true}
+        events={events}
+        eventContent={handleEventContent}
+        dateClick={handleDateClick}
+        height="auto"
+      />
+      <ActivityPlannerModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        selectedDate={selectedDate}
+        onSave={handleSaveActivity}
+      />
     </div>
   );
 };

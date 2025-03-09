@@ -1,3 +1,4 @@
+import '../styles/Register.css';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
@@ -104,18 +105,6 @@ function Register() {
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="password">Password</label>
-                    <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        required
-                    />
-                </div>
-
-                <div className="form-group">
                     <label htmlFor="confirmPassword">Confirm Password</label>
                     <input
                         type="password"
@@ -127,12 +116,13 @@ function Register() {
                     />
                 </div>
 
-                <button type="submit">Register</button>
+                <div className="action-container">
+                    <div className="create-account">
+                        <a href="/login">Login</a>
+                    </div>
+                    <button type="submit">Create account</button>
+                </div>
             </form>
-
-            <p>
-                Already have an account? <a href="/login">Login here</a>
-            </p>
         </div>
     );
 };

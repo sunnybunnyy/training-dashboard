@@ -1,4 +1,4 @@
-.login-container {
+.register-container {
     font-family: 'Roboto', 'Segoe UI', Arial, Helvetica, sans-serif;
     background-color: white;
     border-radius: 8px;
@@ -11,17 +11,7 @@
     margin: 40px auto;
 }
 
-.logo-container {
-    text-align: left;
-    margin-bottom: 24px;
-}
-
-.logo {
-    max-width: 48px;
-    height: auto;
-}
-
-.login-container h2 {
+.register-container h2 {
     font-size: 32px;
     font-weight: 400;
     margin-top: 0;
@@ -29,7 +19,7 @@
     text-align: left;
 }
 
-.login-container h3 {
+.register-container h3 {
     font-size: 16px;
     font-weight: 400;
     color: #1f1f1f;
@@ -38,20 +28,20 @@
     margin-bottom: 32px;
 }
 
-.login-container .form-group {
+.register-container .form-group {
     margin-bottom: 24px;
     text-align: left;
 }
 
-.login-container label {
+.register-container label {
     display: block;
     font-size: 14px;
     font-weight: 400;
     margin-bottom: 8px;
-    color: #5f6368;
+    color: #444746;
 }
 
-.login-container input {
+.register-container input {
     width: 100%;
     padding: 14px 16px;
     font-size: 16px;
@@ -61,12 +51,12 @@
     transition: border 0.2s;
 }
 
-.login-container input:focus {
+.register-container input:focus {
     border-color: #fa8e25;
     outline: none;
 }
 
-.login-container .error-message {
+.register-container .error-message {
     background-color: #fce8e6;
     color: #d93025;
     padding: 12px;
@@ -75,7 +65,7 @@
     margin-bottom: 24px;
 }
 
-.login-container .action-container {
+.register-container .action-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -83,7 +73,7 @@
     width: 100%;
 }
 
-.login-container button {
+.register-container button {
     background-color: #fa8e25;
     color: white;
     font-weight: 500;
@@ -95,12 +85,12 @@
     transition: background-color 0.2s;
 }
 
-.login-container button:hover {
+.register-container button:hover {
     background-color: #fa8e25;
     box-shadow: 0 1px 2px 0 rgba(60,64,67,.3),0 1px 3px 1px rgba(60,64,67,.15);
 }
 
-.login-container a {
+.register-container a {
     text-decoration: none;
     font-weight: 500;
     font-size: 14px;
@@ -110,6 +100,6 @@
     border-radius: 20px;
 }
 
-.login-container a:hover {
+.register-container a:hover {
     background-color: rgb(250, 142, 37, 0.1);
 }

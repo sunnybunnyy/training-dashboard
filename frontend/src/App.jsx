@@ -15,6 +15,7 @@ function Dashboard() {
   const [events, setEvents] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedActivity, setSelectedActivity] = useState(null);
   const calendarRef = useRef(null);
 
   // Use authenticated API calls
@@ -36,44 +37,52 @@ function Dashboard() {
 
   // Fetch Strava activities when the component mounts
   useEffect(() => {
-    const fetchActivities = async () => {
-      try {
-        // Fetch both Strava and planned activities in parallel
-        const [stravaResponse, plannedResponse] = await Promise.all([
-          api.get('/api/strava/activities'),
-          api.get('/api/planned-activities')
-        ]);
-
-        // Map Strava activities to FullCalendar events
-        const stravaEvents = stravaResponse.data.map(activity => ({
-          id: activity.id,
-          title: activity.name,
-          start: activity.start_date, // FullCalendar will parse this date string
-          extendedProps: {
-            type: activity.type,
-            distance: activity.distance,
-            duration: activity.moving_time,
-          },
-        }));
-
-        // Planned activities should already be in the right format
-        const plannedEvents = plannedResponse.data;
-
-        // Combine both type of events
-        setEvents([...stravaEvents, ...plannedEvents]);
-      } catch (error) {
-        console.error('Error fetching Strava activities:', error);
-        // If unauthorized, redirect to login
-        if (error.response && error.response.status === 401) {
-          localStorage.removeItem('token');
-          localStorage.removeItem('user');
-          window.location.href = '/login';
-        }
-      }
-    };
-
     fetchActivities();
   }, []);
+  
+  // Fetch both Strava and planned activities
+  const fetchActivities = async () => {
+    try {
+      // Fetch both Strava and planned activities in parallel
+      const [stravaResponse, plannedResponse] = await Promise.all([
+        api.get('/api/strava/activities'),
+        api.get('/api/planned-activities')
+      ]);
+
+      // Map Strava activities to FullCalendar events
+      const stravaEvents = stravaResponse.data.map(activity => ({
+        id: activity.id,
+        title: activity.name,
+        start: activity.start_date, // FullCalendar will parse this date string
+        extendedProps: {
+          type: activity.type,
+          distance: activity.distance,
+          duration: activity.moving_time,
+          planned: false // Flag to indicate this is a Strava activity
+        },
+      }));
+
+      // Mark planned activities
+      const plannedEvents = plannedResponse.data.map(event => ({
+        ...event,
+        extendedProps: {
+          ...event.extendedProps,
+          planned: true // Flag to indicate this is a planned activity
+        }
+      }));
+
+      // Combine both type of events
+      setEvents([...stravaEvents, ...plannedEvents]);
+    } catch (error) {
+      console.error('Error fetching activities:', error);
+      // If unauthorized, redirect to login
+      if (error.response && error.response.status === 401) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+      }
+    }
+  };
 
   // Manipulate the logo button after it is rendered
   useEffect(() => {
@@ -114,23 +123,62 @@ function Dashboard() {
     }
   };
 
-  // Handle date clicks
+  // Handle date clicks for creating new activities
   const handleDateClick = (arg) => {
     setSelectedDate(arg.dateStr);
+    setSelectedActivity(null); // Clear any selected activity
     setIsModalOpen(true);
   };
 
-  // Handle saving the planned activity
-  const handleSaveActivity = async (newActivity) => {
-    try {
-      // Send the new activity to the backend
-      const response = await api.post('/api/planned-activities', newActivity);
+  // Handle event clicks for editing existing activities
+  const handleEventClick = (info) => {
+    const event = info.event;
 
-      // Update local state with the saved activity from the backend
-      // This ensures we have any additional fields the backend adds, like ID
-      setEvents(prev => [...prev, response.data]);
+    // Only allow editing of planned activities, not Strava activities
+    if (event.extendedProps.planned) {
+      setSelectedActivity({
+        id: event.id,
+        title: event.title,
+        start: event.startStr.split('T')[0], // Get just the date part
+        extendedProps: {
+          ...event.extendedProps
+        }
+      });
+      setSelectedDate(null); // Clear selected date
+      setIsModalOpen(true);
+    }
+  };
+
+  // Handle saving or updating an activity
+  const handleSaveActivity = async (activityData) => {
+    try {
+      let response;
+
+      if (activityData.id) {
+        // Update existing activity
+        response = await api.put(`/api/planned-activities/${activityData.id}`, activityData);
+
+        // Update the events array
+        setEvents(prev =>
+          prev.map(event =>
+            event.id === activityData.id ? response.data : event
+          )
+        );
+      } else {
+        // Create new activity
+        response = await api.post('/api/planned-activities', activityData);
+
+        // Add the new activity to events
+        setEvents(prev => [...prev, {
+          ...response.data,
+          extendedProps: {
+            ...response.data.extendedProps,
+            planned: true
+          }
+        }]);
+      }
     } catch (error) {
-      console.error('Error saving planned activity:', error);
+      console.error('Error saving activity:', error);
       // If unauthorized, redirect to login
       if (error.response && error.response.status === 401) {
         localStorage.removeItem('token');
@@ -138,7 +186,25 @@ function Dashboard() {
         window.location.href = '/login';
       }
     }
-  }
+  };
+
+  // Handle deleting an activity
+  const handleDeleteActivity = async (activityId) => {
+    try {
+      await api.delete(`/api/planned-activities/${activityId}`);
+
+      // Remove the deleted activity from events
+      setEvents(prev => prev.filter(event => event.id !== activityId));
+    } catch (error) {
+      console.error('Error deleting activity:', error);
+      // If unauthorized, redirect to login
+      if (error.response && error.response.status === 401) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+      }
+    }
+  };
 
   // Custom event content
   const handleEventContent = (eventInfo) => {
@@ -182,17 +248,20 @@ function Dashboard() {
         events={events}
         eventContent={handleEventContent}
         dateClick={handleDateClick}
+        eventClick={handleEventClick}
         height="auto"
       />
       <ActivityPlannerModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         selectedDate={selectedDate}
+        selectedActivity={selectedActivity}
         onSave={handleSaveActivity}
+        onDelete={handleDeleteActivity}
       />
     </div>
   );
-};
+}
 
 // Main App component with routing
 function App() {

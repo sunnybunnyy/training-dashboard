@@ -470,7 +470,8 @@ app.put('/api/planned-activities/:id', authenticateToken, async (req, res) => {
         distance: extendedProps.distance,
         duration: extendedProps.duration,
         route: extendedProps.route,
-        shoes: extendedProps.shoes
+        shoes: extendedProps.shoes,
+        planned: true
       }
     };
 

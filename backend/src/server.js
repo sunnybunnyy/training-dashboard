@@ -436,6 +436,72 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
+app.put('/api/planned-activities/:id', authenticateToken, async (req, res) => {
+  try {
+    const activityId = req.params.id;
+    const { title, start, extendedProps } = req.body;
+    const userId = req.user.id;
+
+    // Verify the activity belongs to the user
+    const existingActivity = await db.getActivityById(activityId);
+    if (!existingActivity || existingActivity.user_id !== userId) {
+      return res.status(404).json({ error: 'Activity not found or access denied' });
+    }
+
+    // Update the activity
+    await db.updateActivity(
+      activityId,
+      title,
+      start,
+      extendedProps.type,
+      extendedProps.distance,
+      extendedProps.duration,
+      extendedProps.route,
+      extendedProps.shoes
+    );
+
+    // Return the updated activity in FullCalendar format
+    const updatedActivity = {
+      id: activityId,
+      title: title,
+      start: start,
+      extendedProps: {
+        type: extendedProps.type,
+        distance: extendedProps.distance,
+        duration: extendedProps.duration,
+        route: extendedProps.route,
+        shoes: extendedProps.shoes
+      }
+    };
+
+    res.json(updatedActivity);
+  } catch (error) {
+    console.error('Error updating planned activity:', error);
+    res.status(500).json({ error: 'Failed to update planned activity' });
+  }
+});
+
+// DELETE planned activity
+app.delete('/api/planed-activities/:id', authenticateToken, async (req, res) => {
+  try {
+    const activityId = req.params.id;
+    const userId = req.user.id;
+
+    // Verify the activity belongs to the user
+    const existingActivity = await db.getActivityById(activityId);
+    if (!existingActivity || existingActivity.user_id !== userId) {
+      return res.status(404).json({ error: 'Activity not found or access denied' });
+    }
+
+    // Delete the activity
+    await db.deleteActivity(activityId);
+
+    res.status(200).json({ message: 'Activity deleted successfully' });
+  } catch (error) {
+    console.error()
+  }
+})
+
 // Serve static files from the frontend build directory
 app.use(express.static(path.join(__dirname, '../../frontend/dist')));
 

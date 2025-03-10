@@ -58,7 +58,7 @@ async function getStravaCredentials(userId) {
 }
 
 // Planned activity functions
-async function getPlannedActivitiesByUserId (userId) {
+async function getPlannedActivitiesByUserId(userId) {
     const { rows } = await pool.query(
       `SELECT *
       FROM planned_activities
@@ -66,6 +66,16 @@ async function getPlannedActivitiesByUserId (userId) {
       [userId]);
       
     return rows;
+}
+
+// Get an activity by ID
+async function getActivityById(id) {
+    const { rows } = await pool.query(
+        `SELECT *
+        FROM planned_activities
+        WHERE id = $1`,
+        [id]);
+    return rows[0];
 }
 
 async function insertActivity(userId, title, date, type, distance, duration, route, shoes) {
@@ -78,6 +88,27 @@ async function insertActivity(userId, title, date, type, distance, duration, rou
     return rows[0];
 }
 
+// Update an existing activity
+async function updateActivity(id, title, date, type, distance, duration, route, shoes) {
+    const { rows } = await pool.query(
+        `UPDATE planned_activities
+        SET title = $1, date = $2, type = $3, distance = $4, duration = $5, route = $6, shoes = $7
+        WHERE id = $8
+        RETURNING *`,
+        [title, date, type, distance, duration, route, shoes, id]);
+
+    return rows[0];
+}
+
+// Delete an activity
+async function deleteActivity(id) {
+    const { rows } = await pool.query(
+        `DELETE FROM planned_activities
+        WHERE id = $1`,
+        [id]);
+    return rows[0];
+}
+
 module.exports = {
     createUser,
     getUserByEmail,
@@ -85,5 +116,8 @@ module.exports = {
     saveStravaCredentials,
     getStravaCredentials,
     getPlannedActivitiesByUserId,
-    insertActivity
+    getActivityById,
+    insertActivity,
+    updateActivity,
+    deleteActivity
 };

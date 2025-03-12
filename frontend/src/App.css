@@ -52,6 +52,7 @@
   text-overflow: ellipsis; /* Show ellipses for overflow text */
   white-space: nowrap; /* Prevent text from wrapping */
   width: 100%;
+  border-radius: 6px;
 }
 
 /* Style the days of the week */

@@ -155,15 +155,19 @@ function Dashboard() {
       let response;
 
       if (activityData.id) {
+        console.log('Updating activity with ID:', activityData.id, 'Data:', activityData);
         // Update existing activity
         response = await api.put(`/api/planned-activities/${activityData.id}`, activityData);
-
+        console.log('Update response:', response.data);
         // Update the events array
-        setEvents(prev =>
-          prev.map(event =>
-            event.id === activityData.id ? response.data : event
-          )
-        );
+        setEvents(prev => {
+          console.log('Current events:', prev);
+          console.log('Event to update:', prev.find(event => event.id === activityData.id));
+          return prev.map(event => {
+            console.log(`Comparing ${event.id} (${typeof event.id}) with ${activityData.id} (${typeof activityData.id}): ${event.id === activityData.id}`);
+            return String(event.id) === String(activityData.id) ? response.data : event
+          });
+        });
       } else {
         // Create new activity
         response = await api.post('/api/planned-activities', activityData);
@@ -191,10 +195,19 @@ function Dashboard() {
   // Handle deleting an activity
   const handleDeleteActivity = async (activityId) => {
     try {
+      console.log('Deleting activity with ID:', activityId, 'Type:', typeof activityId);
       await api.delete(`/api/planned-activities/${activityId}`);
-
+      console.log('Current events before deletion:', events);
       // Remove the deleted activity from events
-      setEvents(prev => prev.filter(event => event.id !== activityId));
+      setEvents(prev => {
+        const filtered = prev.filter(event => {
+          console.log(`Comparing ${event.id} (${typeof event.id}) with ${activityId} (${typeof activityId}): ${event.id !== activityId}`);
+          return event.id !== activityId;
+      });
+
+      console.log('Events after filtering:', filtered);
+      return filtered;
+    });
     } catch (error) {
       console.error('Error deleting activity:', error);
       // If unauthorized, redirect to login

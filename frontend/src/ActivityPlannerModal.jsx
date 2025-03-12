@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Modal from 'react-modal';
 import { FaTimes, FaTrash } from 'react-icons/fa';
-//import './ActivityPlannerModal.css';
+import '../src/styles/ActivityPlannerModal.css';
 
 // Bind modal to app element for accessibility
 Modal.setAppElement('#root');

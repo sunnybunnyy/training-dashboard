@@ -483,7 +483,7 @@ app.put('/api/planned-activities/:id', authenticateToken, async (req, res) => {
 });
 
 // DELETE planned activity
-app.delete('/api/planed-activities/:id', authenticateToken, async (req, res) => {
+app.delete('/api/planned-activities/:id', authenticateToken, async (req, res) => {
   try {
     const activityId = req.params.id;
     const userId = req.user.id;
@@ -499,9 +499,10 @@ app.delete('/api/planed-activities/:id', authenticateToken, async (req, res) => 
 
     res.status(200).json({ message: 'Activity deleted successfully' });
   } catch (error) {
-    console.error()
+    console.error('Error deleting planned activity:', error);
+    res.status(500).json({ error: 'Failed to delete planned activity' });
   }
-})
+});
 
 // Serve static files from the frontend build directory
 app.use(express.static(path.join(__dirname, '../../frontend/dist')));

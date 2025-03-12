@@ -70,43 +70,6 @@
   color: #6d6d78;
 }
 
-.form-group {
-  margin-bottom: 15px;
-}
-
-.modal-buttons {
-  display: flex;
-  gap: 10px;
-  justify-content: flex-end;
-  margin-top: 20px;
-}
-
-.modal-content {
-  background-color: white;
-  padding: 20px;
-  border-radius: 8px;
-  width: 100%;
-  max-width: 500px;
-} 
-
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-
-/* Hide spinners in Firefox */
-input[type="number"] {
-  appearance: textfield;
-}
-
 /* Style for the img element */
 .calendar-container img {
   width: 24px;

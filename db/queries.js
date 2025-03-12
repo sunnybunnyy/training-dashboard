@@ -38,12 +38,14 @@ async function saveStravaCredentials(userId, clientId, clientSecret, accessToken
     const { rows } = await pool.query(
         `INSERT INTO strava_credentials (user_id, client_id, client_secret, access_token, refresh_token, expires_at)
         VALUES ($1, $2, $3, $4, $5, $6)
-        ON CONFLICT (user_id) DO UPDATE SET
+        ON CONFLICT (user_id)
+        DO UPDATE SET
             client_id = $2,
             client_secret = $3,
             access_token = $4,
             refresh_token = $5,
-            expires_at = $6`,
+            expires_at = $6
+        RETURNING *`,
         [userId, clientId, clientSecret, accessToken, refreshToken, expiresAt]);
     return rows[0];
 }

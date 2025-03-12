@@ -16,6 +16,7 @@ function Dashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedActivity, setSelectedActivity] = useState(null);
+  const [stravaConnected, setStravaConnected] = useState(false);
   const calendarRef = useRef(null);
 
   // Use authenticated API calls
@@ -38,7 +39,9 @@ function Dashboard() {
   // Fetch Strava activities when the component mounts
   useEffect(() => {
     fetchActivities();
-  }, []);
+    disableLogoTabIndex();
+    checkStravaConnection();
+  }, []); // Run only once after the initial render
   
   // Fetch both Strava and planned activities
   const fetchActivities = async () => {
@@ -85,7 +88,7 @@ function Dashboard() {
   };
 
   // Manipulate the logo button after it is rendered
-  useEffect(() => {
+  const disableLogoTabIndex = async () => {
     if (calendarRef.current) {
       // Find the logo button in the DOM
       const calendarEl = calendarRef.current.getApi().el;
@@ -97,7 +100,16 @@ function Dashboard() {
         }
       }
     }
-  }, []); // Run only once after the initial render
+  }
+
+  const checkStravaConnection = async () => {
+    try {
+      const response = await api.get('/api/user/strava-status');
+      setStravaConnected(response.data.connected);
+    } catch (error) {
+      console.error('Error checking Strava connection:', error);
+    }
+  };
 
   // Handle logout
   const handleLogout = () => {
@@ -112,9 +124,11 @@ function Dashboard() {
       text: 'Persimmon'
     },
     connectStrava: {
-      text: 'Connect Strava',
+      text: stravaConnected ? 'Strava Connected' : 'Connect Strava',
       click: () => {
-        window.location.href = '/connect-strava';
+        if (!stravaConnected) {
+          window.location.href = '/connect-strava';
+        }
       }
     },
     logout: {

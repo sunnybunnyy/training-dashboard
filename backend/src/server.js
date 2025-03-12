@@ -275,12 +275,19 @@ app.get('/api/strava/activities', authenticateToken, async (req, res) => {
         return res.status(404).json({ error: 'Strava credentials not found for this user' });
       }
 
-      const { access_token } = rows[0];
+      const { access_token, refresh_token, client_id, client_secret, expires_at } = rows[0];
 
-      // Use the user's Strava access token
+      // Check if token is expired
+      let currentToken = access_token;
+      if (new Date(expires_at) < new Date()) {
+        // Token is expired, refresh it
+        currentToken = await refreshStravaToken(req.user.id, refresh_token, client_id, client_secret);
+      }
+
+      // Use the valid token
       const response = await axios.get('https://www.strava.com/api/v3/athlete/activities', {
         headers: {
-          Authorization: `Bearer ${access_token}`,
+          Authorization: `Bearer ${currentToken}`,
         },
       });
       res.json(response.data); // Send activities to the frontend
@@ -318,6 +325,21 @@ app.get('/api/planned-activities', authenticateToken, async (req, res) => {
   } catch (error) {
     console.error('Error fetching planned activities:', error);
     res.status(500).json({ error: 'Failed to fetch planned activities' });
+  }
+});
+
+app.get('/api/user/strava-status', authenticateToken, async (req, res) => {
+  try {
+    // Get user's Strava credentials
+    const rows = await db.getStravaCredentials(req.user.id);
+
+    // Check if user has valid Strava credentials
+    const connected = rows.length > 0 && rows[0].access_token;
+
+    res.json({ connected });
+  } catch (error) {
+    console.error('Error checking Strava status:', error);
+    res.status(500).json({ error: 'Failed to check Strava connection status' });
   }
 });
 
@@ -540,4 +562,31 @@ function authenticateToken (req, res, next) {
     req.user = user;
     next();
   });
+}
+
+async function refreshStravaToken(userId, refreshToken, clientId, clientSecret) {
+  try {
+    // Make request to Strava to refresh the token
+    const response = await axios.post('https://www.strava.com/oauth/token', {
+      client_id: clientId,
+      client_secret: clientSecret,
+      grant_type: 'refresh_token',
+      refresh_token: refreshToken
+    });
+
+    // Update the tokens in database
+    await db.saveStravaCredentials(
+      userId,
+      clientId,
+      clientSecret,
+      response.data.access_token,
+      response.data.refresh_token,
+      new Date(Date.now() + (response.data.expires_in * 1000))
+    );
+
+    return response.data.access_token;
+  } catch (error) {
+    console.error('Error refreshing Strava token:', error);
+    throw error;
+  }
 }

@@ -80,35 +80,34 @@ async function getActivityById(id) {
     return rows[0];
 }
 
-async function insertActivity(userId, title, date, type, distance, duration, route, shoes) {
+async function insertActivity(userId, planId, title, date, type, distance, duration, route, shoes) {
     const { rows } = await pool.query(
         `INSERT INTO planned_activities
-        (user_id, title, date, type, distance, duration, route, shoes)
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        (user_id, planId, title, date, type, distance, duration, route, shoes)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
         RETURNING *`,
-        [userId, title, date, type, distance, duration, route, shoes]);
+        [userId, planId, title, date, type, distance, duration, route, shoes]);
     return rows[0];
 }
 
 // Update an existing activity
-async function updateActivity(id, title, date, type, distance, duration, route, shoes) {
+async function updateActivity(id, planId, title, date, type, distance, duration, route, shoes) {
     const { rows } = await pool.query(
         `UPDATE planned_activities
-        SET title = $1, date = $2, type = $3, distance = $4, duration = $5, route = $6, shoes = $7
+        SET title = $1, plan_id = $2, date = $3, type = $4, distance = $5, duration = $6, route = $7, shoes = $8
         WHERE id = $8
         RETURNING *`,
-        [title, date, type, distance, duration, route, shoes, id]);
+        [title, planId, date, type, distance, duration, route, shoes, id]);
 
     return rows[0];
 }
 
 // Delete an activity
 async function deleteActivity(id) {
-    const { rows } = await pool.query(
+    await pool.query(
         `DELETE FROM planned_activities
         WHERE id = $1`,
         [id]);
-    return rows[0];
 }
 
 async function clearInvalidStravaCredentials(userId) {
@@ -118,6 +117,46 @@ async function clearInvalidStravaCredentials(userId) {
         RETURNING *`,
         [userId]);
     return rows[0];
+}
+
+// Get all training plans for a user
+async function getTrainingPlansByUserId(userId) {
+    const { rows } = await pool.query(
+        `SELECT * FROM training_plans
+        WHERE user_id = $1
+        ORDER BY name`,
+        [[userId]]);
+    
+    return rows;
+}
+
+// Create a new training plan
+async function createTrainingPlan(userId, name, color, description) {
+    const { rows } = await pool.query(
+        `INSERT INTO training_plans (user_id, name, color, description)
+        VALUES ($1, $2, $3, $4)
+        RETURNING *`,
+        [userId, name, color, description]);
+    return rows[0];
+}
+
+// Update a training plan
+async function updateTrainingPlan(id, name, color, description) {
+    const { rows } = await pool.query(
+        `UPDATE training_plans
+        SET name = $2, color = $3, description = $4
+        WHERE id = $1
+        RETURNING *`,
+        [id, name, color, description]);
+    return rows[0];
+}
+
+// Delete a training plan
+async function deleteTrainingPlan(id) {
+    await pool.query(
+        `DELETE FROM training_plans 
+        WHERE id = $1`,
+        [id]);
 }
 
 module.exports = {

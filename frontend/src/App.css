@@ -51,14 +51,15 @@
   border-radius: 6px;
   font-size: 12px;
   line-height: 1.4;
-  overflow: visible;
   padding: 4px;
-  white-space: normal;
   width: 100%;
 }
 
 .event-content div{
   margin-bottom: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 /* Style the days of the week */

@@ -19,7 +19,7 @@ CREATE TABLE strava_credentials (
     client_secret VARCHAR(255),
     access_token VARCHAR(255),
     refresh_token VARCHAR(255),
-    expires_at TIMESTAMP,
+    expires_at TIMESTAMPTZ,
     PRIMARY KEY (user_id)
 );
 

@@ -111,6 +111,15 @@ async function deleteActivity(id) {
     return rows[0];
 }
 
+async function clearInvalidStravaCredentials(userId) {
+    const { rows } = await pool.query(
+        `DELETE FROM strava_credentials
+        WHERE user_id = $1
+        RETURNING *`,
+        [userId]);
+    return rows[0];
+}
+
 module.exports = {
     createUser,
     getUserByEmail,
@@ -121,5 +130,6 @@ module.exports = {
     getActivityById,
     insertActivity,
     updateActivity,
-    deleteActivity
+    deleteActivity,
+    clearInvalidStravaCredentials
 };

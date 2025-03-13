@@ -102,6 +102,23 @@ function Dashboard() {
     }
   }
 
+  // Get activity emoji based on type
+  const getActivityEmoji = (type) => {
+    if (type === 'Run') {
+      return '🏃';
+    } else if (type === 'Bike') {
+      return '🚴';
+    } else if (type === 'Swim') {
+      return '🏊';
+    } else if (type === 'Hike') {
+      return '🥾';
+    } else if (type === 'Walk') {
+      return '🚶';
+    } else if (type === 'Workout') {
+      return '🏋️';
+    }
+  };
+
   const checkStravaConnection = async () => {
     try {
       const response = await api.get('/api/user/strava-status');
@@ -235,15 +252,40 @@ function Dashboard() {
 
   // Custom event content
   const handleEventContent = (eventInfo) => {
+    const title = eventInfo.event.title;
     const isPlanned = eventInfo.event.extendedProps.planned;
+    const eventType = eventInfo.event.extendedProps.type || '';
+    const distance = eventInfo.event.extendedProps.distance || '';
+    const duration = eventInfo.event.extendedProps.duration || '';
+    const shoes = eventInfo.event.extendedProps.shoes || '';
+    const route = eventInfo.event.extendedProps.route || '';
+
+    // Format distance (convert to km if needed)
+    const formattedDistance = distance ? `${(distance / 1000).toFixed(1)} km` : '';
+
+    // Format duration (convert minutes to hours and minutes)
+    let formattedDuration = '';
+    if (duration) {
+      const hours = Math.floor(duration / 60);
+      const minutes = Math.floor((duration % 60));
+      formattedDuration = hours > 0 ?
+      `${hours}h ${minutes}m` :
+      `${minutes}m`;
+    }
+
+    // Get activity emoji based on type
+    
     return (
       <div className={`event-content ${isPlanned ? 'planned-activity' : ''}`}>
-        <b>{eventInfo.event.title}</b>
-        <br />
-        <i>
-          {eventInfo.event.extendedProps.type} - {eventInfo.event.extendedProps.distance} meters
-          {eventInfo.event.extendedProps.shoes && ` - ${eventInfo.event.extendedProps.shoes}`}
-        </i>
+        <div>{getActivityEmoji(eventType)} {title} {formattedDistance && `- ${formattedDistance}`}</div>
+        {(formattedDuration || shoes) && (
+          <div>
+            {formattedDuration && `⏳ ${formattedDuration}`}
+            {shoes && formattedDuration && ' | '}
+            {shoes && `👟 ${shoes}`}
+          </div>
+        )}
+        {route && <div>📍 {route}</div>}
       </div>
     );
   };

@@ -146,14 +146,14 @@ app.get('/auth/strava', async (req, res, next) => {
       function(accessToken, refreshToken, profile, done) {
         // Asynchronous verification function
         process.nextTick(function () {
-          // Store the tokens with the user's credentials
+          // Store all token info
           db.saveStravaCredentials(
             userId,
             client_id,
             client_secret,
             accessToken,
             refreshToken,
-            new Date(Date.now() + 21600000) // Token expires in 6 hours
+            new Date(Date.now() + 21600) // Token expires in 6 hours
           ).then(() => {
             profile.userId = userId;
             profile.token = accessToken;
@@ -277,25 +277,58 @@ app.get('/api/strava/activities', authenticateToken, async (req, res) => {
 
       const { access_token, refresh_token, client_id, client_secret, expires_at } = rows[0];
 
+      // Convert expires_at to Date if it's not already
+      const expiresAtDate = expires_at instanceof Date ? expires_at : new Date(expires_at);
+      const now = new Date();
+
       // Check if token is expired
       let currentToken = access_token;
-      if (new Date(expires_at) < new Date()) {
-        // Token is expired, refresh it
-        currentToken = await refreshStravaToken(req.user.id, refresh_token, client_id, client_secret);
+      if (expiresAtDate < now){
+        console.log('Token expired, refreshing...');
+        try {
+          currentToken = await refreshStravaToken(req.user.id, refresh_token, client_id, client_secret);
+        } catch (refreshError) {
+          console.error('Failed to refresh token, user may need to re-authorize');
+          return res.status(401).json({
+            error: 'Strava authorization expired',
+            message: 'Please reconnect your Strava account'
+          });
+        }
       }
 
-      // Use the valid token
+      // Make the Strava API call
+    try {
       const response = await axios.get('https://www.strava.com/api/v3/athlete/activities', {
         headers: {
           Authorization: `Bearer ${currentToken}`,
         },
       });
       res.json(response.data); // Send activities to the frontend
-    } catch (error) {
-      console.error('Error fetching Strava activities:', error);
-      res.status(500).json({error: 'Failed to fetch Strava activities'});
+    } catch (apiError) {
+      console.error('Strava API error:', apiError.response ? apiError.response.data : apiError.message);
+      
+      // Handle 401 errors specially
+      if (apiError.response && apiError.response.status === 401) {
+        console.log('Invalid token detected - user needs to re-authorize');
+        
+        // Clear the invalid credentials from the strava_credentials table
+        await db.clearInvalidStravaCredentials(req.user.id);
+
+        return res.status(401).json({
+          error: 'Strava authorization required',
+          message: 'Your Strava connection needs to be refreshed',
+          action: 'reauthorize',
+          authUrl: '/auth/strava'
+        });
+      }
+
+      throw apiError; // Let the main catch handle other errors
     } 
-  });
+  } catch (error) {
+    console.error('Error in Strava activities endpoint:', error);
+    res.status(500).json({error: 'Failed to fetch Strava activties'});
+  }
+});
 
 
 // GET planned activities
@@ -574,6 +607,9 @@ async function refreshStravaToken(userId, refreshToken, clientId, clientSecret) 
       refresh_token: refreshToken
     });
 
+    const expiresInSeconds = response.data.expires_in || 21600;
+    const expiresAt = new Date();
+    expiresAt.setSeconds(expiresAt.getSeconds() + expiresInSeconds);
     // Update the tokens in database
     await db.saveStravaCredentials(
       userId,
@@ -581,7 +617,8 @@ async function refreshStravaToken(userId, refreshToken, clientId, clientSecret) 
       clientSecret,
       response.data.access_token,
       response.data.refresh_token,
-      new Date(Date.now() + (response.data.expires_in * 1000))
+      new Date(Date.now() + (response.data.expires_in * 21600))
+      // expiresAt
     );
 
     return response.data.access_token;

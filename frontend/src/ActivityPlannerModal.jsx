@@ -203,11 +203,11 @@ function ActivityPlannerModal ({ isOpen, onClose, selectedDate, selectedActivity
                         required
                     >
                         <option value="Run">Run</option>
-                        <option value="Ride">Ride</option>
+                        <option value="Bike">Bike</option>
                         <option value="Swim">Swim</option>
-                        <option value="Walk">Swim</option>
+                        <option value="Walk">Walk</option>
                         <option value="Hike">Hike</option>
-                        <option value="Hike">Workout</option>
+                        <option value="Workout">Workout</option>
                     </select>
                 </div>
                 

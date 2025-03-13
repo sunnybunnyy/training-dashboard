@@ -119,6 +119,10 @@
   flex: 0 0 auto;
 }
 
+.fc-header-toolbar .fc-toolbar-chunk:last-child {
+  margin-left: -20px;
+}
+
 .form-group label {
   display: block;
   margin-bottom: 5px;

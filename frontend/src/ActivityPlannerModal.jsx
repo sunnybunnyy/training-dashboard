@@ -195,7 +195,8 @@ function ActivityPlannerModal ({ isOpen, onClose, selectedDate, selectedActivity
     }, [isOpen]);
 
     // Get the currently selected training plan
-    const selectedPlan = trainingPlans.find(plan => plan.id === activity.extendedProps.planId);
+    const selectedPlan = trainingPlans.find(plan => 
+        plan.id === (activity.extendedProps.planId ? parseInt(activity.extendedProps.planId, 10) : null));
 
     if (!isOpen) {
         return null;
@@ -313,13 +314,13 @@ function ActivityPlannerModal ({ isOpen, onClose, selectedDate, selectedActivity
                     </div>
                 </div>
 
-                {activity.extendedProps.planId && (
+                {activity.extendedProps.planId && selectedPlan && (
                     <div style={{
                         marginTop: '10px',
                         padding: '10px',
-                        backgroundColor: selectedPlan?.color || '#f0f0f0',
+                        backgroundColor: selectedPlan.color || '#f0f0f0',
                         borderRadius: '4px',
-                        color: isLightColor(selectedPlan?.color) ? '#000' : '#fff'
+                        color: isLightColor(selectedPlan.color) ? '#000' : '#fff'
                     }}>
                         This activity will appear with this background colour
                     </div>

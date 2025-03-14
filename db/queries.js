@@ -125,7 +125,7 @@ async function getTrainingPlansByUserId(userId) {
         `SELECT * FROM training_plans
         WHERE user_id = $1
         ORDER BY name`,
-        [[userId]]);
+        [userId]);
     
     return rows;
 }

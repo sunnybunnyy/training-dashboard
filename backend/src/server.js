@@ -337,22 +337,38 @@ app.get('/api/planned-activities', authenticateToken, async (req, res) => {
     const userId = req.user.id;
     const plannedActivities = await db.getPlannedActivitiesByUserId(userId);
   
+    // Fetch training plans to get their colors
+    const trainingPlans = await db.getTrainingPlansByUserId(userId);
+    const planMap = trainingPlans.reduce((map, plan) => {
+      map[plan.id] = plan;
+      return map;
+    }, {});
+
     if (typeof plannedActivities === "undefined") {
       return res.send([]);
     } else {
       console.log("Planned activities: ", plannedActivities);
-      const events = plannedActivities.map(plannedActivity => ({
-        id: plannedActivity.id,
-        title: plannedActivity.title,
-        start: plannedActivity.date,
-        extendedProps: {
-          type: plannedActivity.type,
-          distance: plannedActivity.distance,
-          duration: plannedActivity.duration,
-          route: plannedActivity.route,
-          shoes: plannedActivity.shoes
-        }
-      }));
+      const events = plannedActivities.map(plannedActivity => {
+        // Find associated training plan if any
+        const trainingPlan = plannedActivity.plan_id ? planMap[plannedActivity.plan_id] : null;
+        
+        return {
+          id: plannedActivity.id,
+          title: plannedActivity.title,
+          start: plannedActivity.date,
+          backgroundColor: trainingPlan ? trainingPlan.color : null,
+          extendedProps: {
+            planId: plannedActivity.plan_id,
+            planName: trainingPlan ? trainingPlan.name : null,
+            type: plannedActivity.type,
+            distance: plannedActivity.distance,
+            duration: plannedActivity.duration,
+            route: plannedActivity.route,
+            shoes: plannedActivity.shoes,
+            planned: true
+          }
+        };  
+      });
       return res.send(events);
     }
   } catch (error) {
@@ -394,9 +410,10 @@ app.post('/api/planned-activities', authenticateToken, async (req, res) => {
   try {
     const { title, start, extendedProps } = req.body;
     const userId = req.user.id;
-
+    
     const result = await db.insertActivity(
       userId, 
+      extendedProps.planId || null,
       title, 
       start, 
       extendedProps.type, 
@@ -408,14 +425,17 @@ app.post('/api/planned-activities', authenticateToken, async (req, res) => {
     
     // Transform the response to match the FullCalendar event format
     const savedActivity = {
+      id: result.id,
       title: title,
       start: start,
       extendedProps : {
+        planId: extendedProps.planId || null,
         type: extendedProps.type,
         distance: extendedProps.distance,
         duration: extendedProps.duration,
         route: extendedProps.route,
-        shoes: extendedProps.shoes
+        shoes: extendedProps.shoes,
+        planned: true
       }
     };
   
@@ -519,6 +539,7 @@ app.post('/api/training-plans', authenticateToken, async (req, res) => {
   }
 });
 
+// PUT update planned activity
 app.put('/api/planned-activities/:id', authenticateToken, async (req, res) => {
   try {
     const activityId = req.params.id;
@@ -534,6 +555,7 @@ app.put('/api/planned-activities/:id', authenticateToken, async (req, res) => {
     // Update the activity
     await db.updateActivity(
       activityId,
+      extendedProps.planId || null,
       title,
       start,
       extendedProps.type,
@@ -549,6 +571,7 @@ app.put('/api/planned-activities/:id', authenticateToken, async (req, res) => {
       title: title,
       start: start,
       extendedProps: {
+        planId: extendedProps.planId || null,
         type: extendedProps.type,
         distance: extendedProps.distance,
         duration: extendedProps.duration,

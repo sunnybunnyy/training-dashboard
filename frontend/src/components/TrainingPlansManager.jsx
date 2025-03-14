@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
-const TrainingPlansManager = ({ isOpen, onClose, onTrainingPlanUpdated }) => {
+function TrainingPlansManager ({ isOpen, onClose, onTrainingPlanUpdated }) {
     const [trainingPlans, setTrainingPlans] = useState([]);
     const [editingPlan, setEditingPlan] = useState(null);
     const [formData, setFormData] = useState({
@@ -104,10 +104,8 @@ const TrainingPlansManager = ({ isOpen, onClose, onTrainingPlanUpdated }) => {
     };
 
     // Delete a plan
-    const handleDeletPlan = async (planId) => {
-        if (window.confirm(`Are you sure you want to delete this 
-            training plan? Activities associated with this plan will 
-            remain but will no longer be color-coded.`)) {
+    const handleDeletePlan = async (planId) => {
+        if (window.confirm("Are you sure you want to delete this training plan? Activities associated with this plan will remain but will no longer be color-coded.")) {
             try {
                 await api.delete(`/api/training-plans/${planId}`);
                 fetchTrainingPlans();

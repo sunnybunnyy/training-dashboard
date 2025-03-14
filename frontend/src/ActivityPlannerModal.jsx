@@ -14,16 +14,6 @@ function ActivityPlannerModal ({ isOpen, onClose, selectedDate, selectedActivity
     const [trainingPlans, setTrainingPlans] = useState([]);
     const [isEditMode, setIsEditMode] = useState(false);
     const [showTrainingPlansManager, setShowTrainingPlansManager] = useState(false);
-    const [formData, setFormData] = useState({
-        planId: '',
-        title: '',
-        type: 'Run',
-        distance: '',
-        duration: '',
-        route: '',
-        shoes: ''
-    }); // TBD
-    
     const [activity, setActivity] = useState({
         title: '',
         start: selectedDate,
@@ -77,19 +67,23 @@ function ActivityPlannerModal ({ isOpen, onClose, selectedDate, selectedActivity
         }
     };
 
+    // Handle training plan selection
+    const handleSelectTrainingPlan = (plan) => {
+        setActivity({
+            ...activity,
+            extendedProps: {
+                ...activity.extendedProps,
+                planId: plan ? plan.id : ''
+            }
+        });
+        setShowTrainingPlansManager(false);
+    };
+
     // Handle form submission
     const handleSubmit = (e) => {
         e.preventDefault();
         // Call the save function passed from parent
         onSave(activity);
-        /* {
-            title: `${activity.type} - ${activity.distance}km`,
-            start: selectedDate,
-            extendedProps: {
-                ...activity,
-                planned: true
-            }
-        }*/
        // Close the modal
         onClose();
     };
@@ -200,6 +194,9 @@ function ActivityPlannerModal ({ isOpen, onClose, selectedDate, selectedActivity
         };
     }, [isOpen]);
 
+    // Get the currently selected training plan
+    const selectedPlan = trainingPlans.find(plan => plan.id === activity.extendedProps.planId);
+
     if (!isOpen) {
         return null;
     }
@@ -295,7 +292,7 @@ function ActivityPlannerModal ({ isOpen, onClose, selectedDate, selectedActivity
                         <select 
                             name="planId" 
                             id="planId"
-                            value={formData.planId}
+                            value={activity.extendedProps.planId}
                             onChange={handleInputChange}
                             style={{ flex: 1 }}
                         >
@@ -316,13 +313,13 @@ function ActivityPlannerModal ({ isOpen, onClose, selectedDate, selectedActivity
                     </div>
                 </div>
 
-                {formData.planId && (
+                {activity.extendedProps.planId && (
                     <div style={{
                         marginTop: '10px',
                         padding: '10px',
-                        backgroundColor: trainingPlans.find(p => p.id == formData.planId)?.color || '#f0f0f0',
+                        backgroundColor: selectedPlan?.color || '#f0f0f0',
                         borderRadius: '4px',
-                        color: isLightColor(trainingPlans.find(p => p.id == formData.planId)?.color) ? '#000' : '#fff'
+                        color: isLightColor(selectedPlan?.color) ? '#000' : '#fff'
                     }}>
                         This activity will appear with this background colour
                     </div>
@@ -372,6 +369,8 @@ function ActivityPlannerModal ({ isOpen, onClose, selectedDate, selectedActivity
                     isOpen={showTrainingPlansManager}
                     onClose={() => setShowTrainingPlansManager(false)}
                     onTrainingPlanUpdated={fetchTrainingPlans}
+                    selectedPlanId={activity.extendedProps.planId}
+                    onSelectPlan={handleSelectTrainingPlan}
                 />
             )}
         </Modal>

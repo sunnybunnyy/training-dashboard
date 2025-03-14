@@ -95,7 +95,7 @@ async function updateActivity(id, planId, title, date, type, distance, duration,
     const { rows } = await pool.query(
         `UPDATE planned_activities
         SET title = $1, plan_id = $2, date = $3, type = $4, distance = $5, duration = $6, route = $7, shoes = $8
-        WHERE id = $8
+        WHERE id = $9
         RETURNING *`,
         [title, planId, date, type, distance, duration, route, shoes, id]);
 

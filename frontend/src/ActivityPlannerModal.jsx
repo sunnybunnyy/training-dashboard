@@ -1,7 +1,9 @@
+import axios from 'axios';
 import React, { useState, useEffect, useRef } from 'react';
 import Modal from 'react-modal';
 import { FaTimes, FaTrash } from 'react-icons/fa';
 import '../src/styles/ActivityPlannerModal.css';
+import TrainingPlansManager from './components/TrainingPlansManager';
 
 // Bind modal to app element for accessibility
 Modal.setAppElement('#root');
@@ -9,11 +11,24 @@ Modal.setAppElement('#root');
 function ActivityPlannerModal ({ isOpen, onClose, selectedDate, selectedActivity, onSave, onDelete }) {
     const modalRef = useRef(null); // Ref for the modal container
     const previousFocusRef = useRef(null); // Ref to store the previously focused element
+    const [trainingPlans, setTrainingPlans] = useState([]);
     const [isEditMode, setIsEditMode] = useState(false);
+    const [showTrainingPlansManager, setShowTrainingPlansManager] = useState(false);
+    const [formData, setFormData] = useState({
+        planId: '',
+        title: '',
+        type: 'Run',
+        distance: '',
+        duration: '',
+        route: '',
+        shoes: ''
+    }); // TBD
+    
     const [activity, setActivity] = useState({
         title: '',
         start: selectedDate,
         extendedProps: {
+            planId: '',
             type: '',
             distance: '',
             duration: '',
@@ -22,7 +37,31 @@ function ActivityPlannerModal ({ isOpen, onClose, selectedDate, selectedActivity
             planned: true
         }
     });
+
+    // Create authenticated API instance
+    const api = axios.create();
+    api.interceptors.request.use(
+        (config) => {
+            const token = localStorage.getItem('token');
+            if (token) {
+                config.headers.Authorization = `Bearer ${token}`;
+            }
+            return config;
+        },
+        (error) => Promise.reject(error)
+    );
+
+    // Fetch training plans
+    const fetchTrainingPlans = async () => {
+        try {
+            const response = await api.get('/api/training-plans');
+            setTrainingPlans(response.data);
+        } catch (error) {
+            console.error('Error fetching training plans:', error);
+        }
+    };
     
+    // Handle form input changes
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         if (name === 'title' || name === 'start') {
@@ -38,8 +77,10 @@ function ActivityPlannerModal ({ isOpen, onClose, selectedDate, selectedActivity
         }
     };
 
+    // Handle form submission
     const handleSubmit = (e) => {
         e.preventDefault();
+        // Call the save function passed from parent
         onSave(activity);
         /* {
             title: `${activity.type} - ${activity.distance}km`,
@@ -49,9 +90,11 @@ function ActivityPlannerModal ({ isOpen, onClose, selectedDate, selectedActivity
                 planned: true
             }
         }*/
+       // Close the modal
         onClose();
     };
 
+    // Handle deletion
     const handleDelete = () => {
         if (window.confirm('Are you sure you want to delete this activity?')) {
             onDelete(activity.id);
@@ -66,28 +109,36 @@ function ActivityPlannerModal ({ isOpen, onClose, selectedDate, selectedActivity
         }
     };
 
-    // Update form when selectedActivity changes (for editing)
+    // Initialize form when modal opens
     useEffect(() => {
-        if (selectedActivity) {
-            setActivity(selectedActivity);
-            setIsEditMode(true);
-        } else {
-            // Reset form for new activites
-            setActivity({
-                title: '',
-                start: selectedDate,
-                extendedProps: {
-                    type: '',
-                    distance: '',
-                    duration: '',
-                    route: '',
-                    shoes: '',
-                    planned: true
-                }
-            });
-            setIsEditMode(false);
+        if (isOpen) {
+            // Fetch training plans
+            fetchTrainingPlans();
+        
+            // Reset form
+            if (selectedActivity) {
+                // Editing existing activity
+                setActivity(selectedActivity);
+                setIsEditMode(true);
+            } else if (selectedDate) {
+                // Creating new activity
+                setActivity({
+                    title: '',
+                    start: selectedDate,
+                    extendedProps: {
+                        planId: '',
+                        type: '',
+                        distance: '',
+                        duration: '',
+                        route: '',
+                        shoes: '',
+                        planned: true
+                    }
+                });
+                setIsEditMode(false);
+            }
         }
-    }, [selectedActivity, selectedDate]);
+    }, [isOpen, selectedActivity, selectedDate]);
 
     // Focus on the modal when it opens
     useEffect(() => {
@@ -107,6 +158,7 @@ function ActivityPlannerModal ({ isOpen, onClose, selectedDate, selectedActivity
         }
     }, [isOpen]);
 
+    // TODO: Figure out if this can be deleted
     // Trap focus inside the modal
     useEffect(() => {
         const handleKeyDown = (e) => {
@@ -237,6 +289,45 @@ function ActivityPlannerModal ({ isOpen, onClose, selectedDate, selectedActivity
                 />
                 </div>
 
+                <div className="form-group">
+                    <label htmlFor="planId">Training Plan</label>
+                    <div style={{ display: 'flex', gap: '10px' }}>
+                        <select 
+                            name="planId" 
+                            id="planId"
+                            value={formData.planId}
+                            onChange={handleInputChange}
+                            style={{ flex: 1 }}
+                        >
+                            <option value="">None</option>
+                            {trainingPlans.map(plan => (
+                                <option value={plan.id} key={plan.id}>
+                                    {plan.name}
+                                </option>
+                            ))}
+                        </select>
+                        <button
+                            type="button"
+                            onClick={() => setShowTrainingPlansManager(true)}
+                            style={{ padding: '0 15px' }}
+                        >
+                            Manage Plans
+                        </button>
+                    </div>
+                </div>
+
+                {formData.planId && (
+                    <div style={{
+                        marginTop: '10px',
+                        padding: '10px',
+                        backgroundColor: trainingPlans.find(p => p.id == formData.planId)?.color || '#f0f0f0',
+                        borderRadius: '4px',
+                        color: isLightColor(trainingPlans.find(p => p.id == formData.planId)?.color) ? '#000' : '#fff'
+                    }}>
+                        This activity will appear with this background colour
+                    </div>
+                )}
+
                 <div className='form-group'>
                     <label htmlFor="route">Route (optional)</label>
                     <input
@@ -276,83 +367,36 @@ function ActivityPlannerModal ({ isOpen, onClose, selectedDate, selectedActivity
                     </button>
                 </div>
             </form>
+            {showTrainingPlansManager && (
+                <TrainingPlansManager
+                    isOpen={showTrainingPlansManager}
+                    onClose={() => setShowTrainingPlansManager(false)}
+                    onTrainingPlanUpdated={fetchTrainingPlans}
+                />
+            )}
         </Modal>
     );
+};
+
+// Helper function to determine if a colour is light or dark
+function isLightColor(color) {
+    if (!color) {
+        return true;
+    }
+
+    // Convert hex to RGB
+    let r, g, b;
+    if (color.startsWith('#')) {
+        r = parseInt(color.slice(1, 3), 16);
+        g = parseInt(color.slice(3, 5), 16);
+        b = parseInt(color.slice(5, 7), 16);
+    } else {
+        return true; // Default to light for non-hex colours
+    }
+
+    // Calculate brightness (YIQ formula)
+    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+    return brightness > 128; // Above 128 is considered light
 }
 
 export default ActivityPlannerModal;
-
-/*
-<div className="modal-overlay" ref={modalRef} tabIndex="=1">
-            <div className='modal-content'>
-                <h2>Plan Activity for {selectedDate}</h2>
-                <form onSubmit={handleSubmit}>
-                    <div className="form-group">
-                        <label htmlFor="type">Activity Type</label>
-                        <select
-                            id="type"
-                            value={activity.type}
-                            onChange={(e) => setActivity({ ...activity, type: e.target.value })}
-                            required
-                        >
-                            <option value="">Select activity type</option>
-                            <option value="Run">Run</option>
-                            <option value="Ride">Ride</option>
-                            <option value="Swim">Swim</option>
-                            <option value="Hike">Hike</option>
-                        </select>
-                    </div>
-                    
-                    <div className="form-group">
-                        <label htmlFor="distance">Distance (km)</label>
-                        <input
-                            id="distance"
-                            type="number"
-                            step="0.1"
-                            value={activity.distance}
-                            onChange={(e) => setActivity({ ...activity, distance: e.target.value })}
-                            onKeyDown={handleKeyDown}
-                        />
-                    </div>
-
-                    <div className="form-group">
-                        <label htmlFor="duration">Duration (minutes)</label>
-                        <input
-                            id="duration"
-                            type="number"
-                            value={activity.duration}
-                            onChange={(e) => setActivity({ ...activity, duration: e.target.value })}
-                            onKeyDown={handleKeyDown}    
-                    />
-                    </div>
-
-                    <div className='form-group'>
-                        <label htmlFor="route">Route</label>
-                        <input
-                            id="route"
-                            type="text"
-                            value={activity.route}
-                            onChange={(e) => setActivity({ ...activity, route: e.target.value })}
-                            onKeyDown={handleKeyDown}
-                        />
-                    </div>
-
-                    <div className='form-group'>
-                        <label htmlFor="shoes">Shoes</label>
-                        <input
-                            id="shoes"
-                            type="text"
-                            value={activity.shoes}
-                            onChange={(e) => setActivity({ ...activity, shoes: e.target.value })}
-                            onKeyDown={handleKeyDown}
-                        />
-                    </div>
-
-                    <div className='modal-buttons'>
-                        <button type="submit">Save Activity</button>
-                        <button type="button" onClick={onClose}>Cancel</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-*/

@@ -258,6 +258,7 @@ function Dashboard() {
     const distance = eventInfo.event.extendedProps.distance || '';
     const duration = eventInfo.event.extendedProps.duration || '';
     const trainingPlanName = eventInfo.event.extendedProps.planName || '';
+    const backgroundColor = eventInfo.event.backgroundColor;
     const shoes = eventInfo.event.extendedProps.shoes || '';
     const route = eventInfo.event.extendedProps.route || '';
 
@@ -274,10 +275,13 @@ function Dashboard() {
       `${minutes}m`;
     }
 
-    // Get activity emoji based on type
+    // Style object with conditional background colour
+    const eventStyle = {
+      backgroundColor: backgroundColor || '' // Apply the training plan color as background
+    };
     
     return (
-      <div className={`event-content ${isPlanned ? 'planned-activity' : ''}`}>
+      <div className={`event-content ${isPlanned ? 'planned-activity' : ''}`} style={eventStyle}>
         <div>{getActivityEmoji(eventType)} {title} {formattedDistance && `- ${formattedDistance}`}</div>
         {(formattedDuration || shoes) && (
           <div>

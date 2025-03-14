@@ -170,5 +170,9 @@ module.exports = {
     insertActivity,
     updateActivity,
     deleteActivity,
-    clearInvalidStravaCredentials
+    clearInvalidStravaCredentials,
+    getTrainingPlansByUserId,
+    createTrainingPlan,
+    updateTrainingPlan,
+    deleteTrainingPlan
 };

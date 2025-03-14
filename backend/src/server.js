@@ -376,6 +376,19 @@ app.get('/api/user/strava-status', authenticateToken, async (req, res) => {
   }
 });
 
+// GET training plans
+app.get('/api/training-plans', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const trainingPlans = await db.getTrainingPlansByUserId(userId);
+
+    res.json(trainingPlans);
+  } catch (error) {
+    console.error('Error fetching training plans:', error);
+    res.status(500).json({ error: 'Failed to fetch training plans' });
+  }
+});
+
 // POST new planned activitiy
 app.post('/api/planned-activities', authenticateToken, async (req, res) => {
   try {
@@ -491,6 +504,21 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
+// POST new training plan
+app.post('/api/training-plans', authenticateToken, async (req, res) => {
+  try {
+    const { name, color, description } = req.body;
+    const userId = req.user.id;
+
+    const trainingPlan = await db.createTrainingPlan(userId, name, color, description);
+
+    res.status(201).json(trainingPlan);
+  } catch (error) {
+    console.error('Error creating training plan:', error);
+    res.status(500).json({ error: 'Failed to create training plan' });
+  }
+});
+
 app.put('/api/planned-activities/:id', authenticateToken, async (req, res) => {
   try {
     const activityId = req.params.id;
@@ -537,6 +565,30 @@ app.put('/api/planned-activities/:id', authenticateToken, async (req, res) => {
   }
 });
 
+// PUT update training plan
+app.put('/api/training-plans/:id', authenticateToken, async (req, res) => {
+  try {
+    const planId = req.params.id;
+    const { name, color, description } = req.body;
+    const userId = req.user.id;
+
+    // Verify the plan belongs to the user
+    const plans = await db.getTrainingPlansByUserId(userId);
+    const userPlanIds = plans.map(p => p.id);
+
+    if (!userPlanIds.includes(parseInt(planId))) {
+      return res.status(404).json({ error: 'Training plan not found or access denied' });
+    }
+
+    const updatedPlan = await db.updateTrainingPlan(planId, name, color, description);
+    
+    res.json(updatedPlan);
+  } catch (error) {
+    console.error('Error updating training plan:', error);
+    res.status(500).json({ error: 'Failed to update training plan' });
+  }
+});
+
 // DELETE planned activity
 app.delete('/api/planned-activities/:id', authenticateToken, async (req, res) => {
   try {
@@ -556,6 +608,29 @@ app.delete('/api/planned-activities/:id', authenticateToken, async (req, res) =>
   } catch (error) {
     console.error('Error deleting planned activity:', error);
     res.status(500).json({ error: 'Failed to delete planned activity' });
+  }
+});
+
+// DELETE training plan
+app.delete('/api/training-plans/:id', authenticateToken, async (req, res) => {
+  try {
+    const planId = req.params.id;
+    const userId = req.user.id;
+
+    // Verify the plan belongs to the user
+    const plans = await db.getTrainingPlansByUserId(userId);
+    const userPlanIds = plans.map(p => p.id);
+
+    if (!userPlanIds.includes(parseInt(planId))) {
+      return res.status(404).json({ error: 'Training plan not found or access denied' });
+    }
+
+    await db.deleteTrainingPlan(planId);
+
+    res.status(200).json({ message: 'Training plan deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting training plan:', error);
+    res.status(500).json({ error: 'Failed to delete training plan' });
   }
 });
 

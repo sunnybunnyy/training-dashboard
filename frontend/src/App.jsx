@@ -257,6 +257,7 @@ function Dashboard() {
     const eventType = eventInfo.event.extendedProps.type || '';
     const distance = eventInfo.event.extendedProps.distance || '';
     const duration = eventInfo.event.extendedProps.duration || '';
+    const trainingPlanName = eventInfo.event.extendedProps.planName || '';
     const shoes = eventInfo.event.extendedProps.shoes || '';
     const route = eventInfo.event.extendedProps.route || '';
 
@@ -286,6 +287,7 @@ function Dashboard() {
           </div>
         )}
         {route && <div>📍 {route}</div>}
+        {trainingPlanName && <div>📋 {trainingPlanName}</div>}
       </div>
     );
   };

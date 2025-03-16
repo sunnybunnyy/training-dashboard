@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { FaEdit, FaTrash, FaPlus } from 'react-icons/fa';
 import TrainingPlansManager from './TrainingPlansManager';
-import './TrainingPlansPanel.css';
+import '../styles/TrainingPlansPanel.css';
 
 function TrainingPlansPanel() {
     const [trainingPlans, setTrainingPlans] = useState([]);

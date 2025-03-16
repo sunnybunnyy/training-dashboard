@@ -43,8 +43,24 @@
 }
 
 .calendar-container {
-  height: 100vh;
+  flex-grow: 1;
+  padding: 1rem;
   overflow: auto;
+}
+
+.dashboard-layout {
+  display: flex;
+  width: 100%;
+  height: 100vh;
+}
+
+.sidebar {
+  width: 300px;
+  background-color: #f8f9fa;
+  border-right: 1px solid #e0e0e0;
+  overflow-y: auto;
+  flex-shrink: 0;
+  padding: 1rem;
 }
 
 .event-content {

@@ -10,6 +10,7 @@ import Login from './components/Login';
 import PrivateRoute from './utils/PrivateRoute';
 import React, { useEffect, useState, useRef } from 'react';
 import Register from './components/Register';
+import TrainingPlansPanel from './components/TrainingPlansPanel';
 
 function Dashboard() {
   const [events, setEvents] = useState([]);
@@ -17,6 +18,7 @@ function Dashboard() {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedActivity, setSelectedActivity] = useState(null);
   const [stravaConnected, setStravaConnected] = useState(false);
+  const [showTrainingPlans, setShowTrainingPlans] = useState(true); // Start with panel visible
   const calendarRef = useRef(null);
 
   // Use authenticated API calls
@@ -151,6 +153,10 @@ function Dashboard() {
     logout: {
       text: 'Logout',
       click: handleLogout
+    },
+    togglePlans: {
+      text: showTrainingPlans ? 'Hide Plans' : 'Show Plans',
+      click: () => setShowTrainingPlans(!showTrainingPlans)
     }
   };
 
@@ -304,36 +310,43 @@ function Dashboard() {
   }
 
   return (
-    <div className="calendar-container">
-      <FullCalendar
-        ref = {calendarRef}
-        plugins={[dayGridPlugin, interactionPlugin]}
-        initialView='dayGridMonth'
-        headerToolbar={{
-          left: 'logo today prev next', // Add icon as seperate button
-          center: 'title',
-          right: 'connectStrava logout' // Connect Strava and Logout buttons on right
-        }}
-        buttonText={{
-          today: 'Today'
-        }}
-        customButtons={customButtons}
-        dayHeaderContent={handleDayHeader}
-        weekends={true}
-        events={events}
-        eventContent={handleEventContent}
-        dateClick={handleDateClick}
-        eventClick={handleEventClick}
-        height="auto"
-      />
-      <ActivityPlannerModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        selectedDate={selectedDate}
-        selectedActivity={selectedActivity}
-        onSave={handleSaveActivity}
-        onDelete={handleDeleteActivity}
-      />
+    <div className='dashboard-layout'>
+      {showTrainingPlans && (
+        <div className='sidebar'>
+          <TrainingPlansPanel />
+        </div>
+      )}
+      <div className="calendar-container">
+        <FullCalendar
+          ref = {calendarRef}
+          plugins={[dayGridPlugin, interactionPlugin]}
+          initialView='dayGridMonth'
+          headerToolbar={{
+            left: 'logo togglePlans today prev next', // Add icon as seperate button
+            center: 'title',
+            right: 'connectStrava logout' // Connect Strava and Logout buttons on right
+          }}
+          buttonText={{
+            today: 'Today'
+          }}
+          customButtons={customButtons}
+          dayHeaderContent={handleDayHeader}
+          weekends={true}
+          events={events}
+          eventContent={handleEventContent}
+          dateClick={handleDateClick}
+          eventClick={handleEventClick}
+          height="auto"
+        />
+        <ActivityPlannerModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          selectedDate={selectedDate}
+          selectedActivity={selectedActivity}
+          onSave={handleSaveActivity}
+          onDelete={handleDeleteActivity}
+        />
+      </div>
     </div>
   );
 }

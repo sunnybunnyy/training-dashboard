@@ -83,7 +83,7 @@ async function getActivityById(id) {
 async function insertActivity(userId, planId, title, date, type, distance, duration, route, shoes) {
     const { rows } = await pool.query(
         `INSERT INTO planned_activities
-        (user_id, planId, title, date, type, distance, duration, route, shoes)
+        (user_id, plan_id, title, date, type, distance, duration, route, shoes)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
         RETURNING *`,
         [userId, planId, title, date, type, distance, duration, route, shoes]);

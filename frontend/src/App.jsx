@@ -233,7 +233,7 @@ function Dashboard() {
       setEvents(prev => {
         const filtered = prev.filter(event => {
           console.log(`Comparing ${event.id} (${typeof event.id}) with ${activityId} (${typeof activityId}): ${event.id !== activityId}`);
-          return event.id !== activityId;
+          return String(event.id) !== String(activityId);
       });
 
       console.log('Events after filtering:', filtered);

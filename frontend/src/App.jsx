@@ -11,6 +11,7 @@ import PrivateRoute from './utils/PrivateRoute';
 import React, { useEffect, useState, useRef } from 'react';
 import Register from './components/Register';
 import TrainingPlansPanel from './components/TrainingPlansPanel';
+import { FaBars } from 'react-icons/fa';
 
 function Dashboard() {
   const [events, setEvents] = useState([]);
@@ -158,6 +159,11 @@ function Dashboard() {
       text: showTrainingPlans ? 'Hide Plans' : 'Show Plans',
       click: () => setShowTrainingPlans(!showTrainingPlans)
     }
+  };
+
+  // Toggle the training plans panel
+  const toggleTrainingPlans = () => {
+    setShowTrainingPlans(!showTrainingPlans);
   };
 
   // Handle date clicks for creating new activities
@@ -311,8 +317,12 @@ function Dashboard() {
 
   return (
     <div className='dashboard-layout'>
+      <div className="hamburger-menu" onClick={toggleTrainingPlans}>
+        <FaBars />
+      </div>
+
       {showTrainingPlans && (
-        <div className='sidebar'>
+        <div className={`sidebar ${showTrainingPlans ? '' : 'closed'}`}>
           <TrainingPlansPanel />
         </div>
       )}
@@ -322,7 +332,7 @@ function Dashboard() {
           plugins={[dayGridPlugin, interactionPlugin]}
           initialView='dayGridMonth'
           headerToolbar={{
-            left: 'logo togglePlans today prev next', // Add icon as seperate button
+            left: 'logo today prev next', // Add icon as seperate button
             center: 'title',
             right: 'connectStrava logout' // Connect Strava and Logout buttons on right
           }}

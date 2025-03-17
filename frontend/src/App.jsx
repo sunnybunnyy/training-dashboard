@@ -156,7 +156,7 @@ function Dashboard() {
       click: handleLogout
     },
     togglePlans: {
-      text: showTrainingPlans ? 'Hide Plans' : 'Show Plans',
+      text: '☰', // Hamburger menu symbol
       click: () => setShowTrainingPlans(!showTrainingPlans)
     }
   };
@@ -316,23 +316,20 @@ function Dashboard() {
   }
 
   return (
-    <div className='dashboard-layout'>
-      <div className="hamburger-menu" onClick={toggleTrainingPlans}>
-        <FaBars />
-      </div>
-
+    <div className={`dashboard-layout ${showTrainingPlans ? 'panel-open' : ''}`}>
       {showTrainingPlans && (
-        <div className={`sidebar ${showTrainingPlans ? '' : 'closed'}`}>
+        <div className="sidebar">
           <TrainingPlansPanel />
         </div>
       )}
+
       <div className="calendar-container">
         <FullCalendar
           ref = {calendarRef}
           plugins={[dayGridPlugin, interactionPlugin]}
           initialView='dayGridMonth'
           headerToolbar={{
-            left: 'logo today prev next', // Add icon as seperate button
+            left: 'togglePlans logo today prev next', // Add icon as seperate button
             center: 'title',
             right: 'connectStrava logout' // Connect Strava and Logout buttons on right
           }}

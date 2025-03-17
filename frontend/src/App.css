@@ -69,11 +69,7 @@
   transition: all 0.3s cubic-bezier(.25, .8, .25, 1);
 }
 
-.hamburger-menu:hover {
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16), 0 3px 6px rgba(0, 0, 0, 0.23);
-}
-
-.sidebar {
+/*.sidebar {
   width: 300px;
   background-color: #f8f9fa;
   border-right: 1px solid #e0e0e0;
@@ -83,7 +79,7 @@
   padding-top: 3rem;
   z-index: 900;
   transition: transform 0.3s ease;
-}
+}*/
 
 .sidebar.closed {
   width: 0;
@@ -229,6 +225,22 @@ input[type="number"]::-webkit-inner-spin-button {
   font-size: 22px;
   padding-left: 50px;
 }
+
+.fc .fc-togglePlans-button {
+  color: #444746;
+  font-size: 1.5em;
+  padding: 0 10px;
+}
+
+.fc .fc-togglePlans-button:hover,
+.fc .fc-togglePlans-button:not(:disabled):active {
+  color: #444746;
+}
+
+/*.panel-open .fc-togglePlans-button {
+  background-color: #f0f0f0 !important;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+}*/
 
 .fc .fc-scrollgrid {
   min-width: calc(150px * 7 + 40px);

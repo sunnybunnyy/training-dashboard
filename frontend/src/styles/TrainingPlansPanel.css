@@ -16,8 +16,8 @@
 }
 
 .panel-header h2 {
-    margin: 0;
-    font-size: 1.2rem;
+    font-size: 14px;
+    font-weight: 500;
 }
 
 .add-plan-btn {
@@ -30,7 +30,8 @@
     display: flex;
     align-items: center;
     gap: 5px;
-    font-size: 0.8rem;
+    font-size: 14px;
+    font-weight: 300;
 }
 
 .add-plan-btn:hover {
@@ -58,14 +59,12 @@
 }
 
 .plan-info h3 {
-    margin: 0;
-    font-size: 1rem;
-    font-weight: 600;
+    font-size: 14px;
+    font-weight: 400;
 }
 
 .plan-info p {
-    margin: 5px 0 0;
-    font-size: 0.8rem;
+    font-size: 14px;
     color: #666;
     white-space: nowrap;
     overflow: hidden;

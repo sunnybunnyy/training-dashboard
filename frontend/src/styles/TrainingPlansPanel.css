@@ -21,21 +21,25 @@
 }
 
 .add-plan-btn {
-    background-color: #4CAF50;
-    color: white;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+    color: #1f1f1f;
+    font-weight: 500;
     border: none;
-    border-radius: 4px;
-    padding: 5px 10px;
+    border-radius: 16px;
+    padding: 20px;
     cursor: pointer;
     display: flex;
     align-items: center;
     gap: 5px;
     font-size: 14px;
-    font-weight: 300;
 }
 
 .add-plan-btn:hover {
-    background-color: #45a049;
+    background-color: #fa8f253F;
+}
+
+.add-plan-btn:active {
+    background-color: #fa8f257F;
 }
 
 .plans-list {

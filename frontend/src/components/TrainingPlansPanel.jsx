@@ -76,9 +76,8 @@ function TrainingPlansPanel() {
     return (
         <div className="training-plans-panel">
             <div className="panel-header">
-                <h2>Training Plans</h2>
                 <button className="add-plan-btn" onClick={handleAddNew}>
-                    <FaPlus /> New Plan
+                    <FaPlus /> Create Plan
                 </button>
             </div>
 

@@ -44,7 +44,6 @@
 
 .calendar-container {
   flex-grow: 1;
-  padding: 1rem;
   overflow: auto;
   transition: margin-left 0.3s ease;
 }
@@ -158,8 +157,22 @@
   flex: 0 0 auto;
 }
 
-.fc-header-toolbar .fc-toolbar-chunk:last-child {
-  margin-left: -20px;
+.fc-toolbar-chunk:first-child {
+  justify-content: flex-start;
+}
+
+.fc-toolbar-chunk:nth-child(2) {
+  justify-content: center;
+}
+
+.fc-toolbar-chunk:last-child {
+  justify-content: flex-end;
+}
+
+.fc-toolbar-chunk {
+  /*flex: 1 1 auto;*/ /* This helps distribute space better */
+  display: flex;
+  align-items: center;
 }
 
 .form-group label {
@@ -271,10 +284,11 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 
 .fc .fc-toolbar.fc-header-toolbar {
-  gap: 120px;
   justify-content: space-between;
+  width: auto;
   margin-top: 20px;
   margin-bottom: 0px;
+  min-width: calc(150px * 7 + 40px);
 }
 
 .fc .fc-button-primary:focus-visible {

@@ -27,22 +27,22 @@
 }
   
 .save-button {
-    background-color: #3498db;
+    background-color: #fa8e25;
     color: white;
     border: none;
     padding: 10px 20px;
-    border-radius: 4px;
+    border-radius: 100px;
     cursor: pointer;
     font-weight: 500;
     margin-left: auto;
 }
 
 .delete-button {
-    background-color: #e74c3c;
+    background-color: #f96155;
     color: white;
     border: none;
     padding: 10px 20px;
-    border-radius: 4px;
+    border-radius: 100px;
     cursor: pointer;
     font-weight: 500;
     display: flex;
@@ -51,11 +51,21 @@
 }
 
 .save-button:hover {
-    background-color: #2980b9;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+    opacity: 0.8;
 }
 
 .delete-button:hover {
-    background-color: #c0392b;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+    opacity: 0.8;
+}
+
+.save-button:active {
+    opacity: 0.6;
+}
+
+.delete-button:active {
+    opacity: 0.6;
 }
 
 .modal-content {

@@ -7,7 +7,7 @@ import '../styles/TrainingPlansManager.css'
 function TrainingPlansManager ({ isOpen, onClose, onTrainingPlanUpdated, selectedPlan }) {
     const [formData, setFormData] = useState({
         name: '',
-        color: '#3788d8', // Default colour
+        color: '#fa8f25', // Default colour
         description: ''
     });
     const [error, setError] = useState('');
@@ -30,14 +30,14 @@ function TrainingPlansManager ({ isOpen, onClose, onTrainingPlanUpdated, selecte
         if (selectedPlan) {
             setFormData({
                 name: selectedPlan.name,
-                color: selectedPlan.color || '#3788d8',
+                color: selectedPlan.color || '#fa8f25',
                 description: selectedPlan.description || ''
             });
         } else {
             // Reset form for new plan
             setFormData({
                 name: '',
-                color: '#3788d8',
+                color: '#fa8f25',
                 description: ''
             });
         }
@@ -82,7 +82,7 @@ function TrainingPlansManager ({ isOpen, onClose, onTrainingPlanUpdated, selecte
         setEditingPlan(null);
         setFormData({
             name: '',
-            color: '#3788d8',
+            color: '#fa8f25',
             description: ''
         });
     };

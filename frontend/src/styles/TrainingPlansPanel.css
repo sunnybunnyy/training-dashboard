@@ -92,11 +92,19 @@
 }
 
 .edit-btn:hover {
-    background-color: #f0f0f0;
+    background-color: #2196F33F;
+}
+
+.edit-btn:active {
+    background-color: #2196F37F;
 }
 
 .delete-btn:hover {
-    background-color: #ffebee;
+    background-color: #f961553F;
+}
+
+.delete-btn:active {
+    background-color: #f961557F;
 }
 
 .edit-btn {
@@ -104,7 +112,7 @@
 }
 
 .delete-btn {
-    color: #F44336;
+    color: #f96155;
 }
 
 .loading, .no-plans, .error-message {
@@ -114,7 +122,7 @@
 }
 
 .error-message {
-    color:#F44336;
+    color:#f96155;
     background-color: #ffebee;
     border-radius: 4px;
 }

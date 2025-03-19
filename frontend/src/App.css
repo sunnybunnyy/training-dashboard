@@ -237,7 +237,8 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 
 .fc .fc-scrollgrid {
-  min-width: calc(150px * 7 + 40px);
+  min-width: calc(100px * 7 + 40px);
+  margin-top: 90px;
 }
 
 .fc td.fc-daygrid-day {
@@ -266,10 +267,13 @@ input[type="number"]::-webkit-inner-spin-button {
 
 .fc .fc-toolbar.fc-header-toolbar {
   justify-content: space-between;
-  width: auto;
+  width: 100vw;
   margin-top: 20px;
   margin-bottom: 0px;
-  min-width: calc(150px * 7 + 40px);
+  min-width: 1000px;
+  z-index: 1000;
+  position: fixed;
+  left: 0;
 }
 
 :focus-visible {

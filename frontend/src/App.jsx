@@ -19,7 +19,7 @@ function Dashboard() {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedActivity, setSelectedActivity] = useState(null);
   const [stravaConnected, setStravaConnected] = useState(false);
-  const [showTrainingPlans, setShowTrainingPlans] = useState(true); // Start with panel visible
+  const [showTrainingPlans, setShowTrainingPlans] = useState(false); // Start with panel visible
   const calendarRef = useRef(null);
 
   // Use authenticated API calls
@@ -159,11 +159,6 @@ function Dashboard() {
       text: '☰', // Hamburger menu symbol
       click: () => setShowTrainingPlans(!showTrainingPlans)
     }
-  };
-
-  // Toggle the training plans panel
-  const toggleTrainingPlans = () => {
-    setShowTrainingPlans(!showTrainingPlans);
   };
 
   // Handle date clicks for creating new activities

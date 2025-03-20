@@ -1,5 +1,5 @@
 import './App.css';
-import ActivityPlannerModal from './ActivityPlannerModal';
+import ActivityPlannerModal from './components/ActivityPlannerModal';
 import axios from 'axios';
 import { BrowserRouter, Routes, Route, Navigate } from  'react-router-dom';
 import ConnectStrava from './components/ConnectStrava';

@@ -177,13 +177,13 @@ function TrainingPlansManager ({ isOpen, onClose, onTrainingPlanUpdated, selecte
                 </div>
 
                     <div className="form-group">
-                        <label htmlFor="description">Description (optional)</label>
                             <textarea  
                                 id="description" 
                                 name="description" 
                                 value={formData.description} 
                                 onChange={handleInputChange} 
-                                rows="3"
+                                placeholder='Jot down notes here!'
+                                rows="10"
                         />
                     </div>
 

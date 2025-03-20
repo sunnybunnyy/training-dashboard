@@ -21,6 +21,7 @@
     margin: 0;
     padding: 9px 9px;
     border-radius: 100%;
+    cursor: pointer;
   }
 
   .color-picker::-webkit-color-swatch-wrapper {
@@ -72,35 +73,24 @@
     margin-left: auto;
 }
 
-.delete-button {
-    background-color: #f96155;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 100px;
-    cursor: pointer;
-    font-weight: 500;
-    display: flex;
-    align-items: center;
-    gap: 5px;
+.cancel-button:hover,
+.save-button:hover {
+    opacity: 0.8;
 }
 
 .save-button:hover {
     box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-    opacity: 0.8;
 }
 
-.delete-button:hover {
-    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
-    opacity: 0.8;
-}
-
+.cancel-button:active,
 .save-button:active {
     opacity: 0.6;
 }
 
-.delete-button:active {
-    opacity: 0.6;
+.cancel-button {
+    border: none;
+    background-color: white;
+    cursor: pointer;
 }
 
 .modal-content {

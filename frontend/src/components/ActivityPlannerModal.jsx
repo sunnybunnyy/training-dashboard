@@ -2,8 +2,8 @@ import axios from 'axios';
 import React, { useState, useEffect, useRef } from 'react';
 import Modal from 'react-modal';
 import { FaTimes, FaTrash } from 'react-icons/fa';
-import '../src/styles/ActivityPlannerModal.css';
-import TrainingPlansManager from './components/TrainingPlansManager';
+import '../styles/ActivityPlannerModal.css';
+import TrainingPlansManager from './TrainingPlansManager';
 
 // Bind modal to app element for accessibility
 Modal.setAppElement('#root');

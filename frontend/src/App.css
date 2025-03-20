@@ -154,6 +154,7 @@
 
 .fc-toolbar-chunk:last-child {
   justify-content: flex-end;
+  margin-right: 20px;
 }
 
 .fc-toolbar-chunk {
@@ -180,12 +181,6 @@ input[type="number"]::-webkit-inner-spin-button {
   appearance: none;
 }
 
-.fc-header-toolbar,
-.fc .fc-scrollgrid {
-  padding: 0 20px;
-  padding-bottom: 20px;
-}
-
 .fc .fc-col-header-cell,
 .fc .fc-daygrid-day {
   font-size: 14px;
@@ -206,7 +201,7 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 
 .fc .fc-col-header-cell-cushion {
-  font-weight: 500;
+  font-weight: 400;
 }
 
 .fc .fc-daygrid-day-frame {
@@ -223,6 +218,7 @@ input[type="number"]::-webkit-inner-spin-button {
   cursor: default !important;
   font-size: 22px;
   padding-left: 50px;
+  margin-left: 0 !important;
 }
 
 .fc .fc-togglePlans-button {
@@ -238,7 +234,7 @@ input[type="number"]::-webkit-inner-spin-button {
 
 .fc .fc-scrollgrid {
   min-width: calc(100px * 7 + 40px);
-  margin-top: 90px;
+  margin: 90px 20px 20px;
 }
 
 .fc td.fc-daygrid-day {
@@ -268,12 +264,19 @@ input[type="number"]::-webkit-inner-spin-button {
 .fc .fc-toolbar.fc-header-toolbar {
   justify-content: space-between;
   width: 100vw;
-  margin-top: 20px;
-  margin-bottom: 0px;
+  padding-top: 20px;
+  padding-left: 20px;
+  margin-bottom: 0;
+  margin-left: 0;
   min-width: 1000px;
   z-index: 1000;
   position: fixed;
   left: 0;
+}
+
+.fc .fc-toolbar.fc-header-toolbar,
+.training-plans-panel {
+  background-color: #fbfbfc;
 }
 
 :focus-visible {

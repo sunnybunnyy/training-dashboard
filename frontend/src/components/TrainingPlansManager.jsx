@@ -144,47 +144,35 @@ function TrainingPlansManager ({ isOpen, onClose, onTrainingPlanUpdated, selecte
             overlayClassName="training-plan-modal-overlay"
         >
             <div className="modal-header">
-                <h2>{selectedPlan ? 'Edit Training Plan' : 'Create New Training Plan'}</h2>
-                <button onClick={onClose} className='close-button'>
-                    <FaTimes />
+                <button type="button" onClick={onClose} className='cancel-button'>
+                    Cancel
                 </button>
+                <h2>{selectedPlan ? 'Edit Training Plan' : 'Create New Training Plan'}</h2>
+                
             </div>
 
             {error && <div className="error-message">{error}</div>}
 
             <form action="" onSubmit={handleSubmit}>
                 <div className="form-group">
-                    <label htmlFor="name">Plan Name</label>
                     <input 
                         type="text" 
                         id="name" 
                         name="name" 
                         value={formData.name} 
                         onChange={handleInputChange} 
+                        placeholder='Name'
                         required
                     />
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="color">Color</label>
-                        <div className='color-input-container'>
-                            <input 
-                                type="color"
-                                id="color"
-                                name="color"
-                                value={formData.color} 
-                                onChange={handleInputChange} 
-                                className='color-picker'
-                            />
-                            <input 
-                                type="text"
-                                value={formData.color} 
-                                onChange={handleInputChange} 
-                                name="color"
-                                placeholder="#RRGGBB"
-                                pattern="^#[0-9A-Fa-f]{6}$"
-                                className='color-text'
-                            />
+                    <div className='colour-input-container'>
+                        <input 
+                            type="color"
+                            id="color"
+                            name="color"
+                            value={formData.color} 
+                            onChange={handleInputChange} 
+                            className='color-picker'
+                        />
                     </div>
                 </div>
 
@@ -200,9 +188,6 @@ function TrainingPlansManager ({ isOpen, onClose, onTrainingPlanUpdated, selecte
                     </div>
 
                     <div className="modal-actions">
-                        <button type="button" onClick={onClose} className='cancel-button'>
-                            Cancel
-                        </button>
                         <button type="submit" className='save-button'>
                             {selectedPlan ? 'Update Plan' : 'Create Plan'}
                         </button>

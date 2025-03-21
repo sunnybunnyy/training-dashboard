@@ -43,24 +43,6 @@ function TrainingPlansManager ({ isOpen, onClose, onTrainingPlanUpdated, selecte
         }
     }, [selectedPlan, isOpen]);
 
-    // Fetch training plans when component mounts
-    /*useEffect(() => {
-        if (isOpen) {
-            fetchTrainingPlans();
-        }
-    }, [isOpen]);*/
-
-    // Fetch training plans
-    /*const fetchTrainingPlans = async () => {
-        try {
-            const response = await api.get('/api/training-plans');
-            setTrainingPlans(response.data);
-        } catch (error) {
-            console.error('Error fetching training plans:', error);
-            setError('Failed to fetch training plans');
-        }
-    };*/
-
     // Handle form input changes
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -112,24 +94,6 @@ function TrainingPlansManager ({ isOpen, onClose, onTrainingPlanUpdated, selecte
             setError('Failed to save training plan');
         }
     };
-
-    // Delete a plan
-    /*const handleDeletePlan = async (planId) => {
-        if (window.confirm("Are you sure you want to delete this training plan? Activities associated with this plan will remain but will no longer be color-coded.")) {
-            try {
-                await api.delete(`/api/training-plans/${planId}`);
-                fetchTrainingPlans();
-
-                // Notify parent component
-                if (onTrainingPlanUpdated) {
-                    onTrainingPlanUpdated();
-                }
-            } catch (error) {
-                console.error('Error deleting training plan:', error);
-                setError('Failed to delete training plan');
-            }
-        }
-    };*/
 
     if (!isOpen) {
         return null;

@@ -38,23 +38,23 @@ function Login() {
 
             <form onSubmit={handleSubmit}>
                 <div className="form-group">
-                    <label htmlFor="email">Email</label>
                     <input
                         type="email"
                         id="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
+                        placeholder='Email'
                         required
                     />
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="password">Password</label>
                     <input
                         type="password"
                         id="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
+                        placeholder='Password'
                         required
                     />
                 </div>

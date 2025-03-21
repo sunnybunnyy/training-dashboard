@@ -144,9 +144,6 @@ function TrainingPlansManager ({ isOpen, onClose, onTrainingPlanUpdated, selecte
             overlayClassName="training-plan-modal-overlay"
         >
             <div className="modal-header">
-                <button type="button" onClick={onClose} className='cancel-button'>
-                    Cancel
-                </button>
                 <h2>{selectedPlan ? 'Edit Training Plan' : 'Create New Training Plan'}</h2>
                 
             </div>
@@ -188,8 +185,11 @@ function TrainingPlansManager ({ isOpen, onClose, onTrainingPlanUpdated, selecte
                     </div>
 
                     <div className="modal-actions">
+                        <button type="button" onClick={onClose} className='cancel-button'>
+                            Cancel
+                        </button>
                         <button type="submit" className='save-button'>
-                            {selectedPlan ? 'Update Plan' : 'Create Plan'}
+                            {selectedPlan ? 'Update' : 'Create'}
                         </button>
                     </div>
                 </form>

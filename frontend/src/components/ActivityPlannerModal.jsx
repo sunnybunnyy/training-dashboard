@@ -219,20 +219,18 @@ function ActivityPlannerModal ({ isOpen, onClose, selectedDate, selectedActivity
         
             <form onSubmit={handleSubmit}>
                 <div className="form-group">
-                        <label htmlFor="title">Activity Title</label>
                         <input
                             type="text"
                             id="title"
                             name="title"
                             value={activity.title}
                             onChange={handleInputChange}
-                            placeholder='e.g., Morning Run'
+                            placeholder='Title'
                             required
                         />
                 </div>
 
                 <div className="form-group">
-                        <label htmlFor="start">Date</label>
                         <input
                             type="date"
                             id="start"
@@ -244,7 +242,6 @@ function ActivityPlannerModal ({ isOpen, onClose, selectedDate, selectedActivity
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="type">Activity Type</label>
                     <select
                         id="type"
                         name="type"
@@ -262,21 +259,19 @@ function ActivityPlannerModal ({ isOpen, onClose, selectedDate, selectedActivity
                 </div>
                 
                 <div className="form-group">
-                    <label htmlFor="distance">Distance (meters)</label>
                     <input
                         id="distance"
                         type="number"
                         name="distance"
                         value={activity.extendedProps.distance}
                         onChange={handleInputChange}
-                        placeholder="Distance in meters"
+                        placeholder="Distance"
                         onKeyDown={handleKeyDown}
                         required
                     />
                 </div>
 
                 <div className="form-group">
-                    <label htmlFor="duration">Duration (minutes)</label>
                     <input
                         id="duration"
                         type="number"
@@ -284,6 +279,7 @@ function ActivityPlannerModal ({ isOpen, onClose, selectedDate, selectedActivity
                         value={activity.extendedProps.duration}
                         onChange={handleInputChange}
                         onKeyDown={handleKeyDown}    
+                        placeholder='Duration (mins)'
                 />
                 </div>
 
@@ -304,13 +300,6 @@ function ActivityPlannerModal ({ isOpen, onClose, selectedDate, selectedActivity
                                 </option>
                             ))}
                         </select>
-                        <button
-                            type="button"
-                            onClick={() => setShowTrainingPlansManager(true)}
-                            style={{ padding: '0 15px' }}
-                        >
-                            Manage Plans
-                        </button>
                     </div>
                 </div>
 
@@ -327,7 +316,6 @@ function ActivityPlannerModal ({ isOpen, onClose, selectedDate, selectedActivity
                 )}
 
                 <div className='form-group'>
-                    <label htmlFor="route">Route (optional)</label>
                     <input
                         id="route"
                         type="text"
@@ -335,11 +323,11 @@ function ActivityPlannerModal ({ isOpen, onClose, selectedDate, selectedActivity
                         value={activity.extendedProps.route || ''}
                         onChange={handleInputChange}
                         onKeyDown={handleKeyDown}
+                        placeholder='Route (optional)'
                     />
                 </div>
 
                 <div className='form-group'>
-                    <label htmlFor="shoes">Shoes (Optional)</label>
                     <input
                         id="shoes"
                         type="text"
@@ -347,6 +335,7 @@ function ActivityPlannerModal ({ isOpen, onClose, selectedDate, selectedActivity
                         value={activity.extendedProps.shoes || ''}
                         onChange={handleInputChange}
                         onKeyDown={handleKeyDown}
+                        placeholder='Shoes (optional)'
                     />
                 </div>
 
@@ -357,7 +346,7 @@ function ActivityPlannerModal ({ isOpen, onClose, selectedDate, selectedActivity
                             className="delete-button"
                             onClick={handleDelete}
                         >
-                            <FaTrash /> Delete
+                            Delete
                         </button>
                     )}
                     <button type="submit" className='save-button'>

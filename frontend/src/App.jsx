@@ -303,6 +303,11 @@ function Dashboard() {
     );
   };
 
+  const handleTrainingPlanUpdated = () => {
+    // Re-fetch all activities to get updated colours
+    fetchActivities();
+  };
+
   const handleDayHeader = (arg) => {
     // Get the full weekday name
     const weekdayName = new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(arg.date);
@@ -314,7 +319,9 @@ function Dashboard() {
     <div className={`dashboard-layout ${showTrainingPlans ? 'panel-open' : ''}`}>
       {showTrainingPlans && (
         <div className="sidebar">
-          <TrainingPlansPanel />
+          <TrainingPlansPanel 
+            onTrainingPlanUpdated={handleTrainingPlanUpdated}
+          />
         </div>
       )}
 

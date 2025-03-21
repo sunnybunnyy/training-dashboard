@@ -4,7 +4,7 @@ import { FaEdit, FaTrash, FaPlus } from 'react-icons/fa';
 import TrainingPlansManager from './TrainingPlansManager';
 import '../styles/TrainingPlansPanel.css';
 
-function TrainingPlansPanel() {
+function TrainingPlansPanel( {onTrainingPlanUpdated} ) {
     const [trainingPlans, setTrainingPlans] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -57,7 +57,12 @@ function TrainingPlansPanel() {
     const handleCloseManager = () => {
         setShowManager(false);
         setSelectedPlan(null);
-        fetchTrainingPlans(); // Refresh the list
+        fetchTrainingPlans(); // Refresh the plans list
+
+        // If we have a callback from the parent (Dashboard), call it
+        if (onTrainingPlanUpdated) {
+            onTrainingPlanUpdated();
+        }
     };
 
     // Delete a plan

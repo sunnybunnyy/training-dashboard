@@ -66,7 +66,10 @@ function TrainingPlansPanel( {onTrainingPlanUpdated} ) {
     };
 
     // Delete a plan
-    const handleDeletePlan = async (planId) => {
+    const handleDeletePlan = async (planId, event) => {
+        // Stop event propogation to prevent opening the edit dialog
+        event.stopPropogation();
+
         if (window.confirm("Are you sure you want to delete this training plan? Activities associated with this plan will remain but will no longer be color-coded.")) {
             try {
                 await api.delete(`/api/training-plans/${planId}`);
@@ -98,7 +101,11 @@ function TrainingPlansPanel( {onTrainingPlanUpdated} ) {
                         <div
                             key={plan.id}
                             className="plan-item"
-                            style={{ borderLeft: `4px solid ${plan.color || '#ccc'}` }}
+                            style={{ 
+                                borderLeft: `4px solid ${plan.color || '#ccc'}`,
+                                cursor: 'pointer' // Add cursor pointer to indicate clickability
+                            }}
+                            onClick={() => handleEditPlan(plan)} // Make entire plan item clickable
                         >
                             <div className="plan-info">
                                 <h3>{plan.name}</h3>
@@ -106,15 +113,8 @@ function TrainingPlansPanel( {onTrainingPlanUpdated} ) {
                             </div>
                             <div className="plan-actions">
                                 <button
-                                    className="edit-btn"
-                                    onClick={() => handleEditPlan(plan)}
-                                    aria-label={`Edit ${plan.name}`}
-                                >
-                                    <FaEdit />
-                                </button>
-                                <button
                                     className="delete-btn"
-                                    onClick={() => handleDeletePlan(plan.id)}
+                                    onClick={(e) => handleDeletePlan(plan.id, e)}
                                     aria-label={`Delete ${plan.name}`}
                                 >
                                     <FaTrash />

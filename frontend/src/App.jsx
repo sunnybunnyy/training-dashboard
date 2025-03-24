@@ -257,6 +257,27 @@ function Dashboard() {
     }
   };
 
+  // Helper function to determine if a colour is light or dark
+  const isLightColor = (color) => {
+    if (!color) {
+      return true;
+    }
+
+    // Convert hex to RGB
+    let r, g, b;
+    if (color.startsWith('#')) {
+      r = parseInt(color.slice(1, 3), 16);
+      g = parseInt(color.slice(3, 5), 16);
+      b = parseInt(color.slice(5, 7), 16);
+    } else {
+      return true; // Default to light for non-hex colours
+    }
+
+    // Calculate brightness (YIQ formula)
+    const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+    return brightness > 128; // Above 128 is considered light
+  };
+
   // Custom event content
   const handleEventContent = (eventInfo) => {
     const title = eventInfo.event.title;
@@ -281,10 +302,14 @@ function Dashboard() {
       `${hours}h ${minutes}m` :
       `${minutes}m`;
     }
+    
+    // Determine text colour based on background colour
+    const textColour = backgroundColor ? (isLightColor(backgroundColor) ? '#000' : '#fff') : '#000';
 
     // Style object with conditional background colour
     const eventStyle = {
-      backgroundColor: backgroundColor || '' // Apply the training plan color as background
+      backgroundColor: backgroundColor || '', // Apply the training plan color as background
+      color: textColour // Apple appropriate text colour based on background
     };
     
     return (

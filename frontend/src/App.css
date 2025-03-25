@@ -323,7 +323,6 @@ input[type="number"]::-webkit-inner-spin-button {
   margin-left: 0px;
 }
 
-.fc .fc-button.fc-connectStrava-button,
 .fc .fc-button.fc-logout-button,
 .fc .fc-button.fc-today-button {
   border: 1px solid #747775;

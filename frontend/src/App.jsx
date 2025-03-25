@@ -198,14 +198,14 @@ function Dashboard() {
         response = await api.put(`/api/planned-activities/${activityData.id}`, activityData);
         console.log('Update response:', response.data);
         // Update the events array
-        setEvents(prev => {
-          console.log('Current events:', prev);
-          console.log('Event to update:', prev.find(event => event.id === activityData.id));
-          return prev.map(event => {
-            console.log(`Comparing ${event.id} (${typeof event.id}) with ${activityData.id} (${typeof activityData.id}): ${event.id === activityData.id}`);
-            return String(event.id) === String(activityData.id) ? response.data : event
-          });
-        });
+        setEvents(prev => prev.map(event => 
+          String(event.id) === String(activityData.id)
+          ? {
+              ...response.data,
+              backgroundColor: response.data.backgroundColor || response.data.extendedProps?.planColour || '',
+            }
+          : event
+        ));
       } else {
         // Create new activity
         response = await api.post('/api/planned-activities', activityData);
@@ -213,6 +213,7 @@ function Dashboard() {
         // Add the new activity to events
         setEvents(prev => [...prev, {
           ...response.data,
+          backgroundColor: response.data.backgroundColor || response.data.extendedProps?.planColour || '',
           extendedProps: {
             ...response.data.extendedProps,
             planned: true

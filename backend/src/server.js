@@ -423,11 +423,17 @@ app.post('/api/planned-activities', authenticateToken, async (req, res) => {
       extendedProps.shoes
     );
     
+    // Fetch the training plan to get its colour
+    const trainingPlan = extendedProps.planId
+      ? await db.getTrainingPlanById(extendedProps.planId)
+      : null;
+
     // Transform the response to match the FullCalendar event format
     const savedActivity = {
       id: result.id,
       title: title,
       start: start,
+      backgroundColor: trainingPlan ? trainingPlan.color: null,
       extendedProps : {
         planId: extendedProps.planId || null,
         type: extendedProps.type,
@@ -565,11 +571,17 @@ app.put('/api/planned-activities/:id', authenticateToken, async (req, res) => {
       extendedProps.shoes
     );
 
+    // Fetch the training plan to get its colour
+    const trainingPlan = extendedProps.planId
+      ? await db.getTrainingPlanById(extendedProps.planId)
+      : null;
+
     // Return the updated activity in FullCalendar format
     const updatedActivity = {
       id: activityId,
       title: title,
       start: start,
+      backgroundColor: trainingPlan ? trainingPlan.color : null,
       extendedProps: {
         planId: extendedProps.planId || null,
         type: extendedProps.type,

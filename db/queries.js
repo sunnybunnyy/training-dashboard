@@ -130,6 +130,16 @@ async function getTrainingPlansByUserId(userId) {
     return rows;
 }
 
+// Get a training plan by ID
+async function getTrainingPlanById(id) {
+    const { rows } = await pool.query(
+        `SELECT *
+        FROM training_plans
+        WHERE id = $1`,
+        [id]);
+    return rows[0];
+}
+
 // Create a new training plan
 async function createTrainingPlan(userId, name, color, description) {
     const { rows } = await pool.query(
@@ -172,6 +182,7 @@ module.exports = {
     deleteActivity,
     clearInvalidStravaCredentials,
     getTrainingPlansByUserId,
+    getTrainingPlanById,
     createTrainingPlan,
     updateTrainingPlan,
     deleteTrainingPlan

@@ -261,6 +261,7 @@ function ActivityPlannerModal ({ isOpen, onClose, selectedDate, selectedActivity
                 <div className="form-group">
                     <input
                         id="distance"
+                        className='input-with-unit'
                         type="number"
                         name="distance"
                         value={activity.extendedProps.distance}
@@ -269,18 +270,21 @@ function ActivityPlannerModal ({ isOpen, onClose, selectedDate, selectedActivity
                         onKeyDown={handleKeyDown}
                         required
                     />
+                    <span className='unit-label'>km</span>
                 </div>
 
                 <div className="form-group">
                     <input
                         id="duration"
+                        className='input-with-unit'
                         type="number"
                         name="duration"
                         value={activity.extendedProps.duration}
                         onChange={handleInputChange}
                         onKeyDown={handleKeyDown}    
                         placeholder='Duration (mins)'
-                />
+                    />
+                    <span className='unit-label'>mins</span>
                 </div>
 
                 <div className="form-group">

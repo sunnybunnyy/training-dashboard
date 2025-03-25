@@ -330,53 +330,6 @@ app.get('/api/strava/activities', authenticateToken, async (req, res) => {
   }
 });
 
-
-// GET planned activities
-app.get('/api/planned-activities', authenticateToken, async (req, res) => {
-  try {
-    const userId = req.user.id;
-    const plannedActivities = await db.getPlannedActivitiesByUserId(userId);
-  
-    // Fetch training plans to get their colors
-    const trainingPlans = await db.getTrainingPlansByUserId(userId);
-    const planMap = trainingPlans.reduce((map, plan) => {
-      map[plan.id] = plan;
-      return map;
-    }, {});
-
-    if (typeof plannedActivities === "undefined") {
-      return res.send([]);
-    } else {
-      console.log("Planned activities: ", plannedActivities);
-      const events = plannedActivities.map(plannedActivity => {
-        // Find associated training plan if any
-        const trainingPlan = plannedActivity.plan_id ? planMap[plannedActivity.plan_id] : null;
-        
-        return {
-          id: plannedActivity.id,
-          title: plannedActivity.title,
-          start: plannedActivity.date,
-          backgroundColor: trainingPlan ? trainingPlan.color : null,
-          extendedProps: {
-            planId: plannedActivity.plan_id,
-            planName: trainingPlan ? trainingPlan.name : null,
-            type: plannedActivity.type,
-            distance: plannedActivity.distance,
-            duration: plannedActivity.duration,
-            route: plannedActivity.route,
-            shoes: plannedActivity.shoes,
-            planned: true
-          }
-        };  
-      });
-      return res.send(events);
-    }
-  } catch (error) {
-    console.error('Error fetching planned activities:', error);
-    res.status(500).json({ error: 'Failed to fetch planned activities' });
-  }
-});
-
 app.get('/api/user/strava-status', authenticateToken, async (req, res) => {
   try {
     // Get user's Strava credentials
@@ -389,66 +342,6 @@ app.get('/api/user/strava-status', authenticateToken, async (req, res) => {
   } catch (error) {
     console.error('Error checking Strava status:', error);
     res.status(500).json({ error: 'Failed to check Strava connection status' });
-  }
-});
-
-// GET training plans
-app.get('/api/training-plans', authenticateToken, async (req, res) => {
-  try {
-    const userId = req.user.id;
-    const trainingPlans = await db.getTrainingPlansByUserId(userId);
-
-    res.json(trainingPlans);
-  } catch (error) {
-    console.error('Error fetching training plans:', error);
-    res.status(500).json({ error: 'Failed to fetch training plans' });
-  }
-});
-
-// POST new planned activitiy
-app.post('/api/planned-activities', authenticateToken, async (req, res) => {
-  try {
-    const { title, start, extendedProps } = req.body;
-    const userId = req.user.id;
-    
-    const result = await db.insertActivity(
-      userId, 
-      extendedProps.planId || null,
-      title, 
-      start, 
-      extendedProps.type, 
-      extendedProps.distance, 
-      extendedProps.duration, 
-      extendedProps.route, 
-      extendedProps.shoes
-    );
-    
-    // Fetch the training plan to get its colour
-    const trainingPlan = extendedProps.planId
-      ? await db.getTrainingPlanById(extendedProps.planId)
-      : null;
-
-    // Transform the response to match the FullCalendar event format
-    const savedActivity = {
-      id: result.id,
-      title: title,
-      start: start,
-      backgroundColor: trainingPlan ? trainingPlan.color: null,
-      extendedProps : {
-        planId: extendedProps.planId || null,
-        type: extendedProps.type,
-        distance: extendedProps.distance,
-        duration: extendedProps.duration,
-        route: extendedProps.route,
-        shoes: extendedProps.shoes,
-        planned: true
-      }
-    };
-  
-    res.status(201).json(savedActivity);
-  } catch (error) {
-    console.error('Error creating planned activity:', error);
-    res.status(500).json({ error: 'Failed to create planned activity' });
   }
 });
 
@@ -530,18 +423,96 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-// POST new training plan
-app.post('/api/training-plans', authenticateToken, async (req, res) => {
+// GET planned activities
+app.get('/api/planned-activities', authenticateToken, async (req, res) => {
   try {
-    const { name, color, description } = req.body;
     const userId = req.user.id;
+    const plannedActivities = await db.getPlannedActivitiesByUserId(userId);
+  
+    // Fetch training plans to get their colors
+    const trainingPlans = await db.getTrainingPlansByUserId(userId);
+    const planMap = trainingPlans.reduce((map, plan) => {
+      map[plan.id] = plan;
+      return map;
+    }, {});
 
-    const trainingPlan = await db.createTrainingPlan(userId, name, color, description);
-
-    res.status(201).json(trainingPlan);
+    if (typeof plannedActivities === "undefined") {
+      return res.send([]);
+    } else {
+      console.log("Planned activities: ", plannedActivities);
+      const events = plannedActivities.map(plannedActivity => {
+        // Find associated training plan if any
+        const trainingPlan = plannedActivity.plan_id ? planMap[plannedActivity.plan_id] : null;
+        
+        return {
+          id: plannedActivity.id,
+          title: plannedActivity.title,
+          start: plannedActivity.date,
+          backgroundColor: trainingPlan ? trainingPlan.color : null,
+          extendedProps: {
+            planId: plannedActivity.plan_id,
+            planName: trainingPlan ? trainingPlan.name : null,
+            type: plannedActivity.type,
+            distance: plannedActivity.distance,
+            duration: plannedActivity.duration,
+            route: plannedActivity.route,
+            shoes: plannedActivity.shoes,
+            planned: true
+          }
+        };  
+      });
+      return res.send(events);
+    }
   } catch (error) {
-    console.error('Error creating training plan:', error);
-    res.status(500).json({ error: 'Failed to create training plan' });
+    console.error('Error fetching planned activities:', error);
+    res.status(500).json({ error: 'Failed to fetch planned activities' });
+  }
+});
+
+// POST new planned activitiy
+app.post('/api/planned-activities', authenticateToken, async (req, res) => {
+  try {
+    const { title, start, extendedProps } = req.body;
+    const userId = req.user.id;
+    
+    const result = await db.insertActivity(
+      userId, 
+      extendedProps.planId || null,
+      title, 
+      start, 
+      extendedProps.type, 
+      extendedProps.distance, 
+      extendedProps.duration, 
+      extendedProps.route, 
+      extendedProps.shoes
+    );
+    
+    // Fetch the training plan to get its colour
+    const trainingPlan = extendedProps.planId
+      ? await db.getTrainingPlanById(extendedProps.planId)
+      : null;
+
+    // Transform the response to match the FullCalendar event format
+    const savedActivity = {
+      id: result.id,
+      title: title,
+      start: start,
+      backgroundColor: trainingPlan ? trainingPlan.color: null,
+      extendedProps : {
+        planId: extendedProps.planId || null,
+        type: extendedProps.type,
+        distance: extendedProps.distance,
+        duration: extendedProps.duration,
+        route: extendedProps.route,
+        shoes: extendedProps.shoes,
+        planned: true
+      }
+    };
+  
+    res.status(201).json(savedActivity);
+  } catch (error) {
+    console.error('Error creating planned activity:', error);
+    res.status(500).json({ error: 'Failed to create planned activity' });
   }
 });
 
@@ -600,6 +571,57 @@ app.put('/api/planned-activities/:id', authenticateToken, async (req, res) => {
   }
 });
 
+// DELETE planned activity
+app.delete('/api/planned-activities/:id', authenticateToken, async (req, res) => {
+  try {
+    const activityId = req.params.id;
+    const userId = req.user.id;
+
+    // Verify the activity belongs to the user
+    const existingActivity = await db.getActivityById(activityId);
+    if (!existingActivity || existingActivity.user_id !== userId) {
+      return res.status(404).json({ error: 'Activity not found or access denied' });
+    }
+
+    // Delete the activity
+    await db.deleteActivity(activityId);
+
+    res.status(200).json({ message: 'Activity deleted successfully' });
+  } catch (error) {
+    console.error('Error deleting planned activity:', error);
+    res.status(500).json({ error: 'Failed to delete planned activity' });
+  }
+});
+
+
+// GET training plans
+app.get('/api/training-plans', authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const trainingPlans = await db.getTrainingPlansByUserId(userId);
+
+    res.json(trainingPlans);
+  } catch (error) {
+    console.error('Error fetching training plans:', error);
+    res.status(500).json({ error: 'Failed to fetch training plans' });
+  }
+});
+
+// POST new training plan
+app.post('/api/training-plans', authenticateToken, async (req, res) => {
+  try {
+    const { name, color, description } = req.body;
+    const userId = req.user.id;
+
+    const trainingPlan = await db.createTrainingPlan(userId, name, color, description);
+
+    res.status(201).json(trainingPlan);
+  } catch (error) {
+    console.error('Error creating training plan:', error);
+    res.status(500).json({ error: 'Failed to create training plan' });
+  }
+});
+
 // PUT update training plan
 app.put('/api/training-plans/:id', authenticateToken, async (req, res) => {
   try {
@@ -621,28 +643,6 @@ app.put('/api/training-plans/:id', authenticateToken, async (req, res) => {
   } catch (error) {
     console.error('Error updating training plan:', error);
     res.status(500).json({ error: 'Failed to update training plan' });
-  }
-});
-
-// DELETE planned activity
-app.delete('/api/planned-activities/:id', authenticateToken, async (req, res) => {
-  try {
-    const activityId = req.params.id;
-    const userId = req.user.id;
-
-    // Verify the activity belongs to the user
-    const existingActivity = await db.getActivityById(activityId);
-    if (!existingActivity || existingActivity.user_id !== userId) {
-      return res.status(404).json({ error: 'Activity not found or access denied' });
-    }
-
-    // Delete the activity
-    await db.deleteActivity(activityId);
-
-    res.status(200).json({ message: 'Activity deleted successfully' });
-  } catch (error) {
-    console.error('Error deleting planned activity:', error);
-    res.status(500).json({ error: 'Failed to delete planned activity' });
   }
 });
 

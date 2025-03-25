@@ -10,7 +10,6 @@ import PrivateRoute from './utils/PrivateRoute';
 import React, { useEffect, useState, useRef } from 'react';
 import Register from './components/Register';
 import TrainingPlansPanel from './components/TrainingPlansPanel';
-import { FaBars } from 'react-icons/fa';
 
 function Dashboard() {
   const [events, setEvents] = useState([]);
@@ -18,7 +17,13 @@ function Dashboard() {
   const [selectedDate, setSelectedDate] = useState(null);
   const [selectedActivity, setSelectedActivity] = useState(null);
   const [stravaConnected, setStravaConnected] = useState(false);
-  const [showTrainingPlans, setShowTrainingPlans] = useState(false); // Start with panel visible
+  const [showTrainingPlans, setShowTrainingPlans] = useState(false); // Start with panel not visible
+  const [initialView, setInitialView] = useState({
+    currentStart: null,
+    currentEnd: null,
+    type: 'dayGridMonth'
+  });
+  const [isLoading, setIsLoading] = useState(true);
   const calendarRef = useRef(null);
 
   // Use authenticated API calls
@@ -40,11 +45,59 @@ function Dashboard() {
 
   // Fetch Strava activities when the component mounts
   useEffect(() => {
-    fetchActivities();
-    disableLogoTabIndex();
-    checkStravaConnection();
+    initialize();
   }, []); // Run only once after the initial render
   
+  const initialize = async () => {
+    await getLastViewedMonth();
+    await fetchActivities();
+    disableLogoTabIndex();
+    checkStravaConnection();
+    setIsLoading(false);
+  };
+
+  // Retrieve the last viewed month from localStorage
+  const getLastViewedMonth = async () => {
+    const savedView = localStorage.getItem('calendarView');
+    if (savedView) {
+      try {
+        const parsedView = JSON.parse(savedView);
+        console.log('savedView', JSON.stringify(savedView));
+        // Use the saved currentStart to set the initial date
+        setInitialView(parsedView);
+      } catch (error) {
+        console.error('Error parsing saved view:', error);
+        // Clear invalid localStorage item
+        localStorage.removeItem('calendarView');
+        // Fall back to current date
+        setInitialView({
+          currentStart: new Date().toISOString(),
+          currentEnd: new Date().toISOString(),
+          type: 'dayGridMonth'
+        });
+      } 
+    } else {
+      // No saved view, use current date
+      setInitialView({
+        currentStart: new Date().toISOString(),
+        currentEnd: new Date().toISOString(),
+        type: 'dayGridMonth'
+      });
+    }
+  };
+
+  // Save calendar view when it changes
+  const handleViewChange = (view) => {
+    // Extract current month and year
+    const currentView = {
+      currentStart: view.currentStart.toISOString(),
+      currentEnd: view.currentEnd.toISOString(),
+      type: view.type
+    };
+    localStorage.setItem('calendarView', JSON.stringify(currentView));
+    console.log('calendarView', JSON.stringify(currentView));
+  };
+
   // Fetch both Strava and planned activities
   const fetchActivities = async () => {
     try {
@@ -362,27 +415,35 @@ function Dashboard() {
       )}
 
       <div className="calendar-container">
-        <FullCalendar
-          ref = {calendarRef}
-          plugins={[dayGridPlugin, interactionPlugin]}
-          initialView='dayGridMonth'
-          headerToolbar={{
-            left: 'togglePlans logo today prev next', // Add icon as seperate button
-            center: 'title',
-            right: 'connectStrava logout' // Connect Strava and Logout buttons on right
-          }}
-          buttonText={{
-            today: 'Today'
-          }}
-          customButtons={customButtons}
-          dayHeaderContent={handleDayHeader}
-          weekends={true}
-          events={events}
-          eventContent={handleEventContent}
-          dateClick={handleDateClick}
-          eventClick={handleEventClick}
-          height="auto"
-        />
+        {!isLoading && (
+          <FullCalendar
+            ref = {calendarRef}
+            plugins={[dayGridPlugin, interactionPlugin]}
+            initialView='dayGridMonth'
+            initialDate={
+              initialView && initialView.currentStart
+                ? new Date(initialView.currentStart)
+                : new Date() //  Default to current date if no saved view
+            }
+            headerToolbar={{
+              left: 'togglePlans logo today prev next', // Add icon as seperate button
+              center: 'title',
+              right: 'connectStrava logout' // Connect Strava and Logout buttons on right
+            }}
+            buttonText={{
+              today: 'Today'
+            }}
+            customButtons={customButtons}
+            dayHeaderContent={handleDayHeader}
+            weekends={true}
+            events={events}
+            eventContent={handleEventContent}
+            dateClick={handleDateClick}
+            eventClick={handleEventClick}
+            datesSet={(arg) => handleViewChange(arg.view)}
+            height="auto"
+          />
+        )}
         <ActivityPlannerModal
           isOpen={isModalOpen}
           onClose={() => setIsModalOpen(false)}

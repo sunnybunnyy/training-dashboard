@@ -2,7 +2,6 @@ import './App.css';
 import ActivityPlannerModal from './components/ActivityPlannerModal';
 import axios from 'axios';
 import { BrowserRouter, Routes, Route, Navigate } from  'react-router-dom';
-import ConnectStrava from './components/ConnectStrava';
 import dayGridPlugin from '@fullcalendar/daygrid'
 import FullCalendar from '@fullcalendar/react'
 import interactionPlugin from "@fullcalendar/interaction" // needed for dayClick
@@ -138,6 +137,17 @@ function Dashboard() {
     window.location.href = '/login';    
   };
 
+  const handleConnectStrava = () => {
+      // Get token from localStorage
+      const token = localStorage.getItem('token');
+
+      // Create URL object for easier manipulation
+      const url = new URL('/auth/strava', window.location.origin);
+
+      // Redirect to this URL
+      window.location.href = url.toString();
+  };
+
   // Custom buttons for the toolbar
   const customButtons = {
     logo: {
@@ -147,7 +157,7 @@ function Dashboard() {
       text: stravaConnected ? 'Strava Connected' : 'Connect Strava',
       click: () => {
         if (!stravaConnected) {
-          window.location.href = '/connect-strava';
+          handleConnectStrava();
         }
       }
     },
@@ -398,14 +408,6 @@ function App() {
           element={
             <PrivateRoute>
               <Dashboard />
-            </PrivateRoute>
-          }
-        />
-        <Route
-          path="/connect-strava"
-          element={
-            <PrivateRoute>
-              <ConnectStrava />
             </PrivateRoute>
           }
         />

@@ -361,6 +361,50 @@ app.get('/api/strava/activities', authenticateToken, async (req, res) => {
   }
 });
 
+// PUT update Strava activity training plan
+app.put('/api/strava/activities/:id', authenticateToken, async (req, res) => {
+  try {
+    const activityId = req.params.id;
+    const { trainingPlanId } = req.body;
+    const userId = req.user.id;
+
+    // Verify the Strava activity belongs to the user
+    const existingActivity = await db.getStravaActivityById(activityId);
+    if (!existingActivity || existingActivity.user_id !== userId) {
+      return res.status(404).json({ error: 'Strava activity not found or access denied' });
+    }
+
+    // Update the Strava activity with training plan
+    await db.updateStravaActivityPlan(activityId, trainingPlanId || null);
+
+    // Fetch the training plan to get its colour
+    const trainingPlan = trainingPlanId
+      ? await db.getTrainingPlanById(trainingPlanId)
+      : null;
+
+      // Return the updated activity in FullCalendar format
+      const updatedActivity = {
+        id: activityId,
+        title: existingActivity.name,
+        start: existingActivity.start_date,
+        backgroundColor: trainingPlan ? trainingPlan.color : null,
+        extendedProps: {
+          planId: trainingPlanId || null,
+          planName: trainingPlan ? trainingPlan.name : null,
+          type: existingActivity.type,
+          distance: existingActivity.distance,
+          duration: existingActivity.moving_time,
+          planned: false
+        }
+      };
+
+      res.json(updatedActivity);
+  } catch (error) {
+    console.error('Error updating Strava activity plan:', error);
+    res.status(500).json({ error: 'Failed to update Strava activity plan' });
+  }
+});
+
 app.get('/api/user/strava-status', authenticateToken, async (req, res) => {
   try {
     // Get user's Strava credentials

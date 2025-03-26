@@ -267,6 +267,7 @@ app.get('/api/profile', authenticateToken, async (req, res) => {
   }
 });
 
+// GET Strava activities
 app.get('/api/strava/activities', authenticateToken, async (req, res) => {
     try {
       // Get user's Strava credentials
@@ -283,7 +284,7 @@ app.get('/api/strava/activities', authenticateToken, async (req, res) => {
 
       // Check if token is expired
       let currentToken = access_token;
-      if (expiresAtDate < now){
+      if (expiresAtDate < now) {
         console.log('Token expired, refreshing...');
         try {
           currentToken = await refreshStravaToken(req.user.id, refresh_token, client_id, client_secret);
@@ -298,12 +299,42 @@ app.get('/api/strava/activities', authenticateToken, async (req, res) => {
 
       // Make the Strava API call
     try {
-      const response = await axios.get('https://www.strava.com/api/v3/athlete/activities', {
+      const stravaResponse = await axios.get('https://www.strava.com/api/v3/athlete/activities', {
         headers: {
           Authorization: `Bearer ${currentToken}`,
         },
       });
-      res.json(response.data); // Send activities to the frontend
+
+      // Fetch the user's training plans to match with activities
+      const trainingPlans = getTrainingPlansByUserId(req.user.id);
+      // Fetch existing Strava activities with associated plans from database
+      const existingStravaActivities = getStravaActivitiesByUserId(req.user.id);
+
+      // Create a map of exisiting activity plan associations
+      const planAssociationMap = existingStravaActivities.rows.reduce((acc, activity) => {
+        acc[activity.strava_id] = activity.plan_id;
+        return acc;
+      }, {});
+
+      // Transform Strava activities with training plan info
+      const activitiesWithPlans = stravaResponse.data.map(activity => {
+        // Find associated training plan ID from our database
+        const associatedPlanId = planAssociationMap[activity.id] || null;
+
+        // Find the full training plan details
+        const associatedPlan = associatedPlanId
+          ? trainingPlans.rows.find(plan => plan.id === associatedPlanId)
+          : null;
+
+        return {
+          ...activity,
+          trainingPlanId: associatedPlanId,
+          trainingPlanName: associatedPlan ? associatedPlan.name : null,
+          trainingPlanColor: associatedPlan ? associatedPlan.color : null
+        };
+      });
+
+      res.json(activitiesWithPlans); // Send activities to the frontend
     } catch (apiError) {
       console.error('Strava API error:', apiError.response ? apiError.response.data : apiError.message);
       

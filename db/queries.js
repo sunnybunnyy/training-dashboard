@@ -191,7 +191,7 @@ async function getStravaActivityById(activityId) {
 // Update Strava activitiy's associated training plan
 async function updateStravaActivityPlan(activityId, planId) {
     const { rows } = await pool.query(
-        `UPFATE strava_activities
+        `UPDATE strava_activities
         SET plan_id = $1
         WHERE id = $2`,
         [planId, activityId]);

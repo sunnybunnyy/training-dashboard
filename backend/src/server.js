@@ -399,8 +399,12 @@ app.put('/api/strava/activities/:id', authenticateToken, async (req, res) => {
 
       res.json({
         success: true,
-        activity: result,
-        trainingPlan: trainingPlan
+        activity: {
+          id: stravaId,
+          trainingPlanId: planId,
+          trainingPlanName: trainingPlan?.name || null,
+          trainingPlanColour: trainingPlan?.color || null
+        }
       });
   } catch (error) {
     console.error('Error updating Strava activity plan:', error);

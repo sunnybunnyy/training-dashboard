@@ -308,9 +308,26 @@ function Dashboard() {
             trainingPlanId: activityData.extendedProps.planId
           });
 
+          // Update the events array with the new plan association
+          setEvents(prev => prev.map(event => {
+            if (String(event.id) === String(activityData.id)) {
+              return {
+                ...event,
+                backgroundColor: response.data.activity.trainingPlanColour || '',
+                extendedProps: {
+                  ...event.extendedProps,
+                  planId: response.data.activity.trainingPlanId,
+                  planName: response.data.activity.trainingPlanName,
+                  trainingPlanId: response.data.activity.trainingPlanId
+                }
+              };
+            }
+            return event;
+          }));
+
           showToast('Activity successfully asociated with training plan');
           // Re-fetch activities to update with new training plan association
-          fetchActivities();
+          //fetchActivities();
         } catch (error) {
           console.error('Error associating activity:', error);
           showToast('Failed to associate activity', 'error');

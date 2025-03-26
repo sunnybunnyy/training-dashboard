@@ -437,7 +437,6 @@ function Dashboard() {
           </div>
         )}
         {route && <div>📍 {route}</div>}
-        {trainingPlanName && <div>📋 {trainingPlanName}</div>}
       </div>
     );
   };

@@ -297,6 +297,7 @@ function ActivityPlannerModal ({ isOpen, onClose, selectedDate, selectedActivity
                                 onChange={handleInputChange}
                                 required
                             >
+                                <option value="">Select activity type</option>
                                 <option value="Run">Run</option>
                                 <option value="Bike">Bike</option>
                                 <option value="Swim">Swim</option>

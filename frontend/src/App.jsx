@@ -101,24 +101,46 @@ function Dashboard() {
   // Fetch both Strava and planned activities
   const fetchActivities = async () => {
     try {
-      // Fetch both Strava and planned activities in parallel
-      const [stravaResponse, plannedResponse] = await Promise.all([
+      // Fetch Strava activites, planned activities, and training plans
+      const [stravaResponse, plannedResponse, trainingPlansResponse] = await Promise.all([
         api.get('/api/strava/activities'),
-        api.get('/api/planned-activities')
+        api.get('/api/planned-activities'),
+        api.get('/api/training-plans')
       ]);
 
+      // Create a map of training plans
+      const trainingPlansMap = trainingPlansResponse.data.reduce((acc, plan) => {
+        acc[plan.id] = plan;
+        return acc;
+      }, {});
+
       // Map Strava activities to FullCalendar events
-      const stravaEvents = stravaResponse.data.map(activity => ({
+      const stravaEvents = stravaResponse.data.map(activity => {
+        // Find associated training plan if exists
+        const associatedPlanId = activity.trainingPlanId
+          ? parseInt(activity.trainingPlanId, 10)
+          : null;
+
+        const associatedPlan = associatedPlanId
+          ? trainingPlansMap[associatedPlanId]
+          : null;
+
+        return {
         id: activity.id,
         title: activity.name,
         start: activity.start_date, // FullCalendar will parse this date string
+        backgroundColor: associatedPlan ? associatedPlan.color: '',
         extendedProps: {
           type: activity.type,
           distance: activity.distance,
           duration: activity.moving_time,
-          planned: false // Flag to indicate this is a Strava activity
+          planned: false, // Flag to indicate this is a Strava activity
+          planId: associatedPlanId,
+          planName: associatedPlan ? associatedPlan.name : '',
+          trainingPlanId: associatedPlanId
         },
-      }));
+      };
+    });
 
       // Mark planned activities
       const plannedEvents = plannedResponse.data.map(event => ({
@@ -235,19 +257,16 @@ function Dashboard() {
   const handleEventClick = (info) => {
     const event = info.event;
 
-    // Only allow editing of planned activities, not Strava activities
-    if (event.extendedProps.planned) {
-      setSelectedActivity({
-        id: event.id,
-        title: event.title,
-        start: event.startStr.split('T')[0], // Get just the date part
-        extendedProps: {
-          ...event.extendedProps
-        }
-      });
-      setSelectedDate(null); // Clear selected date
-      setIsModalOpen(true);
-    }
+    setSelectedActivity({
+      id: event.id,
+      title: event.title,
+      start: event.startStr.split('T')[0], // Get just the date part
+      extendedProps: {
+        ...event.extendedProps
+      }
+    });
+    setSelectedDate(null); // Clear selected date
+    setIsModalOpen(true);
   };
 
   // Handle saving or updating an activity
@@ -255,33 +274,43 @@ function Dashboard() {
     try {
       let response;
 
-      if (activityData.id) {
-        console.log('Updating activity with ID:', activityData.id, 'Data:', activityData);
-        // Update existing activity
-        response = await api.put(`/api/planned-activities/${activityData.id}`, activityData);
-        console.log('Update response:', response.data);
-        // Update the events array
-        setEvents(prev => prev.map(event => 
-          String(event.id) === String(activityData.id)
-          ? {
-              ...response.data,
-              backgroundColor: response.data.backgroundColor || response.data.extendedProps?.planColour || '',
-            }
-          : event
-        ));
-      } else {
-        // Create new activity
-        response = await api.post('/api/planned-activities', activityData);
+      if (activityData.extendedProps.planned) {
+        if (activityData.id) {
+          console.log('Updating activity with ID:', activityData.id, 'Data:', activityData);
+          // Update existing activity
+          response = await api.put(`/api/planned-activities/${activityData.id}`, activityData);
+          console.log('Update response:', response.data);
+          // Update the events array
+          setEvents(prev => prev.map(event => 
+            String(event.id) === String(activityData.id)
+            ? {
+                ...response.data,
+                backgroundColor: response.data.backgroundColor || response.data.extendedProps?.planColour || '',
+              }
+            : event
+          ));
+        } else {
+          // Create new activity
+          response = await api.post('/api/planned-activities', activityData);
 
-        // Add the new activity to events
-        setEvents(prev => [...prev, {
-          ...response.data,
-          backgroundColor: response.data.backgroundColor || response.data.extendedProps?.planColour || '',
-          extendedProps: {
-            ...response.data.extendedProps,
-            planned: true
-          }
-        }]);
+          // Add the new activity to events
+          setEvents(prev => [...prev, {
+            ...response.data,
+            backgroundColor: response.data.backgroundColor || response.data.extendedProps?.planColour || '',
+            extendedProps: {
+              ...response.data.extendedProps,
+              planned: true
+            }
+          }]);
+        }
+      } else {
+        // Handle Strava activity plan association
+        response = await api.put(`/api/strava/activities/${activityData.id}`, {
+          trainingPlanId: activityData.extendedProps.planId
+        });
+
+        // Re-fetch activities to update with new training plan association
+        fetchActivities();
       }
     } catch (error) {
       console.error('Error saving activity:', error);

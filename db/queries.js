@@ -169,6 +169,34 @@ async function deleteTrainingPlan(id) {
         [id]);
 }
 
+// Fetch Strava activities for a user
+async function getStravaActivitiesByUserId(userId) {
+    const { rows } = await pool.query(
+        `SELECT * FROM strava_activities
+        WHERE user_id = $1
+        ORDER BY start_date DESC`,
+        [userId]);
+    return rows;
+}
+
+// Get a specific Strava activity by ID
+async function getStravaActivityById(activityId) {
+    const { rows } = await pool.query(
+        `SELECT * FROM strava_activities
+        WHERE id = $1`,
+        [activityId]);
+    return rows[0];
+}
+
+// Update Strava activitiy's associated training plan
+async function updateStravaActivityPlan(activityId, planId) {
+    const { rows } = await pool.query(
+        `UPFATE strava_activities
+        SET plan_id = $1
+        WHERE id = $2`,
+        [planId, activityId]);
+}
+
 module.exports = {
     createUser,
     getUserByEmail,
@@ -185,5 +213,8 @@ module.exports = {
     getTrainingPlanById,
     createTrainingPlan,
     updateTrainingPlan,
-    deleteTrainingPlan
+    deleteTrainingPlan,
+    getStravaActivitiesByUserId,
+    getStravaActivityById,
+    updateStravaActivityPlan
 };

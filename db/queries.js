@@ -173,8 +173,7 @@ async function deleteTrainingPlan(id) {
 async function getStravaActivitiesByUserId(userId) {
     const { rows } = await pool.query(
         `SELECT * FROM strava_activities
-        WHERE user_id = $1
-        ORDER BY start_date DESC`,
+        WHERE user_id = $1`,
         [userId]);
     return rows;
 }
@@ -188,13 +187,25 @@ async function getStravaActivityById(activityId) {
     return rows[0];
 }
 
-// Update Strava activitiy's associated training plan
-async function updateStravaActivityPlan(activityId, planId) {
+// Get a specific Strava activity by Strava ID (not internal ID)
+async function getStravaActivityByStravaId(userId, stravaId) {
     const { rows } = await pool.query(
-        `UPDATE strava_activities
-        SET plan_id = $1
-        WHERE id = $2`,
-        [planId, activityId]);
+        `SELECT * FROM strava_activities
+        WHERE user_id = $1 AND strava_id = $2`,
+        [userId, stravaId]);
+    return rows[0];
+}
+
+// Update Strava activitiy's associated training plan
+async function upsertStravaActivity(userId, stravaId, planId) {
+    const { rows } = await pool.query(
+        `INSERT INTO strava_activities (user_id, strava_id, plan_id)
+        VALUES ($1, $2, $3)
+        ON CONFLICT (user_id, strava_id)
+        DO UPDATE SET plan_id = EXCLUDED.plan_id
+        RETURNING *`,
+        [userId, stravaId, planId]);
+    return rows[0];
 }
 
 module.exports = {
@@ -216,5 +227,5 @@ module.exports = {
     deleteTrainingPlan,
     getStravaActivitiesByUserId,
     getStravaActivityById,
-    updateStravaActivityPlan
+    upsertStravaActivity
 };

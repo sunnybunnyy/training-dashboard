@@ -62,7 +62,6 @@ function Dashboard() {
     if (savedView) {
       try {
         const parsedView = JSON.parse(savedView);
-        console.log('savedView', JSON.stringify(savedView));
         // Use the saved currentStart to set the initial date
         setInitialView(parsedView);
       } catch (error) {
@@ -95,7 +94,6 @@ function Dashboard() {
       type: view.type
     };
     localStorage.setItem('calendarView', JSON.stringify(currentView));
-    console.log('calendarView', JSON.stringify(currentView));
   };
 
   // Fetch both Strava and planned activities
@@ -126,20 +124,20 @@ function Dashboard() {
           : null;
 
         return {
-        id: activity.id,
-        title: activity.name,
-        start: activity.start_date, // FullCalendar will parse this date string
-        backgroundColor: associatedPlan ? associatedPlan.color: '',
-        extendedProps: {
-          type: activity.type,
-          distance: activity.distance,
-          duration: activity.moving_time,
-          planned: false, // Flag to indicate this is a Strava activity
-          planId: associatedPlanId,
-          planName: associatedPlan ? associatedPlan.name : '',
-          trainingPlanId: associatedPlanId
-        },
-      };
+          id: activity.id,
+          title: activity.name,
+          start: activity.start_date, // FullCalendar will parse this date string
+          backgroundColor: associatedPlan ? associatedPlan.color: '',
+          extendedProps: {
+            type: activity.type,
+            distance: activity.distance,
+            duration: activity.moving_time,
+            planned: false, // Flag to indicate this is a Strava activity
+            planId: associatedPlanId,
+            planName: associatedPlan ? associatedPlan.name : '',
+            trainingPlanId: associatedPlanId
+          },
+        };
     });
 
       // Mark planned activities
@@ -305,12 +303,18 @@ function Dashboard() {
         }
       } else {
         // Handle Strava activity plan association
-        response = await api.put(`/api/strava/activities/${activityData.id}`, {
-          trainingPlanId: activityData.extendedProps.planId
-        });
+        try {
+          response = await api.put(`/api/strava/activities/${activityData.id}`, {
+            trainingPlanId: activityData.extendedProps.planId
+          });
 
-        // Re-fetch activities to update with new training plan association
-        fetchActivities();
+          showToast('Activity successfully asociated with training plan');
+          // Re-fetch activities to update with new training plan association
+          fetchActivities();
+        } catch (error) {
+          console.error('Error associating activity:', error);
+          showToast('Failed to associate activity', 'error');
+        }
       }
     } catch (error) {
       console.error('Error saving activity:', error);

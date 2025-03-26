@@ -211,100 +211,171 @@ function ActivityPlannerModal ({ isOpen, onClose, selectedDate, selectedActivity
             overlayClassName="activity-modal-overlay"
         >
             <div className='modal-header'>
-                <h2>{isEditMode ? 'Edit Activity' : 'Plan New Activity'}</h2>
+                <h2>
+                    {!activity.extendedProps.planned
+                        ? 'Associate Strava Activity with Training Plan'
+                        : (isEditMode ? 'Edit Activity' : 'Plan New Activity')
+                    }
+                </h2>
                 <button onClick={onClose} className='close-button'>
                     <FaTimes />
                 </button>
             </div>
         
             <form onSubmit={handleSubmit}>
-                <div className="form-group">
-                        <input
-                            type="text"
-                            id="title"
-                            name="title"
-                            value={activity.title}
-                            onChange={handleInputChange}
-                            placeholder='Title'
-                            required
-                        />
-                </div>
+                {/* For Strava activities, show read-only activity details */}
+                {!activity.extendedProps.planned && (
+                    <>
+                        <div className="form-group">
+                            <input 
+                                type="text" 
+                                value={activity.title}
+                                readOnly
+                            />
+                        </div>
+                        <div className="form-group">
+                            <input
+                                type="date"
+                                value={activity.start}
+                                readOnly 
+                            />
+                        </div>
+                        <div className="form-group">
+                            <input 
+                                type="text"
+                                value={activity.extendedProps.type}
+                                readOnly
+                            />
+                        </div>
+                        <div className="form-group">
+                            <input 
+                                type="text"
+                                value={`${(activity.extendedProps.distance / 1000).toFixed(1)} km`} 
+                                readOnly
+                            />
+                        </div>
+                        <div className="form-group">
+                            <input 
+                                type="text"
+                                value={`${Math.floor(activity.extendedProps.duration / 60)} mins`}
+                                readOnly
+                            />
+                        </div>
+                    </>
+                )}
+
+                {activity.extendedProps.planned && (
+                    <>
+                        <div className="form-group">
+                                <input
+                                    type="text"
+                                    id="title"
+                                    name="title"
+                                    value={activity.title}
+                                    onChange={handleInputChange}
+                                    placeholder='Title'
+                                    required
+                                />
+                        </div>
+
+                        <div className="form-group">
+                                <input
+                                    type="date"
+                                    id="start"
+                                    name="start"
+                                    value={activity.start}
+                                    onChange={handleInputChange}
+                                    required
+                                />
+                        </div>
+
+                        <div className="form-group">
+                            <select
+                                id="type"
+                                name="type"
+                                value={activity.extendedProps.type}
+                                onChange={handleInputChange}
+                                required
+                            >
+                                <option value="Run">Run</option>
+                                <option value="Bike">Bike</option>
+                                <option value="Swim">Swim</option>
+                                <option value="Walk">Walk</option>
+                                <option value="Hike">Hike</option>
+                                <option value="Workout">Workout</option>
+                            </select>
+                        </div>
+                        
+                        <div className="form-group">
+                            <input
+                                id="distance"
+                                className='input-with-unit'
+                                type="number"
+                                name="distance"
+                                value={activity.extendedProps.distance}
+                                onChange={handleInputChange}
+                                placeholder="Distance"
+                                onKeyDown={handleKeyDown}
+                                required
+                            />
+                            <span className='unit-label'>km</span>
+                        </div>
+
+                        <div className="form-group">
+                            <input
+                                id="duration"
+                                className='input-with-unit'
+                                type="number"
+                                name="duration"
+                                value={activity.extendedProps.duration}
+                                onChange={handleInputChange}
+                                onKeyDown={handleKeyDown}    
+                                placeholder='Duration (mins)'
+                            />
+                            <span className='unit-label'>mins</span>
+                        </div>
+
+                        <div className='form-group'>
+                            <input
+                                id="route"
+                                type="text"
+                                name="route"
+                                value={activity.extendedProps.route || ''}
+                                onChange={handleInputChange}
+                                onKeyDown={handleKeyDown}
+                                placeholder='Route (optional)'
+                            />
+                        </div>
+
+                        <div className='form-group'>
+                            <input
+                                id="shoes"
+                                type="text"
+                                name="shoes"
+                                value={activity.extendedProps.shoes || ''}
+                                onChange={handleInputChange}
+                                onKeyDown={handleKeyDown}
+                                placeholder='Shoes (optional)'
+                            />
+                        </div>
+                    </>
+                )}
 
                 <div className="form-group">
-                        <input
-                            type="date"
-                            id="start"
-                            name="start"
-                            value={activity.start}
-                            onChange={handleInputChange}
-                            required
-                        />
-                </div>
-
-                <div className="form-group">
-                    <select
-                        id="type"
-                        name="type"
-                        value={activity.extendedProps.type}
+                    <select 
+                        name="planId" 
+                        id="planId"
+                        value={activity.extendedProps.planId}
                         onChange={handleInputChange}
-                        required
+                        style={{ flex: 1 }}
                     >
-                        <option value="Run">Run</option>
-                        <option value="Bike">Bike</option>
-                        <option value="Swim">Swim</option>
-                        <option value="Walk">Walk</option>
-                        <option value="Hike">Hike</option>
-                        <option value="Workout">Workout</option>
+                        <option value="">Select training plan</option>
+                        {trainingPlans.map(plan => (
+                            <option value={plan.id} key={plan.id}>
+                                {plan.name}
+                            </option>
+                        ))}
                     </select>
-                </div>
-                
-                <div className="form-group">
-                    <input
-                        id="distance"
-                        className='input-with-unit'
-                        type="number"
-                        name="distance"
-                        value={activity.extendedProps.distance}
-                        onChange={handleInputChange}
-                        placeholder="Distance"
-                        onKeyDown={handleKeyDown}
-                        required
-                    />
-                    <span className='unit-label'>km</span>
-                </div>
-
-                <div className="form-group">
-                    <input
-                        id="duration"
-                        className='input-with-unit'
-                        type="number"
-                        name="duration"
-                        value={activity.extendedProps.duration}
-                        onChange={handleInputChange}
-                        onKeyDown={handleKeyDown}    
-                        placeholder='Duration (mins)'
-                    />
-                    <span className='unit-label'>mins</span>
-                </div>
-
-                <div className="form-group">
-                    <label htmlFor="planId">Training Plan</label>
-                    <div style={{ display: 'flex', gap: '10px' }}>
-                        <select 
-                            name="planId" 
-                            id="planId"
-                            value={activity.extendedProps.planId}
-                            onChange={handleInputChange}
-                            style={{ flex: 1 }}
-                        >
-                            <option value="">None</option>
-                            {trainingPlans.map(plan => (
-                                <option value={plan.id} key={plan.id}>
-                                    {plan.name}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
                 </div>
 
                 {activity.extendedProps.planId && selectedPlan && (
@@ -318,30 +389,6 @@ function ActivityPlannerModal ({ isOpen, onClose, selectedDate, selectedActivity
                         This activity will appear with this background colour
                     </div>
                 )}
-
-                <div className='form-group'>
-                    <input
-                        id="route"
-                        type="text"
-                        name="route"
-                        value={activity.extendedProps.route || ''}
-                        onChange={handleInputChange}
-                        onKeyDown={handleKeyDown}
-                        placeholder='Route (optional)'
-                    />
-                </div>
-
-                <div className='form-group'>
-                    <input
-                        id="shoes"
-                        type="text"
-                        name="shoes"
-                        value={activity.extendedProps.shoes || ''}
-                        onChange={handleInputChange}
-                        onKeyDown={handleKeyDown}
-                        placeholder='Shoes (optional)'
-                    />
-                </div>
 
                 <div className='modal-actions'>
                     {isEditMode && (

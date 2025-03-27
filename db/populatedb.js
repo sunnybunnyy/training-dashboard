@@ -23,6 +23,14 @@ CREATE TABLE IF NOT EXISTS strava_credentials (
     PRIMARY KEY (user_id)
 );
 
+CREATE TABLE IF NOT EXISTS training_plans (
+    id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+    name VARCHAR(255) NOT NULL,
+    color VARCHAR(20) NOT NULL,
+    description TEXT
+);
+
 CREATE TABLE IF NOT EXISTS planned_activities (
     id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
@@ -42,14 +50,6 @@ CREATE TABLE IF NOT EXISTS strava_activities (
     strava_id BIGINT NOT NULL,
     plan_id INTEGER REFERENCES training_plans(id) ON DELETE SET NULL,
     UNIQUE(user_id, strava_id)
-)
-
-CREATE TABLE IF NOT EXISTS training_plans (
-    id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
-    name VARCHAR(255) NOT NULL,
-    color VARCHAR(20) NOT NULL,
-    description TEXT
 );
 `;
 

@@ -16,7 +16,7 @@ function TrainingPlansManager ({ isOpen, onClose, onTrainingPlanUpdated, selecte
     const api = process.env.NODE_ENV 
     ? axios.create() 
     : axios.create({
-        baseURL: process.env.API_BASE_URL || 'http://localhost:5000',
+        baseURL: process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000',
         withCredentials: true
     });
     api.interceptors.request.use(

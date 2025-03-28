@@ -30,7 +30,7 @@ function Dashboard() {
   const api = process.env.NODE_ENV 
     ? axios.create() 
     : axios.create({
-        baseURL: process.env.API_BASE_URL || 'http://localhost:5000',
+        baseURL: process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000',
         withCredentials: true
   });
 
@@ -220,8 +220,8 @@ function Dashboard() {
       const token = localStorage.getItem('token');
 
       // Create URL object for easier manipulation
-      const url = process.env.API_BASE_URL 
-        ? `${process.env.API_BASE_URL}/auth/strava`
+      const url = process.env.REACT_APP_API_BASE_URL 
+        ? `${process.env.REACT_APP_API_BASE_URL}/auth/strava`
         : new URL('/auth/strava', window.location.origin);
 
       // Redirect to this URL

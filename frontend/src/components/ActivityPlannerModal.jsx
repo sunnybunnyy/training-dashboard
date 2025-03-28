@@ -30,11 +30,11 @@ function ActivityPlannerModal ({ isOpen, onClose, selectedDate, selectedActivity
 
     // Create authenticated API instance
     const api = process.env.NODE_ENV 
-    ? axios.create() 
-    : axios.create({
+    ? axios.create({
         baseURL: process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000',
         withCredentials: true
-    });
+    })
+    : axios.create();
     api.interceptors.request.use(
         (config) => {
             const token = localStorage.getItem('token');

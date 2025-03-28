@@ -1,6 +1,5 @@
 const bcrypt = require('bcryptjs');
 const pool = require('./pool');
-const jwt = require('jsonwebtoken');
 
 // User authentication functions
 async function createUser(email, password, firstName, lastName) {

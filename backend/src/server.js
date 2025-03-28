@@ -10,10 +10,9 @@ const methodOverride = require('method-override');
 const morgan = require('morgan');
 const passport = require('passport');
 const path = require('path');
-const router = express.Router();
 const session = require('express-session');
 const StravaStrategy = require('passport-strava-oauth2').Strategy;
-const util = require('util');
+
 
 dotenv.config(); // Load environment variables from .env file
 const port = process.env.PORT; // Get the port from environment variables
@@ -33,7 +32,7 @@ app.use(session({
   secret: process.env.SESSION_SECRET, // Secret used to sign the session ID cookie
   resave: false, // Don't save the session if it wasn't modified
   saveUninitialized: true, // Save new sessions
-  cookie: { secure: false } // Cookie settings
+  cookie: { secure: true } // Cookie settings
 }));
 
 // Initialize Passport for authentication

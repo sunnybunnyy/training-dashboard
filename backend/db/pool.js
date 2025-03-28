@@ -2,7 +2,7 @@ const dotenv = require('dotenv');
 const path = require('path');
 const { Pool } = require('pg');
 
-dotenv.config({ path: path.resolve(__dirname, '../.env') });
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 const pool = new Pool({
     host: 'localhost',

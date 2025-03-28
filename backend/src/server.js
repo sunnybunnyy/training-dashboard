@@ -37,7 +37,7 @@ app.use(methodOverride('_method')); // Allow HTTP method overriding
 app.use(morgan('dev')); // Log HTTP requests in 'dev' format
 app.use(session({
   store: new pgSession({
-    conString: `postgresql://postgres:${process.env.DB_PASSWORD}@localhost:5433/persimmon`,
+    conString: process.env.DATABASE_URL,
     createTableIfMissing: true
   }),
   secret: process.env.SESSION_SECRET, // Secret used to sign the session ID cookie
@@ -46,7 +46,8 @@ app.use(session({
   cookie: { 
     secure: process.env.NODE_ENV === 'production',
     httpOnly: true,
-    maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days 
+    maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days 
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax' // For cross-site cookies
   } // Cookie settings
 }));
 
@@ -103,6 +104,9 @@ app.get('/auth/strava', async (req, res, next) => {
     // Extract user ID from token if available
     const authHeader = req.headers['authorization'];
     let userId = null;
+    const callbackURL = process.env.NODE_ENV === 'production'
+      ? `https://persimmon-u8l4.onrender.com/auth/strava/callback`
+      : `http://localhost:${port}/auth/strava/callback`;
 
     if (authHeader) {
       // Try to get user from token
@@ -155,7 +159,7 @@ app.get('/auth/strava', async (req, res, next) => {
       passport.use(strategyName, new StravaStrategy({
         clientID: client_id,
         clientSecret: client_secret,
-        callbackURL: `http://localhost:${port}/auth/strava/callback` // Callback URL after Strava authentication
+        callbackURL: callbackURL // Callback URL after Strava authentication
       },
       function(accessToken, refreshToken, profile, done) {
         // Asynchronous verification function
@@ -195,7 +199,7 @@ app.get('/auth/strava', async (req, res, next) => {
         passport.use('default-strava', new StravaStrategy({
           clientID: process.env.STRAVA_CLIENT_ID,
           clientSecret: process.env.STRAVA_CLIENT_SECRET,
-          callbackURL: `http://localhost:${port}/auth/strava/callback`
+          callbackURL: callbackURL
         },
         function(accessToken, refreshToken, profile, done) {
           process.nextTick(function () {

@@ -27,7 +27,10 @@ function Dashboard() {
   const calendarRef = useRef(null);
 
   // Use authenticated API calls
-  const api = axios.create();
+  const api = axios.create({
+    baseURL: process.env.API_BASE_URL || 'http://localhost:3000',
+    withCredentials: true // Important for cookies/sessions
+  });
 
   // Add authentication interceptor
   api.interceptors.request.use(
@@ -215,7 +218,9 @@ function Dashboard() {
       const token = localStorage.getItem('token');
 
       // Create URL object for easier manipulation
-      const url = new URL('/auth/strava', window.location.origin);
+      const url = process.env.API_BASE_URL 
+        ? `${process.env.API_BASE_URL}/auth/strava`
+        : new URL('/auth/strava', window.location.origin);
 
       // Redirect to this URL
       window.location.href = url.toString();

@@ -2,17 +2,19 @@ const axios = require('axios');
 const bcrypt = require('bcryptjs');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
+const cors = require('cors');
 const db = require("../db/queries");
 const dotenv = require('dotenv');
 const express = require('express');
+const helmet = require('helmet');
 const jwt = require('jsonwebtoken');
 const methodOverride = require('method-override');
 const morgan = require('morgan');
 const passport = require('passport');
 const path = require('path');
 const session = require('express-session');
+const pgSession = require('connect-pg-simple')(session);
 const StravaStrategy = require('passport-strava-oauth2').Strategy;
-
 
 dotenv.config(); // Load environment variables from .env file
 const port = process.env.PORT; // Get the port from environment variables
@@ -26,13 +28,26 @@ app.set('view engine', 'ejs'); // Initialize the Express application
 // Middleware setup
 app.use(bodyParser.json()); // Parse JSON request bodies
 app.use(cookieParser()); // Parse cookies
+app.use(cors({
+  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  credentials: true
+}));
+app.use(helmet());
 app.use(methodOverride('_method')); // Allow HTTP method overriding
 app.use(morgan('dev')); // Log HTTP requests in 'dev' format
 app.use(session({
+  store: new pgSession({
+    conString: `postgresql://postgres:${process.env.DB_PASSWORD}@localhost:5433/persimmon`,
+    createTableIfMissing: true
+  }),
   secret: process.env.SESSION_SECRET, // Secret used to sign the session ID cookie
   resave: false, // Don't save the session if it wasn't modified
-  saveUninitialized: true, // Save new sessions
-  cookie: { secure: true } // Cookie settings
+  saveUninitialized: false, // Save new sessions
+  cookie: { 
+    secure: process.env.NODE_ENV === 'production',
+    httpOnly: true,
+    maxAge: 30 * 24 * 60 * 60 * 1000 // 30 days 
+  } // Cookie settings
 }));
 
 // Initialize Passport for authentication

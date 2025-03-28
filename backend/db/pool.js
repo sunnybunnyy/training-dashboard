@@ -9,7 +9,7 @@ const pool = new Pool({
     user: 'postgres',
     database: 'persimmon',
     password: process.env.DB_PASSWORD,
-    port: 5433 
+    port: 5433
 });
 
 module.exports = pool;

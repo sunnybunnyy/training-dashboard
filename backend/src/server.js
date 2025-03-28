@@ -29,7 +29,9 @@ app.set('view engine', 'ejs'); // Initialize the Express application
 app.use(bodyParser.json()); // Parse JSON request bodies
 app.use(cookieParser()); // Parse cookies
 app.use(cors({
-  origin: process.env.FRONTEND_URL || 'http://localhost:3000',
+  origin: ['http://localhost:3000',
+            process.env.FRONTEND_URL,
+            process.env.API_BASE_URL],
   credentials: true
 }));
 app.use(helmet());

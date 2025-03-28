@@ -1,6 +1,11 @@
 import axios from 'axios';
 
-const api = axios.create();
+const api = process.env.NODE_ENV 
+    ? axios.create() 
+    : axios.create({
+        baseURL: process.env.API_BASE_URL || 'http://localhost:5000',
+        withCredentials: true
+});
 
 // Add authentication interceptor
 api.interceptors.request.use(

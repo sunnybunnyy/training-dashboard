@@ -12,7 +12,12 @@ function TrainingPlansPanel( {onTrainingPlanUpdated} ) {
     const [selectedPlan, setSelectedPlan] = useState(null);
 
     // Create authenticated API instance
-    const api = axios.create();
+    const api = process.env.NODE_ENV 
+    ? axios.create() 
+    : axios.create({
+        baseURL: process.env.API_BASE_URL || 'http://localhost:5000',
+        withCredentials: true
+    });
     api.interceptors.request.use(
         (config) => {
             const token = localStorage.getItem('token');

@@ -27,9 +27,11 @@ function Dashboard() {
   const calendarRef = useRef(null);
 
   // Use authenticated API calls
-  const api = axios.create({
-    baseURL: process.env.API_BASE_URL || 'http://localhost:3000',
-    withCredentials: true // Important for cookies/sessions
+  const api = process.env.NODE_ENV 
+    ? axios.create() 
+    : axios.create({
+        baseURL: process.env.API_BASE_URL || 'http://localhost:5000',
+        withCredentials: true
   });
 
   // Add authentication interceptor

@@ -21,10 +21,6 @@
   },
   "homepage": "https://github.com/sunnybunnyy/training-dashboard#readme",
   "dependencies": {
-    "@daypilot/daypilot-lite-react": "^3.31.0",
-    "@fullcalendar/core": "^6.1.15",
-    "@fullcalendar/daygrid": "^6.1.15",
-    "@fullcalendar/react": "^6.1.15",
     "axios": "^1.8.2",
     "bcryptjs": "^3.0.2",
     "body-parser": "^1.20.3",

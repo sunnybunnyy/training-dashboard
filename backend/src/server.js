@@ -46,10 +46,10 @@ app.use(session({
   resave: false, // Don't save the session if it wasn't modified
   saveUninitialized: false, // Save new sessions
   cookie: { 
-    secure: process.env.NODE_ENV === 'production',
+    secure: true,
     httpOnly: true,
     maxAge: 30 * 24 * 60 * 60 * 1000, // 30 days 
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax' // For cross-site cookies
+    sameSite: 'none'
   } // Cookie settings
 }));
 
@@ -107,8 +107,8 @@ app.get('/auth/strava', async (req, res, next) => {
     const authHeader = req.headers['authorization'];
     let userId = null;
     const callbackURL = process.env.NODE_ENV === 'production'
-      ? `https://persimmon-u8l4.onrender.com/auth/strava/callback`
-      : `http://localhost:${port}/auth/strava/callback`;
+      ? `https://persimmon-u8l4.onrender.com/auth/strava/callback?userId=${userId}`
+      : `http://localhost:${port}/auth/strava/callback?userId=${userId}`;
 
     if (req.query.token) {
       try {
@@ -242,7 +242,7 @@ app.get('/auth/strava', async (req, res, next) => {
 // Maintains JWT authentication
 app.get('/auth/strava/callback', (req, res, next) => {
   // Get userId from session
-  const userId = req.session.userId;
+  const userId = req.query.userId;
   if (!userId) {
     return res.redirect('/login');
   }
@@ -705,6 +705,10 @@ app.get('/api/training-plans', authenticateToken, async (req, res) => {
     console.error('Error fetching training plans:', error);
     res.status(500).json({ error: 'Failed to fetch training plans' });
   }
+});
+
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../../frontend/dist', 'index.html'));
 });
 
 // POST new training plan

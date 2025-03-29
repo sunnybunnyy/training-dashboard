@@ -33,6 +33,7 @@ function Dashboard() {
         withCredentials: true
     })
     : axios.create();
+    console.log('API Base URL:', process.env.REACT_APP_API_BASE_URL);
 
   // Add authentication interceptor
   api.interceptors.request.use(

@@ -27,9 +27,9 @@ function Dashboard() {
   const calendarRef = useRef(null);
 
   // Use authenticated API calls
-  const api = process.env.NODE_ENV 
+  const api = process.env.REACT_APP_API_BASE_URL
     ? axios.create({
-        baseURL: process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000',
+        baseURL: process.env.REACT_APP_API_BASE_URL,
         withCredentials: true
     })
     : axios.create();

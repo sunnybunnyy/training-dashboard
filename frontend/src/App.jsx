@@ -162,7 +162,7 @@ function Dashboard() {
       if (error.response && error.response.status === 401) {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        window.location.href = `${API_BASE_URL}/login`;
+        window.location.href = '/login';
       }
     }
   };
@@ -212,23 +212,20 @@ function Dashboard() {
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    window.location.href = `${API_BASE_URL}/login`;
+    window.location.href = '/login';    
   };
 
-  const handleConnectStrava = () => {
+  const handleConnectStrava = async () => {
       // Get token from localStorage
       const token = localStorage.getItem('token');
 
       const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
-    /*const api = axios.create({
-                    baseURL: API_BASE_URL,
-                    withCredentials: true
-                });*/
+
       // Create URL object for easier manipulation
       //const url = new URL(`${API_BASE_URL}/auth/strava`, window.location.origin);
 
       // Redirect to this URL
-      window.location.href = `${API_BASE_URL}/auth/strava`;
+      window.location.href = `${API_BASE_URL}/auth/strava?token=${token}`;
   };
 
   // Custom buttons for the toolbar
@@ -349,7 +346,7 @@ function Dashboard() {
       if (error.response && error.response.status === 401) {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        window.location.href = `${API_BASE_URL}/login`;
+        window.location.href = '/login';
       }
     }
   };
@@ -376,7 +373,7 @@ function Dashboard() {
       if (error.response && error.response.status === 401) {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        window.location.href = `${API_BASE_URL}/login`;
+        window.location.href = '/login';
       }
     }
   };

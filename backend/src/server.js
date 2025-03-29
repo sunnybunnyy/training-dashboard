@@ -110,11 +110,9 @@ app.get('/auth/strava', async (req, res, next) => {
       ? `https://persimmon-u8l4.onrender.com/auth/strava/callback`
       : `http://localhost:${port}/auth/strava/callback`;
 
-    if (authHeader) {
-      // Try to get user from token
-      const token = authHeader.split(' ')[1];
+    if (req.query.token) {
       try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const decoded = jwt.verify(req.query.token, process.env.JWT_SECRET);
         userId = decoded.id;
         // Store the userId in a local variable since we have it from the token
         req.userId = userId;

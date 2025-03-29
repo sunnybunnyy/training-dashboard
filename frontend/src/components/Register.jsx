@@ -12,6 +12,11 @@ function Register() {
         lastName: ''
     });
     const [error, setError] = useState('');
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+    const api = axios.create({
+                    baseURL: API_BASE_URL,
+                    withCredentials: true
+                });
     const navigate = useNavigate();
 
     const handleChange = (e) => {
@@ -32,7 +37,7 @@ function Register() {
         }
 
         try {
-            const response = await axios.post('/api/register', {
+            const response = await api.post(`${API_BASE_URL}/api/register`, {
                 email: formData.email,
                 password: formData.password,
                 firstName: formData.firstName,

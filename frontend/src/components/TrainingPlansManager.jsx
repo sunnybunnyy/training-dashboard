@@ -13,9 +13,9 @@ function TrainingPlansManager ({ isOpen, onClose, onTrainingPlanUpdated, selecte
     const [error, setError] = useState('');
 
     // Create authenticated API instance
-    const api = process.env.REACT_APP_API_BASE_URL
+    const api = process.env.VITE_API_BASE_URL
     ? axios.create({
-        baseURL: process.env.REACT_APP_API_BASE_URL || 'http://localhost:5000',
+        baseURL: process.env.VITE_API_BASE_URL || 'http://localhost:5000',
         withCredentials: true
     })
     : axios.create();

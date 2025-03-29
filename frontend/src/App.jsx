@@ -27,13 +27,13 @@ function Dashboard() {
   const calendarRef = useRef(null);
 
   // Use authenticated API calls
-  const api = process.env.REACT_APP_API_BASE_URL
+  const api = process.env.VITE_API_BASE_URL
     ? axios.create({
-        baseURL: process.env.REACT_APP_API_BASE_URL,
+        baseURL: process.env.VITE_API_BASE_URL,
         withCredentials: true
     })
     : axios.create();
-    console.log('API Base URL:', process.env.REACT_APP_API_BASE_URL);
+    console.log('API Base URL:', process.env.VITE_API_BASE_URL);
 
   // Add authentication interceptor
   api.interceptors.request.use(
@@ -221,8 +221,8 @@ function Dashboard() {
       const token = localStorage.getItem('token');
 
       // Create URL object for easier manipulation
-      const url = process.env.REACT_APP_API_BASE_URL 
-        ? `${process.env.REACT_APP_API_BASE_URL}/auth/strava`
+      const url = process.env.VITE_API_BASE_URL 
+        ? `${process.env.VITE_API_BASE_URL}/auth/strava`
         : new URL('/auth/strava', window.location.origin);
 
       // Redirect to this URL

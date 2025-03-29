@@ -27,12 +27,11 @@ function Dashboard() {
   const calendarRef = useRef(null);
 
   // Use authenticated API calls
-  const api = process.env.VITE_API_BASE_URL
-    ? axios.create({
-        baseURL: process.env.VITE_API_BASE_URL,
-        withCredentials: true
-    })
-    : axios.create();
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+  const api = axios.create({
+                  baseURL: API_BASE_URL,
+                  withCredentials: true
+              });
     console.log('API Base URL:', process.env.VITE_API_BASE_URL);
 
   // Add authentication interceptor
@@ -107,9 +106,9 @@ function Dashboard() {
     try {
       // Fetch Strava activites, planned activities, and training plans
       const [stravaResponse, plannedResponse, trainingPlansResponse] = await Promise.all([
-        api.get('/api/strava/activities'),
-        api.get('/api/planned-activities'),
-        api.get('/api/training-plans')
+        api.get(`${API_BASE_URL}/api/strava/activities`),
+        api.get(`${API_BASE_URL}/api/planned-activities`),
+        api.get(`${API_BASE_URL}/api/training-plans`)
       ]);
 
       // Create a map of training plans
@@ -202,7 +201,7 @@ function Dashboard() {
 
   const checkStravaConnection = async () => {
     try {
-      const response = await api.get('/api/user/strava-status');
+      const response = await api.get(`${API_BASE_URL}/api/user/strava-status`);
       setStravaConnected(response.data.connected);
     } catch (error) {
       console.error('Error checking Strava connection:', error);
@@ -284,7 +283,7 @@ function Dashboard() {
         if (activityData.id) {
           console.log('Updating activity with ID:', activityData.id, 'Data:', activityData);
           // Update existing activity
-          response = await api.put(`/api/planned-activities/${activityData.id}`, activityData);
+          response = await api.put(`${API_BASE_URL}/api/planned-activities/${activityData.id}`, activityData);
           console.log('Update response:', response.data);
           // Update the events array
           setEvents(prev => prev.map(event => 
@@ -297,7 +296,7 @@ function Dashboard() {
           ));
         } else {
           // Create new activity
-          response = await api.post('/api/planned-activities', activityData);
+          response = await api.post(`${API_BASE_URL}/api/planned-activities`, activityData);
 
           // Add the new activity to events
           setEvents(prev => [...prev, {
@@ -312,7 +311,7 @@ function Dashboard() {
       } else {
         // Handle Strava activity plan association
         try {
-          response = await api.put(`/api/strava/activities/${activityData.id}`, {
+          response = await api.put(`${API_BASE_URL}/api/strava/activities/${activityData.id}`, {
             trainingPlanId: activityData.extendedProps.planId
           });
 
@@ -356,7 +355,7 @@ function Dashboard() {
   const handleDeleteActivity = async (activityId) => {
     try {
       console.log('Deleting activity with ID:', activityId, 'Type:', typeof activityId);
-      await api.delete(`/api/planned-activities/${activityId}`);
+      await api.delete(`${API_BASE_URL}/api/planned-activities/${activityId}`);
       console.log('Current events before deletion:', events);
       // Remove the deleted activity from events
       setEvents(prev => {

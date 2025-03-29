@@ -12,12 +12,11 @@ function TrainingPlansPanel( {onTrainingPlanUpdated} ) {
     const [selectedPlan, setSelectedPlan] = useState(null);
 
     // Create authenticated API instance
-    const api = process.env.VITE_API_BASE_URL
-        ? axios.create({
-            baseURL: process.env.VITE_API_BASE_URL || 'http://localhost:5000',
-            withCredentials: true
-        })
-        : axios.create();
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+    const api = axios.create({
+                    baseURL: API_BASE_URL,
+                    withCredentials: true
+                });
     api.interceptors.request.use(
         (config) => {
             const token = localStorage.getItem('token');
@@ -33,7 +32,7 @@ function TrainingPlansPanel( {onTrainingPlanUpdated} ) {
     const fetchTrainingPlans = async () => {
         setIsLoading(true);
         try {
-            const response = await api.get('/api/training-plans');
+            const response = await api.get(`${API_BASE_URL}/api/training-plans`);
             setTrainingPlans(response.data);
             setError(null);
         } catch (error) {
@@ -77,7 +76,7 @@ function TrainingPlansPanel( {onTrainingPlanUpdated} ) {
 
         if (window.confirm("Are you sure you want to delete this training plan? Activities associated with this plan will remain but will no longer be color-coded.")) {
             try {
-                await api.delete(`/api/training-plans/${planId}`);
+                await api.delete(`${API_BASE_URL}/api/training-plans/${planId}`);
                 fetchTrainingPlans(); // Refresh the list
             } catch (error) {
                 console.error('Error deleting training plan:', error);

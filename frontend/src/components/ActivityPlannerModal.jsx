@@ -29,12 +29,11 @@ function ActivityPlannerModal ({ isOpen, onClose, selectedDate, selectedActivity
     });
 
     // Create authenticated API instance
-    const api = process.env.VITE_API_BASE_URL
-    ? axios.create({
-        baseURL: process.env.VITE_API_BASE_URL || 'http://localhost:5000',
-        withCredentials: true
-    })
-    : axios.create();
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+    const api = axios.create({
+                    baseURL: API_BASE_URL,
+                    withCredentials: true
+                });
     api.interceptors.request.use(
         (config) => {
             const token = localStorage.getItem('token');
@@ -49,7 +48,7 @@ function ActivityPlannerModal ({ isOpen, onClose, selectedDate, selectedActivity
     // Fetch training plans
     const fetchTrainingPlans = async () => {
         try {
-            const response = await api.get('/api/training-plans');
+            const response = await api.get(`${API_BASE_URL}/api/training-plans`);
             setTrainingPlans(response.data);
         } catch (error) {
             console.error('Error fetching training plans:', error);

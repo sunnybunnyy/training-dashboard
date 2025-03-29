@@ -13,12 +13,11 @@ function TrainingPlansManager ({ isOpen, onClose, onTrainingPlanUpdated, selecte
     const [error, setError] = useState('');
 
     // Create authenticated API instance
-    const api = process.env.VITE_API_BASE_URL
-    ? axios.create({
-        baseURL: process.env.VITE_API_BASE_URL || 'http://localhost:5000',
-        withCredentials: true
-    })
-    : axios.create();
+    const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+    const api = axios.create({
+                    baseURL: API_BASE_URL,
+                    withCredentials: true
+                });
     api.interceptors.request.use(
         (config) => {
             const token = localStorage.getItem('token');
@@ -82,10 +81,10 @@ function TrainingPlansManager ({ isOpen, onClose, onTrainingPlanUpdated, selecte
         try {
             if (selectedPlan) {
                 // Update existing plan
-                await api.put(`/api/training-plans/${selectedPlan.id}`, formData);
+                await api.put(`${API_BASE_URL}/api/training-plans/${selectedPlan.id}`, formData);
             } else {
                 // Create new plan
-                await api.post('/api/training-plans', formData);
+                await api.post(`${API_BASE_URL}/api/training-plans`, formData);
             }
             // Notify parent component
             if (onTrainingPlanUpdated) {

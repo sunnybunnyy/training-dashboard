@@ -162,7 +162,7 @@ function Dashboard() {
       if (error.response && error.response.status === 401) {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        window.location.href = '/login';
+        window.location.href = `${API_BASE_URL}/login`;
       }
     }
   };
@@ -212,7 +212,7 @@ function Dashboard() {
   const handleLogout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('user');
-    window.location.href = '/login';    
+    window.location.href = `${API_BASE_URL}/login`;
   };
 
   const handleConnectStrava = () => {
@@ -349,7 +349,7 @@ function Dashboard() {
       if (error.response && error.response.status === 401) {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        window.location.href = '/login';
+        window.location.href = `${API_BASE_URL}/login`;
       }
     }
   };
@@ -376,7 +376,7 @@ function Dashboard() {
       if (error.response && error.response.status === 401) {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
-        window.location.href = '/login';
+        window.location.href = `${API_BASE_URL}/login`;
       }
     }
   };

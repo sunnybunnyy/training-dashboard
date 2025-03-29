@@ -219,13 +219,16 @@ function Dashboard() {
       // Get token from localStorage
       const token = localStorage.getItem('token');
 
+      const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+    /*const api = axios.create({
+                    baseURL: API_BASE_URL,
+                    withCredentials: true
+                });*/
       // Create URL object for easier manipulation
-      const url = process.env.VITE_API_BASE_URL 
-        ? `${process.env.VITE_API_BASE_URL}/auth/strava`
-        : new URL('/auth/strava', window.location.origin);
+      //const url = new URL(`${API_BASE_URL}/auth/strava`, window.location.origin);
 
       // Redirect to this URL
-      window.location.href = url.toString();
+      window.location.href = `${API_BASE_URL}/auth/strava`;
   };
 
   // Custom buttons for the toolbar

@@ -241,18 +241,19 @@ app.get('/auth/strava', async (req, res, next) => {
 //   which, in this example, will redirect the user to the home page.
 // Maintains JWT authentication
 app.get('/auth/strava/callback', (req, res, next) => {
+  const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
   // Get userId from session
   const userId = req.query.userId;
   if (!userId) {
-    return res.redirect('/login');
+    return res.redirect(`${FRONTEND_URL}/login`);
   }
   
   const strategyName = `strava-${userId}` in passport._strategies ?
                       `strava-${userId}` : 'default-strava';
   
   passport.authenticate(strategyName, { 
-    failureRedirect: '/login', 
-    successRedirect: '/dashboard' 
+    failureRedirect: `${FRONTEND_URL}/login`, 
+    successRedirect: `${FRONTEND_URL}/dashboard` 
   })(req, res, next); // Redirect to login on failure
 });
 

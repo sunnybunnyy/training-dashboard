@@ -78,6 +78,9 @@ passport.deserializeUser(function(serializedUser, done) {
   done(null, serializedUser);
 });
 
+// Serve static files from the frontend build directory
+app.use(express.static(path.join(__dirname, '../../frontend/dist')));
+
 // Root route: Redirect to Strava authentication
 app.get('/', (req, res) => {
   res.redirect('/auth/strava');
@@ -774,8 +777,6 @@ app.delete('/api/training-plans/:id', authenticateToken, async (req, res) => {
   }
 });
 
-// Serve static files from the frontend build directory
-app.use(express.static(path.join(__dirname, '../../frontend/dist')));
 
 // Start the server
 app.listen(port, () => {

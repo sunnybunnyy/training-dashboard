@@ -17,7 +17,7 @@ class FeatureGenerator:
             'distance': ['sum', 'max', 'mean'],
             'moving_time': 'sum',
             'average_speed': 'mean',
-            'elevation_gain' : 'sum'
+            'elevation_gain': 'sum'
         })
 
         # Flatten multi-index columns

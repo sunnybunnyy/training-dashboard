@@ -420,8 +420,8 @@ function Dashboard() {
       const hours = Math.floor(duration / 60);
       const minutes = Math.floor((duration % 60));
       formattedDuration = hours > 0 ?
-      `${hours}h ${minutes}m` :
-      `${minutes}m`;
+      `${hours} hrs ${minutes} mins` :
+      `${minutes} mins`;
     }
     
     // Determine text colour based on background colour

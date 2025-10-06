@@ -412,7 +412,7 @@ function Dashboard() {
     const route = eventInfo.event.extendedProps.route || '';
 
     // Format distance (convert to km if needed)
-    const formattedDistance = distance ? `${(distance / 1000).toFixed(1)} km` : '';
+    const formattedDistance = distance ? `${distance.toFixed(1)} km` : '';
 
     // Format duration (convert minutes to hours and minutes)
     let formattedDuration = '';

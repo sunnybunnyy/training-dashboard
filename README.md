@@ -1,6 +1,6 @@
 Work in progress!
 
-[![Node.js CI](https://github.com/sunnybunnyy/training-dashboard/actions/workflows/node.js.yml/badge.svg)](https://github.com/sunnybunnyy/training-dashboard/actions/workflows/node.js.yml)
+[![Node.js CI](https://github.com/sunnybunnyy/training-dashboard/actions/workflows/node.js.yml/badge.svg?branch=main)](https://github.com/sunnybunnyy/training-dashboard/actions/workflows/node.js.yml)
 <!--
 # Training Plan Dashboard
 This project is a web application that integrates with the Strava API to help athletes plan, track, and manage their training schedules for upcoming races. It allows users to create detailed training plans by adding specific activities (e.g., runs, rides, or swims) to a calendar, including parameters such as distance, pace, and route name. After completing an activity and uploading it to Strava, users can easily log the completed workout into their training calendar by selecting it from the list of Strava activities.

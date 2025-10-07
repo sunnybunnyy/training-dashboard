@@ -1,3 +1,5 @@
+import redisClient from './redisClient.js';
+
 const axios = require('axios');
 const bcrypt = require('bcryptjs');
 const bodyParser = require('body-parser');
@@ -290,34 +292,47 @@ app.get('/api/profile', authenticateToken, async (req, res) => {
 });
 
 // GET Strava activities
+// Check Redis for cached activities first
+// If not found or expired, fetch from Strava API
+// Store transformed activities in Redis
+// Next request within 10 minutes will use cached data
 app.get('/api/strava/activities', authenticateToken, async (req, res) => {
-    try {
-      // Get user's Strava credentials
-      const rows = await db.getStravaCredentials(req.user.id);
-      if (rows.length === 0) {
-        return res.status(404).json({ error: 'Strava credentials not found for this user' });
+  const cacheKey = `strava:activities:${req.user.id}`; 
+  try {
+    // Check Redis cache first
+    const cachedData = await redisClient.get(cacheKey);
+    if (cachedData) {
+      console.log('Serving Strava activities from cache');
+      return res.json(JSON.parse(cachedData));
+    }
+    console.log('No cache found, fetching from Strava API');
+
+    // Get user's Strava credentials
+    const rows = await db.getStravaCredentials(req.user.id);
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'Strava credentials not found for this user' });
+    }
+
+    const { access_token, refresh_token, client_id, client_secret, expires_at } = rows[0];
+
+    // Convert expires_at to Date if it's not already
+    const expiresAtDate = expires_at instanceof Date ? expires_at : new Date(expires_at);
+    const now = new Date();
+
+    // Check if token is expired
+    let currentToken = access_token;
+    if (expiresAtDate < now) {
+      console.log('Token expired, refreshing...');
+      try {
+        currentToken = await refreshStravaToken(req.user.id, refresh_token, client_id, client_secret);
+      } catch (refreshError) {
+        console.error('Failed to refresh token, user may need to re-authorize');
+        return res.status(401).json({
+          error: 'Strava authorization expired',
+          message: 'Please reconnect your Strava account'
+        });
       }
-
-      const { access_token, refresh_token, client_id, client_secret, expires_at } = rows[0];
-
-      // Convert expires_at to Date if it's not already
-      const expiresAtDate = expires_at instanceof Date ? expires_at : new Date(expires_at);
-      const now = new Date();
-
-      // Check if token is expired
-      let currentToken = access_token;
-      if (expiresAtDate < now) {
-        console.log('Token expired, refreshing...');
-        try {
-          currentToken = await refreshStravaToken(req.user.id, refresh_token, client_id, client_secret);
-        } catch (refreshError) {
-          console.error('Failed to refresh token, user may need to re-authorize');
-          return res.status(401).json({
-            error: 'Strava authorization expired',
-            message: 'Please reconnect your Strava account'
-          });
-        }
-      }
+    }
 
       // Make the Strava API call
     try {
@@ -365,6 +380,8 @@ app.get('/api/strava/activities', authenticateToken, async (req, res) => {
           trainingPlanColor: associatedPlan ? associatedPlan.color : null
         };
       });
+
+      await redisClient.set(cacheKey, JSON.stringify(activitiesWithPlans), { EX: 600 }); // Cache for 10 minutes
 
       res.json(activitiesWithPlans); // Send activities to the frontend
     } catch (apiError) {
@@ -612,7 +629,7 @@ app.post('/api/planned-activities', authenticateToken, async (req, res) => {
         planned: true
       }
     };
-  
+    await redisClient.del(`strava:activities:${userId}`); // Clear Strava activities cache since we added a planned activity
     res.status(201).json(savedActivity);
   } catch (error) {
     console.error('Error creating planned activity:', error);
@@ -668,6 +685,7 @@ app.put('/api/planned-activities/:id', authenticateToken, async (req, res) => {
       }
     };
 
+    await redisClient.del(`strava:activities:${userId}`);
     res.json(updatedActivity);
   } catch (error) {
     console.error('Error updating planned activity:', error);
@@ -689,7 +707,7 @@ app.delete('/api/planned-activities/:id', authenticateToken, async (req, res) =>
 
     // Delete the activity
     await db.deleteActivity(activityId);
-
+    await redisClient.del(`strava:activities:${userId}`);
     res.status(200).json({ message: 'Activity deleted successfully' });
   } catch (error) {
     console.error('Error deleting planned activity:', error);

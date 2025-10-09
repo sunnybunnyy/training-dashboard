@@ -15,7 +15,7 @@ import passport from 'passport';
 import path from 'path';
 import session from 'express-session';
 import pgSession from 'connect-pg-simple';
-import  StravaStrategy from ('passport-strava-oauth2').Strategy;
+import { Strategy as StravaStrategy } from 'passport-strava-oauth2';
 
 dotenv.config(); // Load environment variables from .env file
 const port = process.env.PORT; // Get the port from environment variables

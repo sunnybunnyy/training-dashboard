@@ -1,5 +1,5 @@
-const bcrypt = require('bcryptjs');
-const pool = require('./pool');
+import bcrypt from 'bcryptjs';
+import * as pool from './pool.js';
 
 // User authentication functions
 async function createUser(email, password, firstName, lastName) {

@@ -1,22 +1,21 @@
 import redisClient from './redisClient.js';
-
-const axios = require('axios');
-const bcrypt = require('bcryptjs');
-const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
-const cors = require('cors');
-const db = require("../db/queries");
-const dotenv = require('dotenv');
-const express = require('express');
-const helmet = require('helmet');
-const jwt = require('jsonwebtoken');
-const methodOverride = require('method-override');
-const morgan = require('morgan');
-const passport = require('passport');
-const path = require('path');
-const session = require('express-session');
-const pgSession = require('connect-pg-simple')(session);
-const StravaStrategy = require('passport-strava-oauth2').Strategy;
+import axios from 'axios';
+import bcrypt from 'bcryptjs';
+import bodyParser from 'body-parser';
+import cookieParser from 'cookie-parser';
+import cors from 'cors';
+import * as db from '../db/queries.js'; // note: add .js if using ESM
+import dotenv from 'dotenv';
+import express from 'express';
+import helmet from 'helmet';
+import jwt from 'jsonwebtoken';
+import methodOverride from 'method-override';
+import morgan from 'morgan';
+import passport from 'passport';
+import path from 'path';
+import session from 'express-session';
+import pgSession from 'connect-pg-simple';
+import  StravaStrategy from ('passport-strava-oauth2').Strategy;
 
 dotenv.config(); // Load environment variables from .env file
 const port = process.env.PORT; // Get the port from environment variables

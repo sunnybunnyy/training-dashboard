@@ -23,6 +23,17 @@ const port = process.env.PORT; // Get the port from environment variables
 
 const app = express(); // Initialize the Express application
 
+const startCache = async () => {
+  try {
+    await redisClient.connect();
+    console.log('Connected to Redis');
+  } catch (err) {
+    console.error('Could not connect to Redis', err);
+  }
+};
+
+startCache();
+
 // Configure Express settings
 app.set('views', __dirname + '/views'); // Initialize the Express application
 app.set('view engine', 'ejs'); // Initialize the Express application

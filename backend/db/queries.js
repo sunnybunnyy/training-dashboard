@@ -1,5 +1,5 @@
 import bcrypt from 'bcryptjs';
-import * as pool from './pool.js';
+import pool from './pool.js';
 
 // User authentication functions
 async function createUser(email, password, firstName, lastName) {

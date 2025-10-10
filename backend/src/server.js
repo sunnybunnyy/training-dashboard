@@ -14,7 +14,7 @@ import morgan from 'morgan';
 import passport from 'passport';
 import path from 'path';
 import session from 'express-session';
-import pgSession from 'connect-pg-simple';
+import connectPgSimple from 'connect-pg-simple';
 import { Strategy as StravaStrategy } from 'passport-strava-oauth2';
 import { fileURLToPath } from 'url';
 import connectPgSimple from 'connect-pg-simple';

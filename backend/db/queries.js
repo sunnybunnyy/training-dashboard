@@ -207,7 +207,7 @@ async function upsertStravaActivity(userId, stravaId, planId) {
     return rows[0];
 }
 
-module.exports = {
+export {
     createUser,
     getUserByEmail,
     getUserById,

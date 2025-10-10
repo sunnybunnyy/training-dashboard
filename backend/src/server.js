@@ -33,6 +33,9 @@ const startCache = async () => {
 
 startCache();
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 // Configure Express settings
 app.set('views', __dirname + '/views'); // Initialize the Express application
 app.set('view engine', 'ejs'); // Initialize the Express application

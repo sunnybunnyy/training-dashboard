@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
 import path from 'path';
-import { Pool } from 'pg';
+import pkg from 'pg';
+const { Pool } = pkg;
 
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 const isProduction = process.env.NODE_ENV === 'production';

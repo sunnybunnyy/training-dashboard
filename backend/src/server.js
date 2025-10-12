@@ -396,7 +396,7 @@ app.get('/api/strava/activities', authenticateToken, async (req, res) => {
         };
       });
 
-      await redisClient.set(cacheKey, JSON.stringify(activitiesWithPlans), { EX: 600 }); // Cache for 10 minutes
+      await redisClient.set(cacheKey, JSON.stringify(activitiesWithPlans));
 
       res.json(activitiesWithPlans); // Send activities to the frontend
     } catch (apiError) {

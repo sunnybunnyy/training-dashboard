@@ -409,7 +409,7 @@ app.get('/api/strava/activities', authenticateToken, async (req, res) => {
         };
       });
 
-      await redisClient.set(cacheKey, JSON.stringify(activitiesWithPlans));
+      await redisClient.set(cacheKey, JSON.stringify(activitiesWithPlans), { EX: 600 }); // Cache for 10 minutes
 
       res.json(activitiesWithPlans); // Send activities to the frontend
     } catch (apiError) {
@@ -764,7 +764,7 @@ app.get('/api/training-plans', authenticateToken, async (req, res) => {
 
     // Check Redis cache first
     const cachedPlans = await redisClient.get(cacheKey);
-    if (cachedData) {
+    if (cachedPlans) {
       console.log('Serving Strava activities from cache');
       return res.json(JSON.parse(cachedPlans));
     }
@@ -838,7 +838,7 @@ app.delete('/api/training-plans/:id', authenticateToken, async (req, res) => {
 
     await db.deleteTrainingPlan(planId);
     await redisClient.del(`user:trainingPlans:${userId}`);  // Clear training plans cache since we deleted a plan
-    
+
     res.status(200).json({ message: 'Training plan deleted successfully' });
   } catch (error) {
     console.error('Error deleting training plan:', error);

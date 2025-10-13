@@ -3,7 +3,7 @@ import {
     LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer
 } from 'recharts';
 
-export default function Dashboard() {
+export default function Analytics() {
     const [data, setData] = useState([]); // State to hold the fetched data
 
     useEffect(() => {

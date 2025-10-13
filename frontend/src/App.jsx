@@ -10,6 +10,7 @@ import PrivateRoute from './utils/PrivateRoute';
 import React, { useEffect, useState, useRef } from 'react';
 import Register from './components/Register';
 import TrainingPlansPanel from './components/TrainingPlansPanel';
+import Analytics from './components/Analytics';
 
 function Dashboard() {
   const [events, setEvents] = useState([]);
@@ -24,6 +25,7 @@ function Dashboard() {
     type: 'dayGridMonth'
   });
   const [isLoading, setIsLoading] = useState(true);
+  const [view, setView] = useState("calendar"); // "calendar" or "analytics"
   const calendarRef = useRef(null);
 
   // Use authenticated API calls
@@ -234,7 +236,7 @@ function Dashboard() {
       text: 'Persimmon'
     },
     connectStrava: {
-      text: stravaConnected ? 'Strava Connected' : 'Connect Strava',
+      text: stravaConnected ? 'Connected to Strava' : 'Connect to Strava',
       click: () => {
         if (!stravaConnected) {
           handleConnectStrava();
@@ -248,6 +250,10 @@ function Dashboard() {
     togglePlans: {
       text: '☰', // Hamburger menu symbol
       click: () => setShowTrainingPlans(!showTrainingPlans)
+    },
+    analytics: {
+      text: view === "analytics" ? "Calendar" : "Analytics",
+      click: () => setView(prev => (prev === "calendar" ? "analytics" : "calendar"))
     }
   };
 
@@ -461,55 +467,64 @@ function Dashboard() {
   }
 
   return (
-    <div className={`dashboard-layout ${showTrainingPlans ? 'panel-open' : ''}`}>
-      {showTrainingPlans && (
-        <div className="sidebar">
-          <TrainingPlansPanel 
-            onTrainingPlanUpdated={handleTrainingPlanUpdated}
-          />
+    <>
+      {view === "calendar" && (
+        <div className={`dashboard-layout ${showTrainingPlans ? 'panel-open' : ''}`}>
+          {showTrainingPlans && (
+            <div className="sidebar">
+              <TrainingPlansPanel 
+                onTrainingPlanUpdated={handleTrainingPlanUpdated}
+              />
+            </div>
+          )}
+
+          <div className="calendar-container">
+            {!isLoading && (
+              <FullCalendar
+                ref = {calendarRef}
+                plugins={[dayGridPlugin, interactionPlugin]}
+                initialView='dayGridMonth'
+                initialDate={
+                  initialView && initialView.currentStart
+                    ? new Date(initialView.currentStart)
+                    : new Date() //  Default to current date if no saved view
+                }
+                headerToolbar={{
+                  left: 'togglePlans logo today prev next', // Add icon as seperate button
+                  center: 'title',
+                  right: 'analytics connectStrava logout' // Connect Strava and Logout buttons on right
+                }}
+                buttonText={{
+                  today: 'Today'
+                }}
+                customButtons={customButtons}
+                dayHeaderContent={handleDayHeader}
+                weekends={true}
+                events={events}
+                eventContent={handleEventContent}
+                dateClick={handleDateClick}
+                eventClick={handleEventClick}
+                datesSet={(arg) => handleViewChange(arg.view)}
+                height="auto"
+              />
+            )}
+            <ActivityPlannerModal
+              isOpen={isModalOpen}
+              onClose={() => setIsModalOpen(false)}
+              selectedDate={selectedDate}
+              selectedActivity={selectedActivity}
+              onSave={handleSaveActivity}
+              onDelete={handleDeleteActivity}
+            />
+          </div>
         </div>
       )}
-
-      <div className="calendar-container">
-        {!isLoading && (
-          <FullCalendar
-            ref = {calendarRef}
-            plugins={[dayGridPlugin, interactionPlugin]}
-            initialView='dayGridMonth'
-            initialDate={
-              initialView && initialView.currentStart
-                ? new Date(initialView.currentStart)
-                : new Date() //  Default to current date if no saved view
-            }
-            headerToolbar={{
-              left: 'togglePlans logo today prev next', // Add icon as seperate button
-              center: 'title',
-              right: 'connectStrava logout' // Connect Strava and Logout buttons on right
-            }}
-            buttonText={{
-              today: 'Today'
-            }}
-            customButtons={customButtons}
-            dayHeaderContent={handleDayHeader}
-            weekends={true}
-            events={events}
-            eventContent={handleEventContent}
-            dateClick={handleDateClick}
-            eventClick={handleEventClick}
-            datesSet={(arg) => handleViewChange(arg.view)}
-            height="auto"
-          />
-        )}
-        <ActivityPlannerModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          selectedDate={selectedDate}
-          selectedActivity={selectedActivity}
-          onSave={handleSaveActivity}
-          onDelete={handleDeleteActivity}
-        />
-      </div>
-    </div>
+      {view === "analytics" && (
+        <div className='analytics-container'>
+          <Analytics />
+        </div>
+      )}
+    </>
   );
 }
 

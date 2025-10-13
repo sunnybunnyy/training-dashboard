@@ -341,9 +341,7 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 
 .fc .fc-button.fc-connectStrava-button,
-.fc .fc-button.fc-connectStrava-button:active,
-.fc .fc-button.fc-analytics-button
-.fc .fc-button.fc-analytics-button:active {
+.fc .fc-button.fc-connectStrava-button:active {
   background-color: #fa8e25;
   border: none !important;
   color: #fff;

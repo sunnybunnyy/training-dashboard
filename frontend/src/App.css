@@ -325,7 +325,8 @@ input[type="number"]::-webkit-inner-spin-button {
 
 .fc .fc-button.fc-logout-button,
 .fc .fc-button.fc-today-button,
-.fc .fc-button.fc-connectStrava-button {
+.fc .fc-button.fc-connectStrava-button,
+.fc .fc-button.fc-analytics-button {
   border: 1px solid #747775;
   border-radius: 100px;
   color: #1f1f1f;
@@ -340,7 +341,9 @@ input[type="number"]::-webkit-inner-spin-button {
 }
 
 .fc .fc-button.fc-connectStrava-button,
-.fc .fc-button.fc-connectStrava-button:active {
+.fc .fc-button.fc-connectStrava-button:active,
+.fc .fc-button.fc-analytics-button
+.fc .fc-button.fc-analytics-button:active {
   background-color: #fa8e25;
   border: none !important;
   color: #fff;

@@ -7,7 +7,7 @@ export default function Analytics() {
     const [data, setData] = useState([]); // State to hold the fetched data
 
     useEffect(() => {
-        fetch("/api/strava/activities", { credentials: "include" })
+        fetch(`${API_BASE_URL}/api/strava/activities`, { credentials: "include" })
             .then(async res => {
             console.log("Response status:", res.status);
             const text = await res.text();

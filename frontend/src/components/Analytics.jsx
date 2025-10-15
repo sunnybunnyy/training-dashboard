@@ -5,38 +5,29 @@ import {
 
 export default function Analytics() {
     const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+    const api = axios.create({
+                      baseURL: API_BASE_URL,
+                      withCredentials: true
+                  });
     const [data, setData] = useState([]); // State to hold the fetched data
 
     useEffect(() => {
-        fetch(`${API_BASE_URL}/api/strava/activities`, { credentials: "include" })
-            .then(async res => {
-            console.log("Response status:", res.status);
-            const text = await res.text();
-            console.log("Raw response text:", text);
+        const fetchActivities = async () => {
             try {
-                return JSON.parse(text);
-            } catch (err) {
-                console.error("JSON parse error:", err);
-                return [];
-            }
-            })
-            .then(json => {
-            console.log("Parsed JSON:", json);
-            if (!Array.isArray(json)) {
-                console.error("Not an array, received:", json);
-                setData([]);
-                return;
-            }
-            const transformed = json.map(a => ({
-                date: new Date(a.start_date_local).toLocaleDateString(),
-                distance: (a.distance / 1000).toFixed(2),
-                pace: a.moving_time > 0 ? (a.moving_time / 60) / (a.distance / 1000) : 0,
-                avg_hr: a.average_heartrate || 0,
+                const res = await api.get('/api/strava/activities');
+                const transformed = res.data.map(a => ({
+                    date: new Date(a.start_date_local).toLocaleDateString(),
+                    distance: (a.distance / 1000).toFixed(2), // Convert to km
+                    pace: a.moving_time > 0 ? (a.moving_time / 60) / (a.distance / 1000) : 0, // min/km
+                    avg_hr: a.average_heartrate || 0,
             }));
-            setData(transformed.reverse());
-            })
-            .catch(err => console.error("Fetch failed:", err));
-        }, []);
+            setData(transformed.reverse()); // Reverse to have oldest first
+            } catch (err) {
+                console.error("Error fetching activities:", err);
+            }
+        };
+        fetchActivities();
+    }, []);
 
 
     return (

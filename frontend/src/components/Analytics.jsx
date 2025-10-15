@@ -7,21 +7,36 @@ export default function Analytics() {
     const [data, setData] = useState([]); // State to hold the fetched data
 
     useEffect(() => {
-        fetch("/api/strava/activities", {
-            credentials: "include",
-        })
-        .then(res => res.json())
-        .then(json => {
+        fetch("/api/strava/activities", { credentials: "include" })
+            .then(async res => {
+            console.log("Response status:", res.status);
+            const text = await res.text();
+            console.log("Raw response text:", text);
+            try {
+                return JSON.parse(text);
+            } catch (err) {
+                console.error("JSON parse error:", err);
+                return [];
+            }
+            })
+            .then(json => {
+            console.log("Parsed JSON:", json);
+            if (!Array.isArray(json)) {
+                console.error("Not an array, received:", json);
+                setData([]);
+                return;
+            }
             const transformed = json.map(a => ({
                 date: new Date(a.start_date_local).toLocaleDateString(),
-                distance: (a.distance / 1000).toFixed(2), // Convert to km
-                pace: a.moving_time > 0 ? (a.moving_time / 60) / (a.distance / 1000) : 0, // min/km
+                distance: (a.distance / 1000).toFixed(2),
+                pace: a.moving_time > 0 ? (a.moving_time / 60) / (a.distance / 1000) : 0,
                 avg_hr: a.average_heartrate || 0,
             }));
-            setData(transformed.reverse()); // Reverse to have oldest first
-        })
-        .catch(err => console.error("Error fetching activities:", err));
-    }, []);
+            setData(transformed.reverse());
+            })
+            .catch(err => console.error("Fetch failed:", err));
+        }, []);
+
 
     return (
         <div className='p-4 bg-white rounder-2xl shadow-md'>

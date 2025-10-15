@@ -51,7 +51,7 @@ export default function Analytics() {
             {data.length === 0 ? (
                 <p className="text-gray-500">No activities found or Strava not connected.</p>
             ) : (
-                <div className="h-80 w-full relative" height="100vh">
+                <div className="h-80 w-full relative" style="height: 100vh">
                     <ResponsiveContainer>
                         <LineChart data={data} margin={{ top: 5, right: 30, left: 10, bottom: 5}}>
                             <CartesianGrid strokeDasharray="3 3" />

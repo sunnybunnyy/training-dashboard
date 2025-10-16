@@ -54,7 +54,7 @@ export default function Analytics() {
                 <div className='flex flex-row justify-between gap-4'>
                     <div className='flex-1 h-[400px]'>
                         <h3 className="text-lg font-medium text-center mb-2">Pace (min/km)</h3>
-                        <ResponsiveContainer width="100%" height="100%">
+                        <ResponsiveContainer width="90vw" height="30vh">
                             <LineChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 10 }}>
                                 <CartesianGrid strokeDasharray="3 3" />
                                 <XAxis dataKey="date" />
@@ -80,7 +80,7 @@ export default function Analytics() {
 
                     <div className='flex-1 h-[400px]'>
                         <h3 className="text-lg font-medium text-center mb-2">Average Heart Rate (bpm)</h3>
-                        <ResponsiveContainer width="100%" height="100%">
+                        <ResponsiveContainer width="90vw" height="30vh">
                             <LineChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 10 }}>
                                 <CartesianGrid strokeDasharray="3 3" />
                                 <XAxis dataKey="date" />

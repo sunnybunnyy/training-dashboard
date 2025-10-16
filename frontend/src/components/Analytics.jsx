@@ -51,27 +51,45 @@ export default function Analytics() {
             {data.length === 0 ? (
                 <p className="text-gray-500">No activities found or Strava not connected.</p>
             ) : (
-                <div className="h-80 w-full relative" style={{ height: "100vh" }}>
-                    <ResponsiveContainer width="100%" height="100%">
-                        <LineChart data={data} margin={{ top: 5, right: 30, left: 10, bottom: 5}}>
-                            <CartesianGrid strokeDasharray="3 3" />
-                            <XAxis dataKey="date" />
-                            <YAxis yAxisId="left" label={{ value: "Pace (min/km)", angle: -90, position: "insideRight" }} />
-                            <YAxis yAxisId="right" orientation="right" label={{ value: "HR (bpm)", angle: 90, position: "insideRight" }} />
-                            <Tooltip
-                                formatter={(value, name) => {
-                                    if (name === "pace") return [`${value.toFixed(2)} min/km`, "Pace"];
-                                    if (name === "distance") return [`${value} km`, "Distance"];
-                                    if (name === "avg_hr") return [`${value} bpm`, "Avg HR"];
-                                    return [value, name];
-                                }} 
-                            />
-                            <Legend />
-                            <Line yAxisId="left" type="monotone" dataKey="pace" stroke="#8884d8" activeDot={{ r: 6 }} />
-                            <Line yAxisId="left" type="monotone" dataKey="distance" stroke="#82ca9d" />
-                            <Line yAxisId="right" type="monotone" dataKey="avg_hr" stroke="#ff7300" />
-                        </LineChart>
-                    </ResponsiveContainer>
+                <div className='flex flex-row justify-between gap-4'>
+                    <div className='flex-1 h-[400px]'>
+                        <h3 className="text-lg font-medium text-center mb-2">Pace (min/km)</h3>
+                        <ResponsiveContainer width="100%" height="100%">
+                            <LineChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 10 }}>
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="date" />
+                                <YAxis />
+                                <Tooltip formatter={(v) => [`${v.toFixed(2)} min/km`, "Pace"]} />
+                                <Line type="monotone" dataKey="pace" stroke="#8884d8" dot={false} />
+                            </LineChart>
+                        </ResponsiveContainer>
+                    </div>
+
+                    <div className='flex-1 h-[400px]'>
+                        <h3 className="text-lg font-medium text-center mb-2">Distance km</h3>
+                        <ResponsiveContainer width="100%" height="100%">
+                            <LineChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 10 }}>
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="date" />
+                                <YAxis />
+                                <Tooltip formatter={(v) => [`${v} km`, "Distance"]} />
+                                <Line type="monotone" dataKey="distance" stroke="#82ca9d" dot={false} />
+                            </LineChart>
+                        </ResponsiveContainer>
+                    </div>
+
+                    <div className='flex-1 h-[400px]'>
+                        <h3 className="text-lg font-medium text-center mb-2">Average Heart Rate (bpm)</h3>
+                        <ResponsiveContainer width="100%" height="100%">
+                            <LineChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 10 }}>
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="date" />
+                                <YAxis />
+                                <Tooltip formatter={(v) => [`${v} bpm`, "Avg HR"]} />
+                                <Line type="monotone" dataKey="avg_hr" stroke="#ff7300" dot={false} />
+                            </LineChart>
+                        </ResponsiveContainer>
+                    </div>
                 </div>
             )}
         </div>

@@ -52,19 +52,17 @@ export default function Analytics() {
                 <p className="text-gray-500">No activities found or Strava not connected.</p>
             ) : (
                 <div className='flex flex-row justify-between gap-4' style={{ height: '400px' }}>
-                    <div className='flex-1 flex flex-col'>
+                    <div>
                         <h3 className="text-lg font-medium text-center mb-2">Pace (min/km)</h3>
-                        <div style={{ width: '100%', flex: 1 }}> 
-                            <ResponsiveContainer width="100%" height="100%">
-                                <LineChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 10 }}>
-                                    <CartesianGrid strokeDasharray="3 3" />
-                                    <XAxis dataKey="date" />
-                                    <YAxis />
-                                    <Tooltip formatter={(v) => [`${v.toFixed(2)} min/km`, "Pace"]} />
-                                    <Line type="monotone" dataKey="pace" stroke="#8884d8" dot={false} />
-                                </LineChart>
-                            </ResponsiveContainer>
-                        </div>
+                        <ResponsiveContainer width="80%" aspect={1.618}>
+                            <LineChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 10 }}>
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="date" />
+                                <YAxis />
+                                <Tooltip formatter={(v) => [`${v.toFixed(2)} min/km`, "Pace"]} />
+                                <Line type="monotone" dataKey="pace" stroke="#8884d8" dot={false} />
+                            </LineChart>
+                        </ResponsiveContainer>
                     </div>
 
                     <div className='flex-1 flex flex-col'>

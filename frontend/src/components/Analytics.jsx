@@ -51,7 +51,7 @@ export default function Analytics() {
             {data.length === 0 ? (
                 <p className="text-gray-500">No activities found or Strava not connected.</p>
             ) : (
-                <div className='flex flex-row justify-between gap-4' style={{ height: '400px' }}>
+                <div>
                     <div>
                         <h3 className="text-lg font-medium text-center mb-2">Pace (min/km)</h3>
                         <ResponsiveContainer width="80%" aspect={1.618}>
@@ -67,7 +67,7 @@ export default function Analytics() {
 
                     <div>
                         <h3 className="text-lg font-medium text-center mb-2">Distance km</h3>
-                        <ResponsiveContainer width="100%" height="100%">
+                        <ResponsiveContainer width="80%" aspect={1.618}>
                             <LineChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 10 }}>
                                 <CartesianGrid strokeDasharray="3 3" />
                                 <XAxis dataKey="date" />
@@ -80,7 +80,7 @@ export default function Analytics() {
 
                     <div>
                         <h3 className="text-lg font-medium text-center mb-2">Average Heart Rate (bpm)</h3>
-                        <ResponsiveContainer width="100%" height="100%">
+                        <ResponsiveContainer width="80%" aspect={1.618}>
                             <LineChart data={data} margin={{ top: 10, right: 20, left: 0, bottom: 10 }}>
                                 <CartesianGrid strokeDasharray="3 3" />
                                 <XAxis dataKey="date" />

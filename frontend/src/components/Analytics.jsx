@@ -18,8 +18,10 @@ export default function Analytics({ data, onBack}) {
     return (
     <div className="training-trends-container">
         { /* Back to Calendar Button */ }
-        <button className="back-button" onClick={onBack}>Calendar</button>
-        <h2 className="training-trends-title">Training Trends</h2>
+        <div className='training-trends-header'>
+            <h2 className="training-trends-title">Training Trends</h2>
+            <button className="back-button" onClick={onBack}>Calendar</button>
+        </div>
         {/* Flex container for 3 charts side-by-side */}
         <div className="charts-wrapper">
         {/* Each chart container */}

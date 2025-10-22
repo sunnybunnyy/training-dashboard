@@ -80,3 +80,10 @@ back-button:active {
   background-color: #fa8f257F;
   color: #fff;
 }
+
+.training-trends-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}

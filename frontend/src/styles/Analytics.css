@@ -71,12 +71,12 @@
 }
 
 .back-button:hover {
-  background-color: #fa8e253F;
+  background-color: #fa8e257F;
   cursor: pointer;
 }
 
 .back-button:active {
-  background-color: #fa8f257F;
+  background-color: #fa8f253F;
   color: #fff;
 }
 

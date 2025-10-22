@@ -26,6 +26,7 @@ function Dashboard() {
   });
   const [isLoading, setIsLoading] = useState(true);
   const [view, setView] = useState("calendar"); // "calendar" or "analytics"
+  const [activityData, setActivityData] = useState([]); // State to hold the fetched data  
   const calendarRef = useRef(null);
 
   // Use authenticated API calls
@@ -54,6 +55,24 @@ function Dashboard() {
   useEffect(() => {
     initialize();
   }, []); // Run only once after the initial render
+
+  useEffect(() => {
+        const fetchActivities = async () => {
+            try {
+                const res = await api.get('/api/strava/activities');
+                const transformed = res.data.map(a => ({
+                    date: new Date(a.start_date_local).toLocaleDateString(),
+                    distance: (a.distance / 1000).toFixed(2), // Convert to km
+                    pace: a.moving_time > 0 ? (a.moving_time / 60) / (a.distance / 1000) : 0, // min/km
+                    avg_hr: a.average_heartrate || 0,
+            }));
+            setActivityData(transformed.reverse()); // Reverse to have oldest first
+            } catch (err) {
+                console.error("Error fetching activities:", err);
+            }
+        };
+        fetchActivities();
+    }, []);
   
   const initialize = async () => {
     await getLastViewedMonth();
@@ -521,7 +540,7 @@ function Dashboard() {
       )}
       {view === "analytics" && (
         <div className='analytics-container'>
-          <Analytics onBack={() => setView("calendar")} />
+          <Analytics data={activityData} onBack={() => setView("calendar")} />
         </div>
       )}
     </>

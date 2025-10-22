@@ -54,11 +54,26 @@
   border: none !important;
   color: #fff;
   cursor: default;
+  border-radius: 100px;
+  font-weight: 500;
+  padding: 10px 25px;
+  display: inline-block;
+  font-size: 1em;
+  line-height: 1.5;
+  text-align: center;
+  user-select: none;
+  vertical-align: middle;
+  appearance: button;
+  margin: 0px;
+  overflow: visible;
+  text-transform: none;
+  box-sizing: border-box;
 }
 
 back-button:hover {
   background-color: #fa8e253F;
   color: #444746;
+  cursor: pointer;
 }
 
 back-button:active {

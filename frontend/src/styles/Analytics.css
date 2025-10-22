@@ -50,15 +50,14 @@
 }
 
 .back-button {
-  border: 1px solid #747775;
-  border-radius: 100px;
-  color: #1f1f1f;
-  font-weight: 500;
-  padding: 10px 25px;
+  background-color: #fa8e25;
+  border: none !important;
+  color: #fff;
+  cursor: default;
 }
 
 back-button:hover {
-  background-color: #fa8f253F;
+  background-color: #fa8e253F;
   color: #444746;
 }
 

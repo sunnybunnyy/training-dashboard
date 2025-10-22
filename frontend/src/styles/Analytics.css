@@ -70,13 +70,13 @@
   box-sizing: border-box;
 }
 
-back-button:hover {
+.back-button:hover {
   background-color: #fa8e253F;
   color: #444746;
   cursor: pointer;
 }
 
-back-button:active {
+.back-button:active {
   background-color: #fa8f257F;
   color: #fff;
 }

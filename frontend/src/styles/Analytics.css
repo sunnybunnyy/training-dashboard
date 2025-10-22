@@ -1,5 +1,5 @@
 .training-trends-container {
-  padding: 20px 10px;
+  padding: 20px 10px 0;
   background-color: white;
   border-radius: 1rem;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
@@ -11,7 +11,7 @@
 }
 
 .training-trends-title {
-  font-size: 1.75rem;
+  font-size: 1.75em;
   font-weight: bold;
   text-align: center;
 }
@@ -85,4 +85,5 @@
   justify-content: center;
   align-items: center;
   position: relative;
+  padding-top: 10px;
 }

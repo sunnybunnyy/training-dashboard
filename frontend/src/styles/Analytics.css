@@ -1,5 +1,5 @@
 .training-trends-container {
-  padding: 20px 10px 0;
+  padding: 0 10px 0;
   background-color: white;
   border-radius: 1rem;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
@@ -85,5 +85,7 @@
   justify-content: center;
   align-items: center;
   position: relative;
-  padding-top: 10px;
+  padding-top: 30px;
+  padding-bottom: 10px;
+  background-color: #fbfbfc;
 }

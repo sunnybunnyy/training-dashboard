@@ -56,6 +56,8 @@ export default function Analytics() {
     }
     return (
     <div className="training-trends-container">
+        { /* Back to Calendar Button */ }
+        <button className="back-button" onClick={onBack}>Calendar</button>
         <h2 className="training-trends-title">Training Trends</h2>
         {/* Flex container for 3 charts side-by-side */}
         <div className="charts-wrapper">

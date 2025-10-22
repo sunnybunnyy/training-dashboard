@@ -521,7 +521,7 @@ function Dashboard() {
       )}
       {view === "analytics" && (
         <div className='analytics-container'>
-          <Analytics />
+          <Analytics onBack={() => setView("calendar")} />
         </div>
       )}
     </>

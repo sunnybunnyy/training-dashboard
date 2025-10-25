@@ -392,22 +392,27 @@ app.get('/api/strava/activities', authenticateToken, async (req, res) => {
       }, {});
 
       // Transform Strava activities with training plan info
-      const activitiesWithPlans = stravaResponse.data.map(activity => {
-        // Find associated training plan ID from our database
+      const activitiesWithPlans = [];
+      
+      for (const activity of stravaResponse.data) {
+        // Find associated training plan ID from our DB
         const associatedPlanId = planAssociationMap[activity.id] || null;
 
-        // Find the full training plan details
+        // Store activity into strava_activities table
+        await db.upsertStravaActivity(req.user.id, activity, associatedPlanId);
+        
+        // Attach training plan info for frontend
         const associatedPlan = associatedPlanId
           ? trainingPlans.find(plan => plan.id === associatedPlanId)
           : null;
 
-        return {
+        activitiesWithPlans.push({
           ...activity,
           trainingPlanId: associatedPlanId,
           trainingPlanName: associatedPlan ? associatedPlan.name : null,
           trainingPlanColor: associatedPlan ? associatedPlan.color : null
-        };
-      });
+        });
+      }
 
       await redisClient.set(cacheKey, JSON.stringify(activitiesWithPlans), { EX: 600 }); // Cache for 10 minutes
 

@@ -196,14 +196,42 @@ async function getStravaActivityByStravaId(userId, stravaId) {
 }
 
 // Update Strava activitiy's associated training plan
-async function upsertStravaActivity(userId, stravaId, planId) {
+async function upsertStravaActivity(userId, stravaActivity, planId = null) {
+    const {
+        id: stravaId,
+        start_date_local,
+        distance,
+        moving_time,
+        average_speed,
+        average_heartrate,
+        type
+    } = stravaActivity;
+
     const { rows } = await pool.query(
-        `INSERT INTO strava_activities (user_id, strava_id, plan_id)
-        VALUES ($1, $2, $3)
+        `INSERT INTO strava_activities (user_id, strava_id, plan_id, date, distance, duration, avg_speed, avg_hr, type)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
         ON CONFLICT (user_id, strava_id)
-        DO UPDATE SET plan_id = EXCLUDED.plan_id
+        DO UPDATE SET 
+            plan_id = EXCLUDED.plan_id,
+            date = EXCLUDED.date,
+            distance = EXCLUDED.distance,
+            duration = EXCLUDED.duration,
+            avg_speed = EXCLUDED.avg_speed,
+            avg_hr = EXCLUDED.avg_hr,
+            type = EXCLUDED.type
         RETURNING *`,
-        [userId, stravaId, planId]);
+        [
+            userId, 
+            stravaId, 
+            planId,
+            new Date(start_date_local),
+            Math.round(distance),
+            Math.round(moving_time),
+            average_speed,
+            average_heartrate,
+            type
+        ]
+    );
     return rows[0];
 }
 

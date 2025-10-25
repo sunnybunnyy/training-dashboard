@@ -137,7 +137,7 @@ app.get('/auth/strava', async (req, res, next) => {
         // Store the userId in a local variable since we have it from the token
         req.userId = userId;
       } catch (error) {
-        console.log('Token verification failed:', err.message);
+        console.log('Token verification failed:', error.message);
       }
     }
 

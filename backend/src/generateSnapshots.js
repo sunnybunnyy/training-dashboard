@@ -20,10 +20,9 @@ async function generateSnapshots() {
                 "SELECT MAX(start_date) AS max_date FROM strava_activities WHERE user_id = $1",
                 [userId]
             );
-            // You need to save strava activity data in 
-            // your db, you've got to edit your 
-            // strava_activities table and also everywhere 
-            // you pull from there probs
+            const endDate = dayjs(lastActivity.rows[0].max_date);
+            const snapshotDate = endDate.endOf("week");
+
         }
     }
 }

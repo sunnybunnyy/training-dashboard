@@ -55,6 +55,12 @@ async function generateSnapshots() {
 
             const s7 = stats7d.rows[0];
             const s28 = stats28d.rows[0];
+
+            // Derived features
+            const paceTrend = (s7.avg_pace_7d - s28.avg_pace_28d) / s28.avg_pace_28d;
+            const acwr = s7.weekly_distance_7d / (s28.avg_weekly_distance_28d || 1);
+            const hrTrend = (s7.avg_hr_7d - s28.avg_hr_28d) / s28.avg_hr_28d;
+            const trainingLoad7d = s7.weekly_distance_7d * s7.avg_hr_7d;
         }
     }
 }

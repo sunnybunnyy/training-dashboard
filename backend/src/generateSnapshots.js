@@ -1,10 +1,5 @@
-import pg from "pg";
 import dayjs from "dayjs";
-
-const { Pool } = pg;
-const pool = new Pool({
-    connectionString: process.env.DATABASE_URL,
-});
+import pool from '../db/pool.js';
 
 async function generateSnapshots() {
     const client = await pool.connect();
@@ -31,7 +26,6 @@ async function generateSnapshots() {
                 `SELECT
                     SUM(distance) AS weekly_distance_7d,
                     SUM(duration) AS weekly_duration_7d,
-                    COUNT(*) AS weekly_runs.
                     COUNT(*) AS weekly_runs,
                     AVG(duration / NULLIF(distance,0)) AS avg_pace_7d,
                     STDDEV(duration / NULLIF(distance,0)) AS pace_std_7d,
@@ -39,15 +33,15 @@ async function generateSnapshots() {
                     STDDEV(avg_hr) AS hr_std_7d,
                     MAX(avg_hr) AS max_hr_7d
                 FROM strava_activities
-                WHERE user_id = $1 AND start_Date >= $2`,
+                WHERE user_id = $1 AND start_date >= $2`,
                 [userId, sevenDaysAgo]
             );
 
             const stats28d = await client.query(
                 `SELECT
-                    AVG(duration / NULLIF(distance,0)) AS avg_pace_28d,,
+                    AVG(duration / NULLIF(distance,0)) AS avg_pace_28d,
                     AVG(avg_hr) AS avg_hr_28d,
-                    AVG(SUM(distance)) OVER () AS avg_weekly_distance_28d
+                    SUM(distance) / 4.0 AS avg_weekly_distance_28d
                 FROM strava_activities
                 WHERE user_id = $1 AND start_date >= $2`,
                 [userId, twentyEightDaysAgo]
@@ -116,3 +110,5 @@ async function generateSnapshots() {
 generateSnapshots()
     .then(() => console.log("Snapshots generation completed"))
     .catch(err => console.error("Error generating snapshots:", err));
+
+// node src/generateSnapshots.js

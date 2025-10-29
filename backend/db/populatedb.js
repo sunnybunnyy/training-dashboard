@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS strava_activities (
     user_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
     strava_id BIGINT NOT NULL,
     plan_id INTEGER REFERENCES training_plans(id) ON DELETE SET NULL,
-    date DATE,
+    start_date DATE,
     distance INTEGER,
     duration INTEGER,
     avg_speed FLOAT,

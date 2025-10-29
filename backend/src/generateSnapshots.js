@@ -61,6 +61,19 @@ async function generateSnapshots() {
             const acwr = s7.weekly_distance_7d / (s28.avg_weekly_distance_28d || 1);
             const hrTrend = (s7.avg_hr_7d - s28.avg_hr_28d) / s28.avg_hr_28d;
             const trainingLoad7d = s7.weekly_distance_7d * s7.avg_hr_7d;
+
+            // Label with rule-based heuristic
+            let planCategory, targetWeeklyDistance;
+            if (acwr >= 1.3 || s7.avg_hr_7d > 180) {
+                planCategory = "Recovery";
+                targetWeeklyDistance = s7.weekly_distance_7d * 0.7;
+            } else if (acwr < 0.85 && paceTrend > -0.03) {
+                planCategory = "Increase";
+                targetWeeklyDistance = s7.weekly_distance_7d * 1.15;
+            } else {
+                planCategory = "Maintain";
+                targetWeeklyDistance = s7.weekly_distance_7d;
+            }
         }
     }
 }

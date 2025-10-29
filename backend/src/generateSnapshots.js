@@ -74,6 +74,45 @@ async function generateSnapshots() {
                 planCategory = "Maintain";
                 targetWeeklyDistance = s7.weekly_distance_7d;
             }
+
+            // Insert into training_snapshots
+            await client.query(
+                `INSERT INTO training_snapshots
+                (user_id, snapshot_date, weekly_distance_7d, 
+                weekly_duration_7d, weekly_runs, avg_pace_7d, avg_pace_28d, 
+                pace_std_7d, avg_hr_7d, hr_std_7d, max_hr_7d, 
+                training_load_7d, pace_trend, acwr, hr_trend, plan_category, 
+                target_weekly_distance)
+                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, 
+                $13, $14, $15, $16, $17)`,
+                [
+                    userId,
+                    snapshotDate.toDate(),
+                    s7.weekly_distance_7d,
+                    s7.weekly_duration_7d,
+                    s7.weekly_runs,
+                    s7.avg_pace_7d,
+                    s28.avg_pace_28d,
+                    s7.pace_std_7d,
+                    s7.avg_hr_7d,
+                    s7.hr_std_7d,
+                    s7.max_hr_7d,
+                    trainingLoad7d,
+                    paceTrend,
+                    acwr,
+                    hrTrend,
+                    planCategory,
+                    targetWeeklyDistance,
+                ]
+            );
+
+            console.log(`Generated snapshot for user ${userId} on ${snapshotDate.format("YYYY-MM-DD")}`);
         }
+    } finally {
+        client.release();
     }
 }
+
+generateSnapshots()
+    .then(() => console.log("Snapshots generation completed"))
+    .catch(err => console.error("Error generating snapshots:", err));

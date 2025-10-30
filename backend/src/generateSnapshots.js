@@ -27,8 +27,8 @@ async function generateSnapshots() {
                     SUM(distance) AS weekly_distance_7d,
                     SUM(duration) AS weekly_duration_7d,
                     COUNT(*) AS weekly_runs,
-                    AVG(duration / NULLIF(distance,0)) AS avg_pace_7d,
-                    STDDEV(duration / NULLIF(distance,0)) AS pace_std_7d,
+                    AVG(duration::FLOAT / NULLIF(distance,0)) AS avg_pace_7d,
+                    STDDEV(duration::FLOAT / NULLIF(distance,0)) AS pace_std_7d,
                     AVG(avg_hr) AS avg_hr_7d,
                     STDDEV(avg_hr) AS hr_std_7d,
                     MAX(avg_hr) AS max_hr_7d
@@ -39,7 +39,7 @@ async function generateSnapshots() {
 
             const stats28d = await client.query(
                 `SELECT
-                    AVG(duration / NULLIF(distance,0)) AS avg_pace_28d,
+                    AVG(duration::FLOAT / NULLIF(distance,0)) AS avg_pace_28d,
                     AVG(avg_hr) AS avg_hr_28d,
                     SUM(distance) / 4.0 AS avg_weekly_distance_28d
                 FROM strava_activities

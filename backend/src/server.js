@@ -17,6 +17,7 @@ import session from 'express-session';
 import connectPgSimple from 'connect-pg-simple';
 import { Strategy as StravaStrategy } from 'passport-strava-oauth2';
 import { fileURLToPath } from 'url';
+import { recommendPlan } from './ruleRecommender.js';
 
 dotenv.config(); // Load environment variables from .env file
 const port = process.env.PORT; // Get the port from environment variables
@@ -801,6 +802,25 @@ app.post('/api/training-plans', authenticateToken, async (req, res) => {
     console.error('Error creating training plan:', error);
     res.status(500).json({ error: 'Failed to create training plan' });
   }
+});
+
+// POST recommendation for training plan based on user stats
+app.post('/api/rules', (req, res) => {
+  const { acwr, avg_hr_7d, pace_trend, resting_hr } = req.body;
+
+  // Validate input
+  if (
+    acwr === undefined ||
+    avg_hr_7d === undefined ||
+    pace_trend === undefined ||
+    resting_hr === undefined
+  ) {
+    return res.status(400).json({ error: "Missing required fields" });
+  }
+
+  const plan_category = recommendPlan({ acwr, avg_hr_7d, pace_trend, resting_hr});
+
+  res.json({ plan_category});
 });
 
 // PUT update training plan

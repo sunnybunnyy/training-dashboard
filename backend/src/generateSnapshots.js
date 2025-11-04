@@ -48,6 +48,13 @@ async function generateSnapshots() {
                     [userId, twentyEightDaysAgo]
                 );
 
+                const lastRun = await client.query(
+                    "SELECT MAX(start_date) AS last_run FROM strava_activities WHERE user_id = $1",
+                    [userId]
+                );
+
+                const daysSinceLastRun = snapshotDate.diff(dayjs(lastRun.rows[0].last_run), "day");
+                const adheranceValue = 1.0; // Placeholder for actual adherence calculation based on user's plan
                 const s7 = stats7d.rows[0];
                 const s28 = stats28d.rows[0];
 
@@ -77,9 +84,9 @@ async function generateSnapshots() {
                     weekly_duration_7d, weekly_runs, avg_pace_7d, avg_pace_28d, 
                     pace_std_7d, avg_hr_7d, hr_std_7d, max_hr_7d, 
                     training_load_7d, pace_trend, acwr, hr_trend, plan_category, 
-                    target_weekly_distance)
+                    target_weekly_distance, adherance, days_since_last_run)
                     VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, 
-                    $13, $14, $15, $16, $17)`,
+                    $13, $14, $15, $16, $17, $18, $19)`,
                     [
                         userId,
                         snapshotDate.toDate(),
@@ -98,6 +105,8 @@ async function generateSnapshots() {
                         hrTrend,
                         planCategory,
                         targetWeeklyDistance,
+                        adheranceValue,
+                        daysSinceLastRun
                     ]
                 );
 

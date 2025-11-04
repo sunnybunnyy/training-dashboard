@@ -80,7 +80,9 @@ CREATE TABLE IF NOT EXISTS training_snapshots (
     hr_trend FLOAT,
     plan_category VARCHAR(20),
     target_weekly_distance FLOAT,
-    created_at TIMESTAMP DEFAULT NOW()
+    created_at TIMESTAMP DEFAULT NOW(),
+    adherance FLOAT,
+    days_since_last_run INTEGER
 );
 
 `;

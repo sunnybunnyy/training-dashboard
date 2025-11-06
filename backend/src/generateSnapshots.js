@@ -1,5 +1,11 @@
 import dayjs from "dayjs";
 import pool from '../db/pool.js';
+import { labelSnapshot } from "./labelHeuristics.js";
+
+function safeRatio(a, b) {
+    if (!b || isNaN(a) || isNaN(b) || b === 0) return 0;
+    return a / b;
+}
 
 async function generateSnapshots() {
     const client = await pool.connect();
@@ -59,23 +65,20 @@ async function generateSnapshots() {
                 const s28 = stats28d.rows[0];
 
                 // Derived features
-                const paceTrend = (s7.avg_pace_7d - s28.avg_pace_28d) / s28.avg_pace_28d;
-                const acwr = s7.weekly_distance_7d / (s28.avg_weekly_distance_28d || 1);
-                const hrTrend = (s7.avg_hr_7d - s28.avg_hr_28d) / s28.avg_hr_28d;
+                const paceTrend = safeRatio(s7.avg_pace_7d - s28.avg_pace_28d, s28.avg_pace_28d);
+                const acwr = safeRatio(s7.weekly_distance_7d, s28.avg_weekly_distance_28d);
+                const hrTrend = safeRatio(s7.avg_hr_7d - s28.avg_hr_28d, s28.avg_hr_28d);
                 const trainingLoad7d = s7.weekly_distance_7d * s7.avg_hr_7d;
 
                 // Label with rule-based heuristic
-                let planCategory, targetWeeklyDistance;
-                if (acwr >= 1.3 || s7.avg_hr_7d > 180) {
-                    planCategory = "Recovery";
-                    targetWeeklyDistance = s7.weekly_distance_7d * 0.7;
-                } else if (acwr < 0.85 && paceTrend > -0.03) {
-                    planCategory = "Increase";
-                    targetWeeklyDistance = s7.weekly_distance_7d * 1.15;
-                } else {
-                    planCategory = "Maintain";
-                    targetWeeklyDistance = s7.weekly_distance_7d;
-                }
+                const { planCategory, targetWeeklyDistance } = labelSnapshot({
+                    acwr,
+                    avg_hr_7d: s7.avg_hr_7d,
+                    resting_hr: 60, // TODO: Store user resting HR
+                    pace_trend: paceTrend,
+                    weekly_distance_7d: s7.weekly_distance_7d,
+                    adherence: adheranceValue,
+                });
 
                 // Insert into training_snapshots
                 await client.query(

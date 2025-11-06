@@ -1,23 +1,19 @@
+import { labelSnapshot } from "./labelHeuristics.js";
+
 /**
- * Calculate plan recommendation based on user stats
- * using rule-based heuristics.
- * @param {Object} features - User features snapshot
+ * Recommend a training plan category based on recent user stats
+ * @param {Object} features - Snapshot metrics for labeling
  * @param {number} features.acwr - Acute:Chronic Workload ratio
  * @param {number} features.avg_hr_7d - Average heart rate last 7 days
- * @param {number} features.pace_trend - Change in pace over last 4 weeks
  * @param {number} features.resting_hr - User resting heart rate
- * @returns {string} plan category: "Recovery" | "Maintain" | "Increase"
+ * @param {number} features.pace_trend - Change in pace over last 4 weeks
+ * @param {number} features.weekly_distance_7d - Weekly distance over last 7 days
+ * @param {number} [features.adherence=1.0] - User adherence to training plan
+ * @returns {{ planCategory: string, targetWeeklyDistance: number }} - Derived labels
  */
 function recommendPlan(features) {
-    const { acwr, avg_hr_7d, pace_trend, resting_hr } = features;
-
-    if (acwr >= 1.3 || avg_hr_7d > resting_hr + 10) {
-        return "Recovery";
-    } else if (acwr <= 0.7 && pace_trend > -0.02) {
-        return "Increase";
-    } else {
-        return "Maintain";
-    }
+    // Just reuse the labeling heuristic
+    return labelSnapshot(features);
 }
 
 module.exports = { recommendPlan };

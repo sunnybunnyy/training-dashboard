@@ -16,4 +16,4 @@ function recommendPlan(features) {
     return labelSnapshot(features);
 }
 
-module.exports = { recommendPlan };
+export { recommendPlan };

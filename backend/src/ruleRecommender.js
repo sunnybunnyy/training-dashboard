@@ -16,4 +16,4 @@ function recommendPlan(features) {
     return labelSnapshot(features);
 }
 
-export { recommendPlan };
+export default recommendPlan;

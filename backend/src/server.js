@@ -18,6 +18,7 @@ import connectPgSimple from 'connect-pg-simple';
 import { Strategy as StravaStrategy } from 'passport-strava-oauth2';
 import { fileURLToPath } from 'url';
 import recommendPlan from './ruleRecommender.js';
+import recommendRoute from "./routes/recommend.js"
 
 dotenv.config(); // Load environment variables from .env file
 const port = process.env.PORT; // Get the port from environment variables
@@ -52,6 +53,7 @@ app.use(cors({
   credentials: true
 }));
 app.use(helmet());
+app.use(express.json()); // Parse JSON request bodies
 app.use(methodOverride('_method')); // Allow HTTP method overriding
 app.use(morgan('dev')); // Log HTTP requests in 'dev' format
 const pgSession = connectPgSimple(session);
@@ -871,6 +873,7 @@ app.delete('/api/training-plans/:id', authenticateToken, async (req, res) => {
   }
 });
 
+app.use('/api/recommend', recommendRoute);
 
 // Start the server
 app.listen(port, () => {

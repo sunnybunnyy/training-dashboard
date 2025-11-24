@@ -208,7 +208,7 @@ async function upsertStravaActivity(userId, stravaActivity, planId = null) {
     } = stravaActivity;
 
     const { rows } = await pool.query(
-        `INSERT INTO strava_activities (user_id, strava_id, plan_id, date, distance, duration, avg_speed, avg_hr, type)
+        `INSERT INTO strava_activities (user_id, strava_id, plan_id, start_date, distance, duration, avg_speed, avg_hr, type)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
         ON CONFLICT (user_id, strava_id)
         DO UPDATE SET 

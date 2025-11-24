@@ -213,7 +213,7 @@ async function upsertStravaActivity(userId, stravaActivity, planId = null) {
         ON CONFLICT (user_id, strava_id)
         DO UPDATE SET 
             plan_id = EXCLUDED.plan_id,
-            date = EXCLUDED.date,
+            start_date = EXCLUDED.start_date,
             distance = EXCLUDED.distance,
             duration = EXCLUDED.duration,
             avg_speed = EXCLUDED.avg_speed,

@@ -11,4 +11,4 @@ backend/controllers/
 backend/src/config/
 backend/src/routes/
 backend/src/data/
-backend/src/models/*.joblib
+*.joblib

@@ -12,3 +12,4 @@ backend/src/config/
 backend/src/routes/
 backend/src/data/
 *.joblib
+.github/prompts

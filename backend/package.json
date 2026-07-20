@@ -21,7 +21,7 @@
   },
   "homepage": "https://github.com/sunnybunnyy/training-dashboard#readme",
   "dependencies": {
-    "axios": "^1.16.0",
+    "axios": "^1.18.0",
     "bcryptjs": "^3.0.2",
     "body-parser": "^1.20.4",
     "connect-pg-simple": "^10.0.0",
